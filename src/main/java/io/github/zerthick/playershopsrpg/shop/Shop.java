@@ -1,8 +1,6 @@
 package io.github.zerthick.playershopsrpg.shop;
 
-import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
-import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.service.economy.account.Account;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.UUID;
 public class Shop {
     private final String name;
     private UUID ownerUUID;
-    private String currencyID;
     private List<ShopItem> items;
     private boolean unlimitedMoney;
     private boolean unlimitedStock;
@@ -19,19 +16,16 @@ public class Shop {
     public Shop(String name, UUID ownerUUID) {
         this.name = name;
         this.ownerUUID = ownerUUID;
-        CatalogType currencyType = (CatalogType) EconManager.getInstance().getDefaultCurrency();
-        currencyID = currencyType.getId();
         items = new ArrayList<>();
         unlimitedMoney = false;
         unlimitedStock = false;
     }
 
-    public Shop(String name, UUID ownerUUID, String currency, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock) {
+    public Shop(String name, UUID ownerUUID, boolean unlimitedMoney, List<ShopItem> items, boolean unlimitedStock) {
         this.name = name;
         this.ownerUUID = ownerUUID;
-        this.currencyID = currency;
-        this.items = items;
         this.unlimitedMoney = unlimitedMoney;
+        this.items = items;
         this.unlimitedStock = unlimitedStock;
     }
 
@@ -45,14 +39,6 @@ public class Shop {
 
     public void setOwnerUUID(UUID ownerUUID) {
         this.ownerUUID = ownerUUID;
-    }
-
-    public String getCurrencyID() {
-        return currencyID;
-    }
-
-    public void setCurrencyID(String currencyID) {
-        this.currencyID = currencyID;
     }
 
     public List<ShopItem> getItems() {
@@ -79,11 +65,11 @@ public class Shop {
         this.unlimitedStock = unlimitedStock;
     }
 
-    public void buyItem(Account playerAccount, int index){
+    public void buyItem(Player player, int index) {
 
     }
 
-    public void sellItem(Account playerAccoount, int index){
+    public void sellItem(Player player, int index) {
 
     }
 

@@ -25,7 +25,7 @@ public class EconManager {
         return instance;
     }
 
-    public void HookEconService(EconomyService economyService){
+    public void hookEconService(EconomyService economyService) {
         this.economyService = economyService;
     }
 
