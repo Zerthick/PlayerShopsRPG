@@ -11,7 +11,7 @@ public class ShopItem {
     private double itemSellPrice;
 
     public ShopItem(ItemType itemType, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
-        this.itemName = itemType.getName();
+        this.itemName = itemType.getId();
         this.itemAmount = itemAmount;
         this.itemMaxAmount = itemMaxAmount;
         this.itemBuyPrice = itemBuyPrice;
