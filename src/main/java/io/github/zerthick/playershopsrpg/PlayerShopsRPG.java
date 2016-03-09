@@ -1,6 +1,7 @@
 package io.github.zerthick.playershopsrpg;
 
 import com.google.inject.Inject;
+import io.github.zerthick.playershopsrpg.cmd.PlayerShopsRPGCommandRegister;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionSelectBuffer;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
@@ -58,12 +59,16 @@ public class PlayerShopsRPG {
 
     @Listener
     public void onServerStart(GameStartedServerEvent event){
-        //Initialize Region Select Buffer
+        // Initialize Region Select Buffer
         regionSelectBuffer = new RegionSelectBuffer();
+
+        // Register Commands
+        PlayerShopsRPGCommandRegister commandRegister = new PlayerShopsRPGCommandRegister(instance);
+        commandRegister.registerCmds();
 
         // Log Start Up to Console
         getLogger().info(
-                instance.getName() + " version " + instance.getVersion()
+                instance.getName() + " version " + instance.getVersion().get()
                         + " enabled!");
     }
 
