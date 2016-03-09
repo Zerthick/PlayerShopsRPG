@@ -48,4 +48,9 @@ public class RectangularRegion implements Region{
                 z >= this.a.getZ() && z <= this.b.getZ() &&
                 y >= this.a.getY() && y <= this.b.getY());
     }
+
+    @Override
+    public String toString() {
+        return a.toString() + " " + b.toString();
+    }
 }

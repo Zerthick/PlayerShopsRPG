@@ -14,9 +14,9 @@ public class ShopManager {
     }
 
     public Optional<ShopContainer> getShop(UUID worldUUID, Vector3i location){
-        for(ShopContainer shopContainter : shopMap.get(worldUUID)){
-            if(shopContainter.isShop(location)){
-                return Optional.of(shopContainter);
+        for (ShopContainer shopContainer : shopMap.get(worldUUID)) {
+            if (shopContainer.isShop(location)) {
+                return Optional.of(shopContainer);
             }
         }
         return Optional.empty();
