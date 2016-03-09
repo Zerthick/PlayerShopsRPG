@@ -7,7 +7,12 @@ public class ShopContainer {
     private Shop shop;
     private Region shopRegion;
 
-    public boolean isShop( Vector3i location){
+    public ShopContainer(Shop shop, Region shopRegion) {
+        this.shop = shop;
+        this.shopRegion = shopRegion;
+    }
+
+    public boolean isShop(Vector3i location) {
        return shopRegion.contains(location);
     }
 

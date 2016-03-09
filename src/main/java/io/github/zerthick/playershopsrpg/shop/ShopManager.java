@@ -1,6 +1,7 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import com.flowpowered.math.vector.Vector3i;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.*;
 
@@ -19,6 +20,10 @@ public class ShopManager {
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<ShopContainer> getShop(Player player) {
+        return getShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
     }
 
     public void addShop(UUID worldUUID, ShopContainer shopContainter){
