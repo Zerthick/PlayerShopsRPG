@@ -14,7 +14,7 @@ public class ShopManager {
     }
 
     public Optional<ShopContainer> getShop(UUID worldUUID, Vector3i location){
-        for (ShopContainer shopContainer : shopMap.get(worldUUID)) {
+        for (ShopContainer shopContainer : shopMap.getOrDefault(worldUUID, new HashSet<>())) {
             if (shopContainer.isShop(location)) {
                 return Optional.of(shopContainer);
             }
@@ -26,9 +26,10 @@ public class ShopManager {
         return getShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
     }
 
-    public void addShop(UUID worldUUID, ShopContainer shopContainter){
+    public void addShop(UUID worldUUID, ShopContainer shopContainer) {
         Set<ShopContainer> shopContainers = shopMap.getOrDefault(worldUUID, new HashSet<>());
-        shopContainers.add(shopContainter);
+        shopContainers.add(shopContainer);
+        shopMap.put(worldUUID, shopContainers);
     }
 
     public Optional<ShopContainer> removeShop(UUID worldUUID, Vector3i location){
@@ -37,5 +38,9 @@ public class ShopManager {
             shopMap.get(worldUUID).remove(shopOptional.get());
         }
         return shopOptional;
+    }
+
+    public Optional<ShopContainer> removeShop(Player player) {
+        return removeShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
     }
 }

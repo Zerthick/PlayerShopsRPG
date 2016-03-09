@@ -54,7 +54,7 @@ public class RectangularRegionBuffer implements RegionBuffer {
     public Text getProgressionMessage() {
         switch (currentCapacity) {
             case 0:
-                return Text.of(TextColors.BLUE, "Left-click on the bottom corner of the shop!");
+                return Text.of(TextColors.BLUE, "Left-click on the bottom-left corner of the shop!");
             case 1:
                 if (vector3iTuple[0] == null) {
                     return Text.of(TextColors.BLUE, "Left-click on the bottom-left corner of the shop!");

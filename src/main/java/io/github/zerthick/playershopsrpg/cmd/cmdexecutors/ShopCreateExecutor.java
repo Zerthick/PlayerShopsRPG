@@ -34,7 +34,7 @@ public class ShopCreateExecutor extends AbstractCmdExecutor {
                 if (regionOptional.isPresent()) {
                     ShopContainer shopContainer =
                             new ShopContainer(new Shop("Test", player.getUniqueId()), regionOptional.get());
-                    plugin.getShopManager().addShop(player.getWorld().getUniqueId(), shopContainer);
+                    shopManager.addShop(player.getWorld().getUniqueId(), shopContainer);
                     plugin.getRegionSelectBuffer().removeBuffer(player.getUniqueId());
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created shop encompassing points: ", regionOptional.get()));
                 } else {
@@ -48,7 +48,7 @@ public class ShopCreateExecutor extends AbstractCmdExecutor {
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of("You cannot select shop regions from the console!"));
+        src.sendMessage(Text.of("You cannot create shop regions from the console!"));
         return CommandResult.success();
     }
 }

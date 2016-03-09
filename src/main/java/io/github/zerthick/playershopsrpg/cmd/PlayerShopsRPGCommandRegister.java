@@ -1,6 +1,7 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopCreateExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopDestroyExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopSelectExecutor;
 import org.spongepowered.api.Sponge;
@@ -17,6 +18,13 @@ public class PlayerShopsRPGCommandRegister {
     }
 
     public void registerCmds() {
+
+        // shop destroy
+        CommandSpec shopDestroyCommand = CommandSpec.builder()
+                .description(Text.of("Destroys the shop you are currently standing in"))
+                .permission("playershopsrpg.command.destroy")
+                .executor(new ShopDestroyExecutor(container))
+                .build();
 
         // shop create <Name>
         CommandSpec shopCreateCommand = CommandSpec.builder()
@@ -39,6 +47,7 @@ public class PlayerShopsRPGCommandRegister {
                 .executor(new ShopExecutor(container))
                 .child(shopSelectCommmand, "select")
                 .child(shopCreateCommand, "create")
+                .child(shopDestroyCommand, "destroy")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");
