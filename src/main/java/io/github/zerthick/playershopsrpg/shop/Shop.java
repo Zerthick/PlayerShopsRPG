@@ -1,6 +1,7 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +74,8 @@ public class Shop {
 
     }
 
-    public void addItem(ShopItem item){
-        items.add(item);
+    public void addItem(ItemStack item) {
+
     }
 
     public ShopItem removeItem(int index){

@@ -1,25 +1,25 @@
 package io.github.zerthick.playershopsrpg.shop;
 
-import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ShopItem {
 
-    private final String itemName;
+    private final ItemStack itemStack;
     private int itemAmount;
     private int itemMaxAmount;
     private double itemBuyPrice;
     private double itemSellPrice;
 
-    public ShopItem(ItemType itemType, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
-        this.itemName = itemType.getId();
+    public ShopItem(ItemStack itemStack, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
+        this.itemStack = itemStack;
         this.itemAmount = itemAmount;
         this.itemMaxAmount = itemMaxAmount;
         this.itemBuyPrice = itemBuyPrice;
         this.itemSellPrice = itemSellPrice;
     }
 
-    public String getItemName() {
-        return itemName;
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 
     public int getItemAmount() {
