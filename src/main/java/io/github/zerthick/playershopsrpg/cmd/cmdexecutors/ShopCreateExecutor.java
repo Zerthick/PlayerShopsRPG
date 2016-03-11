@@ -28,9 +28,11 @@ public class ShopCreateExecutor extends AbstractCmdExecutor {
         if (src instanceof Player) {
             Player player = (Player) src;
             Optional<RegionBuffer> regionBufferOptional = plugin.getRegionSelectBuffer().getBuffer(player.getUniqueId());
+            //If the player has previously selected points for the shop
             if (regionBufferOptional.isPresent()) {
                 RegionBuffer regionBuffer = regionBufferOptional.get();
                 Optional<Region> regionOptional = regionBuffer.getRegion();
+                //If the points selected are enough to create a region
                 if (regionOptional.isPresent()) {
                     ShopContainer shopContainer =
                             new ShopContainer(new Shop("Test", player.getUniqueId()), regionOptional.get());

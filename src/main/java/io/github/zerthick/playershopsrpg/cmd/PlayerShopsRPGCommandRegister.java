@@ -5,6 +5,7 @@ import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopDestroyExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopSelectExecutor;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -37,6 +38,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSelectCommmand = CommandSpec.builder()
                 .description(Text.of("Selects a region to create a shop"))
                 .permission("playershopsrpg.command.select")
+                .arguments(GenericArguments.optional(GenericArguments.choices(Text.of("SelectionType"), ShopSelectExecutor.selectChoices())))
                 .executor(new ShopSelectExecutor(container))
                 .build();
 
