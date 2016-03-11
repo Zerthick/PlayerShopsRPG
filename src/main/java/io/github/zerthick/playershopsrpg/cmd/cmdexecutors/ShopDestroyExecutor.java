@@ -31,7 +31,7 @@ public class ShopDestroyExecutor extends AbstractCmdExecutor {
                 ShopContainer shopContainer = shopContainerOptional.get();
                 if (shopContainer.getShop().hasOwnerPermissions(player) || player.hasPermission("playershopsrpg.bypass.destroy")) {
                     shopManager.removeShop(player);
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully destroyed shop: " + shopContainer.getShop().getName(), "!"));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully destroyed ", TextColors.AQUA, shopContainer.getShop().getName(), TextColors.BLUE, "!"));
                 } else {
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You do not have permission to destroy this shop!"));
                 }

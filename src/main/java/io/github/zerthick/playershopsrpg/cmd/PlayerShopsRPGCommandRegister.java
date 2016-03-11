@@ -31,6 +31,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopCreateCommand = CommandSpec.builder()
                 .description(Text.of("Creates a shop in the region selected by shop select command"))
                 .permission("playershopsrpg.command.create")
+                .arguments(GenericArguments.remainingJoinedStrings(Text.of("ShopName")))
                 .executor(new ShopCreateExecutor(container))
                 .build();
 
@@ -44,7 +45,6 @@ public class PlayerShopsRPGCommandRegister {
 
         // shop
         CommandSpec shopCommand = CommandSpec.builder()
-                .description(Text.of("/shop [select|create]"))
                 .permission("playershopsrpg.command.help")
                 .executor(new ShopExecutor(container))
                 .child(shopSelectCommmand, "select")

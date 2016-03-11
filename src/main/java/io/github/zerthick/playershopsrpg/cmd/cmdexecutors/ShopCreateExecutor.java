@@ -27,25 +27,34 @@ public class ShopCreateExecutor extends AbstractCmdExecutor {
 
         if (src instanceof Player) {
             Player player = (Player) src;
-            Optional<RegionBuffer> regionBufferOptional = plugin.getRegionSelectBuffer().getBuffer(player.getUniqueId());
-            //If the player has previously selected points for the shop
-            if (regionBufferOptional.isPresent()) {
-                RegionBuffer regionBuffer = regionBufferOptional.get();
-                Optional<Region> regionOptional = regionBuffer.getRegion();
-                //If the points selected are enough to create a region
-                if (regionOptional.isPresent()) {
-                    ShopContainer shopContainer =
-                            new ShopContainer(new Shop("Test", player.getUniqueId()), regionOptional.get());
-                    shopManager.addShop(player.getWorld().getUniqueId(), shopContainer);
-                    plugin.getRegionSelectBuffer().removeBuffer(player.getUniqueId());
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created shop encompassing points: ", regionOptional.get()));
+
+            Optional<String> shopNameOptional = args.getOne(Text.of("ShopName"));
+
+            if (shopNameOptional.isPresent()) {
+                String shopName = shopNameOptional.get();
+                Optional<RegionBuffer> regionBufferOptional = plugin.getRegionSelectBuffer().getBuffer(player.getUniqueId());
+                //If the player has previously selected points for the shop
+                if (regionBufferOptional.isPresent()) {
+                    RegionBuffer regionBuffer = regionBufferOptional.get();
+                    Optional<Region> regionOptional = regionBuffer.getRegion();
+                    //If the points selected are enough to create a region
+                    if (regionOptional.isPresent()) {
+                        ShopContainer shopContainer =
+                                new ShopContainer(new Shop(shopName, player.getUniqueId()), regionOptional.get());
+                        shopManager.addShop(player.getWorld().getUniqueId(), shopContainer);
+                        plugin.getRegionSelectBuffer().removeBuffer(player.getUniqueId());
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ", TextColors.AQUA, shopName, TextColors.BLUE, " encompassing points: ", regionOptional.get()));
+                    } else {
+                        player.sendMessage(ChatTypes.CHAT,
+                                Text.of(TextColors.RED, "Not enough points selected! Use /shop select to select a region."));
+                    }
                 } else {
                     player.sendMessage(ChatTypes.CHAT,
-                            Text.of(TextColors.RED, "Not enough points selected! Use /shop select to select a region."));
+                            Text.of(TextColors.RED, "No region selected! Use /shop select to select a region."));
                 }
             } else {
                 player.sendMessage(ChatTypes.CHAT,
-                        Text.of(TextColors.RED, "No region selected! Use /shop select to select a region."));
+                        Text.of(TextColors.RED, "You must specify a shop name!"));
             }
             return CommandResult.success();
         }
