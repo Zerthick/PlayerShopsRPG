@@ -21,8 +21,8 @@ public class Shop {
     /**
      * Basic Constructor, used for creating shops for the first time
      *
-     * @param name
-     * @param ownerUUID
+     * @param name The name of the shop.
+     * @param ownerUUID The UUID of the owner player.
      */
     public Shop(String name, UUID ownerUUID) {
         shopUUID = UUID.randomUUID();
@@ -36,13 +36,13 @@ public class Shop {
     /**
      * Full Constructor, used only for Object Serialization/Deserialization
      *
-     * @param shopUUID
-     * @param name
-     * @param ownerUUID
-     * @param managerUUIDset
-     * @param items
-     * @param unlimitedMoney
-     * @param unlimitedStock
+     * @param shopUUID The UUID of the shop.
+     * @param name The name of the shop.
+     * @param ownerUUID The UUID of the owner player.
+     * @param managerUUIDset The UUID set of the manager players.
+     * @param items The ShopItem set of the items contained within the shop.
+     * @param unlimitedMoney Whether or not the shop can buy items without spending money.
+     * @param unlimitedStock Whether or not the shop never runs out of items to sell.
      */
     public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock) {
         this.shopUUID = shopUUID;
@@ -52,6 +52,33 @@ public class Shop {
         this.items = items;
         this.unlimitedMoney = unlimitedMoney;
         this.unlimitedStock = unlimitedStock;
+    }
+
+    public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
+
+        //If the item already exists, just update that item's amount
+        for (ShopItem item : items) {
+            if (ShopItemUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
+                int oldItemAmount = item.getItemAmount();
+                item.setItemAmount(oldItemAmount + itemStack.getQuantity());
+                return ShopTransactionResult.SUCCESS;
+            }
+        }
+
+        //The item is not already in the shop, we need to add it
+        ShopItem newShopItem = new ShopItem(itemStack, itemStack.getQuantity(), -1, -1, -1);
+        items.add(newShopItem);
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult destroyItem(Player player, int index) {
+
+        //Bounds Check
+        if (index >= 0 && index < items.size()) {
+            items.remove(index);
+            return ShopTransactionResult.SUCCESS;
+        }
+        return new ShopTransactionResult("The specified item is not in this shop!");
     }
 
     public ShopTransactionResult buyItem(Player player, int index, int amount) {
@@ -112,6 +139,12 @@ public class Shop {
     public ShopTransactionResult setUnlimitedMoney(Player player, boolean bool) {
 
         return ShopTransactionResult.EMPTY;
+    }
+
+    public ShopTransactionResult showBuyView(Player player) {
+        ShopItemUtils.sendShopBuyView(player, items, unlimitedStock);
+
+        return ShopTransactionResult.SUCCESS;
     }
 
     public boolean hasOwnerPermissions(Player player) {

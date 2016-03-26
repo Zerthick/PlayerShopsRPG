@@ -23,7 +23,7 @@ import org.spongepowered.api.text.chat.ChatTypes;
 import java.util.HashMap;
 import java.util.Optional;
 
-@Plugin(id = "PlayerShopsRPG", name = "PlayerShopsRPG", version = "0.0.1")
+@Plugin(id = "playershopsrpg", name = "PlayerShopsRPG", version = "0.0.1")
 public class PlayerShopsRPG {
 
     private ShopManager shopManager;
