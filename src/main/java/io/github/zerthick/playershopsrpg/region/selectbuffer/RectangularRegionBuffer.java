@@ -23,17 +23,13 @@ public class RectangularRegionBuffer implements RegionBuffer {
     @Override
     public void addFront(Vector3i vector) {
         vector3iTuple[0] = vector;
-        if (currentCapacity < maxCapacity) {
-            currentCapacity++;
-        }
+        currentCapacity = 1 + (vector3iTuple[1] == null ? 0 : 1);
     }
 
     @Override
     public void addBack(Vector3i vector) {
         vector3iTuple[1] = vector;
-        if (currentCapacity < maxCapacity) {
-            currentCapacity++;
-        }
+        currentCapacity = 1 + (vector3iTuple[0] == null ? 0 : 1);
     }
 
     @Override
