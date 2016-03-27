@@ -1,5 +1,6 @@
-package io.github.zerthick.playershopsrpg.cmd.cmdexecutors;
+package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RectangularRegionBuffer;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -38,10 +39,10 @@ public class ShopSelectExecutor extends AbstractCmdExecutor {
 
             String selectType = "rectangular";
 
-            Optional<String> selectTypeOption = args.getOne(Text.of("SelectionType"));
+            Optional<String> selectTypeOptional = args.getOne(Text.of("SelectionType"));
 
-            if (selectTypeOption.isPresent()) {
-                selectType = selectTypeOption.get();
+            if (selectTypeOptional.isPresent()) {
+                selectType = selectTypeOptional.get();
             }
 
             switch (selectType) {

@@ -14,7 +14,6 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 public class ShopItemUtils {
 
@@ -63,16 +62,13 @@ public class ShopItemUtils {
     public static boolean itemStackEqualsIgnoreSize(ItemStack o1, ItemStack o2) {
         Comparator<ItemStack> typeComparator = ItemStackComparators.TYPE;
         Comparator<ItemStack> dataComparator = ItemStackComparators.ITEM_DATA;
+        Comparator<ItemStack> propertiesComparator = ItemStackComparators.PROPERTIES;
 
-        return (typeComparator.compare(o1, o2) == 0) && (dataComparator.compare(o1, o2) == 0);
+        return (typeComparator.compare(o1, o2) == 0) && (dataComparator.compare(o1, o2) == 0)
+                && (propertiesComparator.compare(o1, o2) == 0) && (getItemName(o1).equals(getItemName(o2)));
     }
 
     public static Text getItemName(ItemStack itemStack) {
-        Optional<Text> textOptional = itemStack.get(Keys.DISPLAY_NAME);
-        if (textOptional.isPresent()) {
-            return textOptional.get();
-        } else {
-            return Text.of(itemStack.getTranslation().get());
-        }
+        return itemStack.get(Keys.DISPLAY_NAME).orElse(Text.of(itemStack.getTranslation().get()));
     }
 }

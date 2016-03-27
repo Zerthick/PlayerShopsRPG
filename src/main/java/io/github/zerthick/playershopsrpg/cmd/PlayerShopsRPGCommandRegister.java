@@ -1,6 +1,9 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.*;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopCreateItemExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopDestroyItemExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopSetItemExecutor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -16,11 +19,69 @@ public class PlayerShopsRPGCommandRegister {
     }
 
     public void registerCmds() {
+
+        // shop item set
+        CommandSpec shopItemSetCommand = CommandSpec.builder()
+                .description(Text.of("Set various attributes of a shop item (max amount / buy price / sell price"))
+                .permission("playershopsrpg.command.item.destroy")
+                .arguments(GenericArguments.choices(Text.of("SelectionType"), ShopSetItemExecutor.selectChoices()),
+                        GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .executor(new ShopSetItemExecutor(container))
+                .build();
+
+        // shop item destroy
+        CommandSpec shopItemDestroyCommand = CommandSpec.builder()
+                .description(Text.of("Destroy an item in the shop you are currently standing in"))
+                .permission("playershopsrpg.command.item.destroy")
+                .arguments(GenericArguments.integer(Text.of("ItemIndex")))
+                .executor(new ShopDestroyItemExecutor(container))
+                .build();
+
         // shop item create
         CommandSpec shopItemCreateCommand = CommandSpec.builder()
                 .description(Text.of("Create an item in the shop you are currently standing in"))
                 .permission("playershopsrpg.command.item.create")
                 .executor(new ShopCreateItemExecutor(container))
+                .build();
+
+        // shop item
+        CommandSpec shopItemCommand = CommandSpec.builder()
+                .permission("playershopsrpg.command.item")
+                .child(shopItemCreateCommand, "create")
+                .child(shopItemDestroyCommand, "destroy")
+                .child(shopItemSetCommand, "set")
+                .build();
+
+        // shop set name <name>
+        CommandSpec shopSetNameCommmand = CommandSpec.builder()
+                .description(Text.of("Set the name of the shop you are currently standing in"))
+                .permission("playershopsrpg.command.set.name")
+                .arguments(GenericArguments.remainingJoinedStrings(Text.of("NameArgument")))
+                .executor(new ShopSetNameExecutor(container))
+                .build();
+
+        // shop set owner <user>
+        CommandSpec shopSetOwnerCommand = CommandSpec.builder()
+                .description(Text.of("Set the owner of the shop you are currently standing in"))
+                .permission("playershopsrpg.command.set.owner")
+                .arguments(GenericArguments.user(Text.of("UserArgument")))
+                .executor(new ShopSetOwnerExecutor(container))
+                .build();
+
+        // shop set unlimited [stock | money] <bool>
+        CommandSpec shopSetUnlimitedCommand = CommandSpec.builder()
+                .description(Text.of("Set the shop you are currently standing in to have unlimited stock or money"))
+                .permission("playershopsrpg.command.set.unlimited")
+                .arguments(GenericArguments.choices(Text.of("SelectionType"), ShopSetUnlimitedExecutor.selectChoices()), GenericArguments.bool(Text.of("BooleanArgument")))
+                .executor(new ShopSetUnlimitedExecutor(container))
+                .build();
+
+        // shop set
+        CommandSpec shopSetCommand = CommandSpec.builder()
+                .permission("playershopsrpg.command.set")
+                .child(shopSetUnlimitedCommand, "unlimited")
+                .child(shopSetOwnerCommand, "owner")
+                .child(shopSetNameCommmand, "name")
                 .build();
 
         // shop browse
@@ -61,7 +122,8 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopCreateCommand, "create")
                 .child(shopDestroyCommand, "destroy")
                 .child(shopBrowseCommand, "browse")
-                .child(shopItemCreateCommand, "itemcreate")
+                .child(shopItemCommand, "item")
+                .child(shopSetCommand, "set")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");

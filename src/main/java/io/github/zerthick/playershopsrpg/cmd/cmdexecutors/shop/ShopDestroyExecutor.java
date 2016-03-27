@@ -1,6 +1,7 @@
-package io.github.zerthick.playershopsrpg.cmd.cmdexecutors;
+package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
