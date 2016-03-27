@@ -8,21 +8,23 @@ import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class ShopItemUtils {
 
     private static PaginationService pagServ = Sponge.getServiceManager().provide(PaginationService.class).get();
 
-    public static void sendShopBuyView(Player player, List<ShopItem> items, boolean unlimitedStock) {
+    public static void sendShopBuyView(Player player, Shop shop, boolean unlimitedStock) {
 
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
-        contents.add(Text.of("Test"));
+        List<ShopItem> items = shop.getItems();
         for (int i = 0; i < items.size(); i++) {
             ShopItem item = items.get(i);
 
@@ -34,7 +36,7 @@ public class ShopItemUtils {
             }
 
             //Grab the necessary info we need from the item
-            Text itemName = item.getItemStack().get(Keys.DISPLAY_NAME).get();
+            Text itemName = getItemName(item.getItemStack());
             Text itemMax = Text.of(item.getItemMaxAmount() == -1 ? "\u221E" : String.valueOf(item.getItemMaxAmount()));
             Text itemBuy = Text.of(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()));
             Text itemSell = Text.of(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()));
@@ -52,6 +54,7 @@ public class ShopItemUtils {
         }
 
         pagServ.builder()
+                .header(Text.of(TextColors.AQUA, shop.getName()))
                 .contents(contents)
                 .sendTo(player);
 
@@ -62,5 +65,14 @@ public class ShopItemUtils {
         Comparator<ItemStack> dataComparator = ItemStackComparators.ITEM_DATA;
 
         return (typeComparator.compare(o1, o2) == 0) && (dataComparator.compare(o1, o2) == 0);
+    }
+
+    public static Text getItemName(ItemStack itemStack) {
+        Optional<Text> textOptional = itemStack.get(Keys.DISPLAY_NAME);
+        if (textOptional.isPresent()) {
+            return textOptional.get();
+        } else {
+            return Text.of(itemStack.getTranslation().get());
+        }
     }
 }

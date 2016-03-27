@@ -16,6 +16,12 @@ public class PlayerShopsRPGCommandRegister {
     }
 
     public void registerCmds() {
+        // shop item create
+        CommandSpec shopItemCreateCommand = CommandSpec.builder()
+                .description(Text.of("Create an item in the shop you are currently standing in"))
+                .permission("playershopsrpg.command.item.create")
+                .executor(new ShopCreateItemExecutor(container))
+                .build();
 
         // shop browse
         CommandSpec shopBrowseCommand = CommandSpec.builder()
@@ -55,6 +61,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopCreateCommand, "create")
                 .child(shopDestroyCommand, "destroy")
                 .child(shopBrowseCommand, "browse")
+                .child(shopItemCreateCommand, "itemcreate")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");

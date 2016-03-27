@@ -62,7 +62,7 @@ public class RectangularRegionBuffer implements RegionBuffer {
                     return Text.of(TextColors.BLUE, "Right-click on the top-right corner of the shop!");
                 }
             case 2:
-                return Text.of(TextColors.BLUE, "Shop Region Selected, used /shop create to create the shop!");
+                return Text.of(TextColors.BLUE, "Shop region selected, use /shop create <shop-name> to create the shop!");
         }
         return Text.EMPTY;
     }

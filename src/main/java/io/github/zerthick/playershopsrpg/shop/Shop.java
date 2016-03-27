@@ -56,17 +56,22 @@ public class Shop {
 
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
 
-        //If the item already exists, just update that item's amount
+        //If the player is not the owner of the shop return a message to the player
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult("You are not the owner of this shop!");
+        }
+
+        //If the item already exists return a message to the player
         for (ShopItem item : items) {
             if (ShopItemUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
-                int oldItemAmount = item.getItemAmount();
-                item.setItemAmount(oldItemAmount + itemStack.getQuantity());
-                return ShopTransactionResult.SUCCESS;
+                return new ShopTransactionResult("The specified item is already in this shop!");
             }
         }
 
         //The item is not already in the shop, we need to add it
-        ShopItem newShopItem = new ShopItem(itemStack, itemStack.getQuantity(), -1, -1, -1);
+        ItemStack itemToAdd = itemStack.copy();
+        itemToAdd.setQuantity(1);
+        ShopItem newShopItem = new ShopItem(itemToAdd, 0, -1, -1, -1);
         items.add(newShopItem);
         return ShopTransactionResult.SUCCESS;
     }
@@ -142,7 +147,7 @@ public class Shop {
     }
 
     public ShopTransactionResult showBuyView(Player player) {
-        ShopItemUtils.sendShopBuyView(player, items, unlimitedStock);
+        ShopItemUtils.sendShopBuyView(player, this, unlimitedStock);
 
         return ShopTransactionResult.SUCCESS;
     }
@@ -161,5 +166,9 @@ public class Shop {
 
     public UUID getUUID() {
         return shopUUID;
+    }
+
+    public List<ShopItem> getItems() {
+        return items;
     }
 }
