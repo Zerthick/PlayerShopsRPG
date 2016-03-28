@@ -1,6 +1,7 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopAddItemExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopCreateItemExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopDestroyItemExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopSetItemExecutor;
@@ -19,6 +20,13 @@ public class PlayerShopsRPGCommandRegister {
     }
 
     public void registerCmds() {
+
+        // shop item add
+        CommandSpec shopItemAddCommand = CommandSpec.builder()
+                .description(Text.of("Add an item to the shop you are currently standing in"))
+                .permission("playershopsrpg.command.item.add")
+                .executor(new ShopAddItemExecutor(container))
+                .build();
 
         // shop item set
         CommandSpec shopItemSetCommand = CommandSpec.builder()
@@ -50,6 +58,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopItemCreateCommand, "create")
                 .child(shopItemDestroyCommand, "destroy")
                 .child(shopItemSetCommand, "set")
+                .child(shopItemAddCommand, "add")
                 .build();
 
         // shop set name <name>

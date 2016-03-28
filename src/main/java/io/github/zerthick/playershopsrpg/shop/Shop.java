@@ -99,9 +99,21 @@ public class Shop {
         return ShopTransactionResult.EMPTY;
     }
 
-    public ShopTransactionResult addItem(Player player, ItemStack item, int amount) {
+    public ShopTransactionResult addItem(Player player, ItemStack itemStack, int amount) {
 
-        return ShopTransactionResult.EMPTY;
+        //If the player is not a manager of the shop return a message to the player
+        if (!hasManagerPermissions(player)) {
+            return new ShopTransactionResult("You are not a manager of this shop!");
+        }
+
+        //If the item already exists add to it's total to the player and empty the itemstack
+        for (ShopItem item : items) {
+            if (ShopItemUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
+                item.setItemAmount(item.getItemAmount() + amount);
+                return ShopTransactionResult.SUCCESS;
+            }
+        }
+        return new ShopTransactionResult("The specified item is not in this shop!");
     }
 
     public ShopTransactionResult removeItem(Player player, int index, int amount) {

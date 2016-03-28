@@ -3,6 +3,7 @@ package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.Shop;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.shop.ShopItemUtils;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -33,13 +34,18 @@ public class ShopAddItemExecutor extends AbstractCmdExecutor {
             if (shopContainerOptional.isPresent()) {
                 ShopContainer shopContainer = shopContainerOptional.get();
                 Shop shop = shopContainer.getShop();
-                ShopTransactionResult transactionResult = ShopTransactionResult.EMPTY;
-                if (player.getItemInHand().isPresent()) {
-                    ItemStack item = player.getItemInHand().get();
+                ShopTransactionResult transactionResult;
+                Optional<ItemStack> itemStackOptional = player.getItemInHand();
+                if (itemStackOptional.isPresent()) {
+                    ItemStack item = itemStackOptional.get();
                     transactionResult = shop.addItem(player, item, item.getQuantity());
-                }
-                if (transactionResult != ShopTransactionResult.SUCCESS) {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
+
+                    if (transactionResult != ShopTransactionResult.SUCCESS) {
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
+                    } else {
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully added ",
+                                TextColors.AQUA, item.getQuantity(), " ", ShopItemUtils.getItemName(item), "(s)", TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
+                    }
                 }
             } else {
                 player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
