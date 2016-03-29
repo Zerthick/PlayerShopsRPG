@@ -1,5 +1,7 @@
 package io.github.zerthick.playershopsrpg.shop;
 
+import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtilTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -61,7 +63,7 @@ public class Shop {
 
         //If the item already exists return a message to the player
         for (ShopItem item : items) {
-            if (ShopItemUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
+            if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
                 return new ShopTransactionResult("The specified item is already in this shop!");
             }
         }
@@ -108,7 +110,13 @@ public class Shop {
 
         //If the item already exists add to it's total to the player and empty the itemstack
         for (ShopItem item : items) {
-            if (ShopItemUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
+            if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
+
+                InventoryUtilTransactionResult result = InventoryUtils.removeItem(player.getInventory(), itemStack, amount);
+                if (result != InventoryUtilTransactionResult.SUCCESS) {
+                    return new ShopTransactionResult(result.getMessage());
+                }
+
                 item.setItemAmount(item.getItemAmount() + amount);
                 return ShopTransactionResult.SUCCESS;
             }

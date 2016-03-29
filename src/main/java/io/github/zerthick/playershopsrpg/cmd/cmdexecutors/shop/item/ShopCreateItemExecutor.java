@@ -3,8 +3,8 @@ package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.Shop;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
-import io.github.zerthick.playershopsrpg.shop.ShopItemUtils;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -43,7 +43,7 @@ public class ShopCreateItemExecutor extends AbstractCmdExecutor {
                         player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
                     } else {
                         player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ",
-                                TextColors.AQUA, ShopItemUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
+                                TextColors.AQUA, InventoryUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
                     }
                 }
             } else {

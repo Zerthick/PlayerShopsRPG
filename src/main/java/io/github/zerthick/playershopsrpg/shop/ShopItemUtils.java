@@ -1,10 +1,8 @@
 package io.github.zerthick.playershopsrpg.shop;
 
+import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -12,7 +10,6 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ShopItemUtils {
@@ -35,7 +32,7 @@ public class ShopItemUtils {
             }
 
             //Grab the necessary info we need from the item
-            Text itemName = getItemName(item.getItemStack());
+            Text itemName = InventoryUtils.getItemName(item.getItemStack());
             Text itemMax = Text.of(item.getItemMaxAmount() == -1 ? "\u221E" : String.valueOf(item.getItemMaxAmount()));
             Text itemBuy = Text.of(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()));
             Text itemSell = Text.of(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()));
@@ -57,18 +54,5 @@ public class ShopItemUtils {
                 .contents(contents)
                 .sendTo(player);
 
-    }
-
-    public static boolean itemStackEqualsIgnoreSize(ItemStack o1, ItemStack o2) {
-        Comparator<ItemStack> typeComparator = ItemStackComparators.TYPE;
-        Comparator<ItemStack> dataComparator = ItemStackComparators.ITEM_DATA;
-        Comparator<ItemStack> propertiesComparator = ItemStackComparators.PROPERTIES;
-
-        return (typeComparator.compare(o1, o2) == 0) && (dataComparator.compare(o1, o2) == 0)
-                && (propertiesComparator.compare(o1, o2) == 0) && (getItemName(o1).equals(getItemName(o2)));
-    }
-
-    public static Text getItemName(ItemStack itemStack) {
-        return itemStack.get(Keys.DISPLAY_NAME).orElse(Text.of(itemStack.getTranslation().get()));
     }
 }
