@@ -74,26 +74,11 @@ public class InventoryUtils {
             return new InventoryUtilTransactionResult("Not enough items in this inventory!");
         }
 
-        int total = amount;
+        ItemStack copy = itemStack.copy();
+        copy.setQuantity(-1);
 
-        for (Inventory slot : inventory.slots()) {
-            Optional<ItemStack> itemStackOptional = slot.peek();
-            if (itemStackOptional.isPresent()) {
-                ItemStack itemToRemove = itemStackOptional.get();
-                if (itemStackEqualsIgnoreSize(itemStack, itemToRemove)) {
-                    if (total >= itemToRemove.getQuantity()) {
-                        total -= itemToRemove.getQuantity();
-                        slot.poll();
-                    } else {
-                        itemToRemove.setQuantity(itemToRemove.getQuantity() - total);
-                        total = 0;
-                    }
-                }
-            }
-            if (total == 0) {
-                break;
-            }
-        }
+        inventory.query(copy).poll(amount);
+
         return InventoryUtilTransactionResult.SUCCESS;
     }
 
