@@ -2,6 +2,8 @@ package io.github.zerthick.playershopsrpg.cmd;
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.*;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager.ShopAddManagerExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager.ShopRemoveManagerExecutor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -65,6 +67,29 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopItemSetCommand, "set")
                 .child(shopItemAddCommand, "add")
                 .child(shopItemRemoveCommand, "remove")
+                .build();
+
+        // shop manager remove
+        CommandSpec shopManagerRemoveCommand = CommandSpec.builder()
+                .description(Text.of("Add a manager to the shop you are currently standing in"))
+                .permission("playershopsrpg.command.manager.remove")
+                .arguments(GenericArguments.user(Text.of("UserArgument")))
+                .executor(new ShopRemoveManagerExecutor(container))
+                .build();
+
+        // shop manager add
+        CommandSpec shopManagerAddCommand = CommandSpec.builder()
+                .description(Text.of("Add a manager to the shop you are currently standing in"))
+                .permission("playershopsrpg.command.manager.add")
+                .arguments(GenericArguments.user(Text.of("UserArgument")))
+                .executor(new ShopAddManagerExecutor(container))
+                .build();
+
+        // shop manager
+        CommandSpec shopManagerCommand = CommandSpec.builder()
+                .permission("playershopsrpg.command.manager")
+                .child(shopManagerAddCommand, "add")
+                .child(shopManagerRemoveCommand, "remove")
                 .build();
 
         // shop set name <name>
@@ -139,6 +164,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopBrowseCommand, "browse")
                 .child(shopItemCommand, "item")
                 .child(shopSetCommand, "set")
+                .child(shopManagerCommand, "manager")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");
