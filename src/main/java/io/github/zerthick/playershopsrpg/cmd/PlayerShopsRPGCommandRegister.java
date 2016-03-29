@@ -1,10 +1,7 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopAddItemExecutor;
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopCreateItemExecutor;
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopDestroyItemExecutor;
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.ShopSetItemExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.*;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -20,6 +17,14 @@ public class PlayerShopsRPGCommandRegister {
     }
 
     public void registerCmds() {
+
+        // shop item remove
+        CommandSpec shopItemRemoveCommand = CommandSpec.builder()
+                .description(Text.of("Remove an item from the shop you are currenlty standing in"))
+                .permission("playershopsrpg.command.item.remove")
+                .arguments(GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.integer(Text.of("ItemAmount")))
+                .executor(new ShopRemoveItemExecutor(container))
+                .build();
 
         // shop item add
         CommandSpec shopItemAddCommand = CommandSpec.builder()
@@ -59,6 +64,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopItemDestroyCommand, "destroy")
                 .child(shopItemSetCommand, "set")
                 .child(shopItemAddCommand, "add")
+                .child(shopItemRemoveCommand, "remove")
                 .build();
 
         // shop set name <name>

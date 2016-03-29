@@ -111,7 +111,7 @@ public class Shop {
         for (ShopItem item : items) {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
 
-                if ((amount + item.getItemMaxAmount() > item.getItemMaxAmount()) && item.getItemMaxAmount() != -1){
+                if ((amount + item.getItemAmount() > item.getItemMaxAmount()) && item.getItemMaxAmount() != -1) {
                     amount = item.getItemMaxAmount() - item.getItemAmount();
                 }
 
@@ -137,7 +137,7 @@ public class Shop {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), item.getItemStack())) {
 
                 if (amount > item.getItemAmount()){
-                    amount = item.getItemMaxAmount();
+                    amount = item.getItemAmount();
                 }
 
                 InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);

@@ -9,7 +9,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
@@ -17,9 +16,9 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-public class ShopAddItemExecutor extends AbstractCmdExecutor {
+public class ShopRemoveItemExecutor extends AbstractCmdExecutor {
 
-    public ShopAddItemExecutor(PluginContainer pluginContainer) {
+    public ShopRemoveItemExecutor(PluginContainer pluginContainer) {
         super(pluginContainer);
     }
 
@@ -29,22 +28,24 @@ public class ShopAddItemExecutor extends AbstractCmdExecutor {
         if (src instanceof Player) {
             Player player = (Player) src;
 
-            Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
-            if (shopContainerOptional.isPresent()) {
-                ShopContainer shopContainer = shopContainerOptional.get();
-                Shop shop = shopContainer.getShop();
-                ShopTransactionResult transactionResult;
-                Optional<ItemStack> itemStackOptional = player.getItemInHand();
-                if (itemStackOptional.isPresent()) {
-                    ItemStack item = itemStackOptional.get();
-                    transactionResult = shop.addItem(player, item, item.getQuantity());
+            Optional<Integer> itemIndexArgumentOptional = args.getOne(Text.of("ItemIndex"));
+            Optional<Integer> itemAmountArgumentOptional = args.getOne(Text.of("ItemAmount"));
+
+            if (itemIndexArgumentOptional.isPresent() && itemAmountArgumentOptional.isPresent()) {
+                Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
+                if (shopContainerOptional.isPresent()) {
+                    ShopContainer shopContainer = shopContainerOptional.get();
+                    Shop shop = shopContainer.getShop();
+                    ShopTransactionResult transactionResult = shop.removeItem(player, itemIndexArgumentOptional.get(), itemAmountArgumentOptional.get());
 
                     if (transactionResult != ShopTransactionResult.SUCCESS) {
                         player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
                     }
+                } else {
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
                 }
             } else {
-                player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
+                player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You must specify an item index and amount!"));
             }
             return CommandResult.success();
         }
