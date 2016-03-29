@@ -13,18 +13,10 @@ public class InventoryUtils {
 
     public static int getItemCount(Inventory inventory, ItemStack itemStack) {
 
-        int total = 0;
+        ItemStack copy = itemStack.copy();
+        copy.setQuantity(-1);
 
-        for (Inventory slot : inventory.slots()) {
-            Optional<ItemStack> itemStackOptional = slot.peek();
-            if (itemStackOptional.isPresent()) {
-                if (itemStackEqualsIgnoreSize(itemStack, itemStackOptional.get())) {
-                    total += itemStackOptional.get().getQuantity();
-                }
-            }
-        }
-
-        return total;
+        return inventory.query(copy).totalItems();
     }
 
     public static int getAvailableSpace(Inventory inventory, ItemStack itemStack) {
