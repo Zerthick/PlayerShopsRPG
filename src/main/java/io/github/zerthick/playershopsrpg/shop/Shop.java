@@ -1,6 +1,5 @@
 package io.github.zerthick.playershopsrpg.shop;
 
-import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtilTransactionResult;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -108,14 +107,15 @@ public class Shop {
             return new ShopTransactionResult("You are not a manager of this shop!");
         }
 
-        //If the item already exists add to it's total to the player and empty the itemstack
+        //If the item already exists add to it's total to the shopitem and remove it from the player's inventory
         for (ShopItem item : items) {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
 
-                InventoryUtilTransactionResult result = InventoryUtils.removeItem(player.getInventory(), itemStack, amount);
-                if (result != InventoryUtilTransactionResult.SUCCESS) {
-                    return new ShopTransactionResult(result.getMessage());
+                if ((amount + item.getItemMaxAmount() > item.getItemMaxAmount()) && item.getItemMaxAmount() != -1){
+                    amount = item.getItemMaxAmount() - item.getItemAmount();
                 }
+
+                InventoryUtils.removeItem(player.getInventory(), itemStack, amount);
 
                 item.setItemAmount(item.getItemAmount() + amount);
                 return ShopTransactionResult.SUCCESS;
@@ -126,7 +126,27 @@ public class Shop {
 
     public ShopTransactionResult removeItem(Player player, int index, int amount) {
 
-        return ShopTransactionResult.EMPTY;
+        //If the player is not a manager of the shop return a message to the player
+        if (!hasManagerPermissions(player)) {
+            return new ShopTransactionResult("You are not a manager of this shop!");
+        }
+
+        //If the item already exists add to it's total to the player and empty the itemstack
+
+        ShopItem item = items.get(index);
+            if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), item.getItemStack())) {
+
+                if (amount > item.getItemAmount()){
+                    amount = item.getItemMaxAmount();
+                }
+
+                InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
+
+                item.setItemAmount(item.getItemAmount() - amount);
+                return ShopTransactionResult.SUCCESS;
+            }
+
+        return new ShopTransactionResult("The specified item is not in the shop!");
     }
 
     public ShopTransactionResult setItemMax(Player player, int index, int amount) {

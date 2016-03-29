@@ -37,13 +37,17 @@ public class InventoryUtils {
         return total;
     }
 
-    public static InventoryUtilTransactionResult addItem(Inventory inventory, ItemStack itemStack, int amount) {
+    public static int addItem(Inventory inventory, ItemStack itemStack, int amount) {
 
-        if (amount > getAvailableSpace(inventory, itemStack)) {
-            return new InventoryUtilTransactionResult("Not enough space in this inventory!");
+        int overflow = 0;
+        int total = amount;
+
+        int availableSpace = getAvailableSpace(inventory, itemStack);
+        if (amount > availableSpace) {
+            overflow = amount - availableSpace;
+            total = availableSpace;
         }
 
-        int total = amount;
         int maxStackQuantity = itemStack.getMaxStackQuantity();
         ItemStack copy = itemStack.copy();
 
@@ -57,24 +61,30 @@ public class InventoryUtils {
             }
             inventory.offer(copy);
         }
-        return InventoryUtilTransactionResult.SUCCESS;
+        return overflow;
     }
 
-    public static InventoryUtilTransactionResult removeItem(Inventory inventory, ItemStack itemStack, int amount) {
+    public static int removeItem(Inventory inventory, ItemStack itemStack, int amount) {
 
-        if (amount > getItemCount(inventory, itemStack)) {
-            return new InventoryUtilTransactionResult("Not enough items in this inventory!");
+        int underflow = 0;
+        int total = amount;
+
+        int availableItems = getItemCount(inventory, itemStack);
+        if (amount > availableItems) {
+            underflow = amount - availableItems;
+            total = availableItems;
         }
 
         ItemStack copy = itemStack.copy();
         copy.setQuantity(-1);
 
-        inventory.query(copy).poll(amount);
+        inventory.query(copy).poll(total);
 
-        return InventoryUtilTransactionResult.SUCCESS;
+        return underflow;
     }
 
     public static boolean itemStackEqualsIgnoreSize(ItemStack o1, ItemStack o2) {
+
         Comparator<ItemStack> typeComparator = ItemStackComparators.TYPE;
         Comparator<ItemStack> dataComparator = ItemStackComparators.ITEM_DATA;
         Comparator<ItemStack> propertiesComparator = ItemStackComparators.PROPERTIES;
