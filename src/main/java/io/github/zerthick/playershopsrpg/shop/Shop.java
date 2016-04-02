@@ -1,9 +1,16 @@
 package io.github.zerthick.playershopsrpg.shop;
 
+import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.service.economy.account.Account;
+import org.spongepowered.api.service.economy.transaction.ResultType;
+import org.spongepowered.api.service.economy.transaction.TransactionResult;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Shop {
@@ -92,12 +99,73 @@ public class Shop {
 
     public ShopTransactionResult buyItem(Player player, int index, int amount) {
 
-        return ShopTransactionResult.EMPTY;
+        //Bounds Check
+        if (index >= 0 && index < items.size()) {
+            ShopItem item = items.get(index);
+            //First check if the shop has enough room otherwise only buy as much as we can hold
+            if ((amount + item.getItemAmount() > item.getItemMaxAmount()) && item.getItemMaxAmount() != -1) {
+                amount = item.getItemMaxAmount() - item.getItemAmount();
+            }
+
+            //Check if the player has enough of the item in their inventory to sell
+            if (InventoryUtils.getItemCount(player.getInventory(), item.getItemStack()) < amount) {
+                return new ShopTransactionResult("You dont have " + amount + InventoryUtils.getItemName(item.getItemStack()) + "(s)!");
+            }
+
+            //If the shop has unlimited money we don't need to check it's account
+            if (unlimitedMoney) {
+                item.setItemAmount(item.getItemAmount() + amount);
+                InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
+                return ShopTransactionResult.SUCCESS;
+            }
+
+            //Withdraw the money from the shop's account if it doesn't have unlimited money
+            EconManager manager = EconManager.getInstance();
+            Account account = manager.getOrCreateAccount(getUUID()).get();
+            TransactionResult result = account.withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()), Cause.of(NamedCause.notifier(this)));
+            if (result.getResult() == ResultType.SUCCESS) {
+                item.setItemAmount(item.getItemAmount() + amount);
+                InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
+                return ShopTransactionResult.SUCCESS;
+            } else {
+                return new ShopTransactionResult(getName() + " doesn't have enough funds!");
+            }
+        }
+
+        return new ShopTransactionResult("The specified item is not in this shop!");
     }
 
     public ShopTransactionResult sellItem(Player player, int index, int amount) {
 
-        return ShopTransactionResult.EMPTY;
+        //Bounds Check
+        if (index >= 0 && index < items.size()) {
+            ShopItem item = items.get(index);
+
+            //First check if the player has enough room otherwise only sell as much as they can hold
+            int availableSpace = InventoryUtils.getAvailableSpace(player.getInventory(), item.getItemStack());
+            if (availableSpace < amount) {
+                amount = availableSpace;
+            }
+
+            //Check if the shop has enough of the item in their inventory to sell
+            if (item.getItemAmount() < amount) {
+                return new ShopTransactionResult(getName() + " doesn't have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()) + "(s)!");
+            }
+
+            //Withdraw the money from the players's account
+            EconManager manager = EconManager.getInstance();
+            Account account = manager.getOrCreateAccount(player.getUniqueId()).get();
+            TransactionResult result = account.withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()), Cause.of(NamedCause.notifier(this)));
+            if (result.getResult() == ResultType.SUCCESS) {
+                item.setItemAmount(item.getItemAmount() - amount);
+                InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
+                return ShopTransactionResult.SUCCESS;
+            } else {
+                return new ShopTransactionResult("You don't have enough funds!");
+            }
+        }
+
+        return new ShopTransactionResult("The specified item is not in this shop!");
     }
 
     public ShopTransactionResult addItem(Player player, ItemStack itemStack, int amount) {
@@ -107,7 +175,7 @@ public class Shop {
             return new ShopTransactionResult("You are not a manager of this shop!");
         }
 
-        //If the item already exists add to it's total to the shopitem and remove it from the player's inventory
+        //If the item exists add to it's total to the shopitem and remove it from the player's inventory
         for (ShopItem item : items) {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
 
@@ -121,6 +189,7 @@ public class Shop {
                 return ShopTransactionResult.SUCCESS;
             }
         }
+
         return new ShopTransactionResult("The specified item is not in this shop!");
     }
 
@@ -131,22 +200,20 @@ public class Shop {
             return new ShopTransactionResult("You are not a manager of this shop!");
         }
 
-        //If the item already exists add to it's total to the player and empty the itemstack
-
-        ShopItem item = items.get(index);
-            if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), item.getItemStack())) {
-
-                if (amount > item.getItemAmount()){
-                    amount = item.getItemAmount();
-                }
-
-                InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
-
-                item.setItemAmount(item.getItemAmount() - amount);
-                return ShopTransactionResult.SUCCESS;
+        //Bounds Check
+        if (index >= 0 && index < items.size()) {
+            ShopItem item = items.get(index);
+            if (amount > item.getItemAmount()) {
+                amount = item.getItemAmount();
             }
 
-        return new ShopTransactionResult("The specified item is not in the shop!");
+            InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
+
+            item.setItemAmount(item.getItemAmount() - amount);
+            return ShopTransactionResult.SUCCESS;
+        }
+
+        return new ShopTransactionResult("The specified item is not in this shop!");
     }
 
     public ShopTransactionResult setItemMax(Player player, int index, int amount) {
