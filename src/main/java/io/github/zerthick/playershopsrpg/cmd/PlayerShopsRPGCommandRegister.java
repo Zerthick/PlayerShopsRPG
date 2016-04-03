@@ -20,6 +20,44 @@ public class PlayerShopsRPGCommandRegister {
 
     public void registerCmds() {
 
+        // shop balance withdraw
+        CommandSpec shopBalanceWithdrawCommmand = CommandSpec.builder()
+                .description(Text.of("Transfer funds from the shop's account to your account"))
+                .permission("playershopsrpg.command.balance.withdraw")
+                .arguments(GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .executor(new ShopBalanceWithdrawExecutor(container))
+                .build();
+
+        // shop balance deposit
+        CommandSpec shopBalanceDepositCommmand = CommandSpec.builder()
+                .description(Text.of("Transfer funds from your account to the shop's account"))
+                .permission("playershopsrpg.command.balance.deposit")
+                .arguments(GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .executor(new ShopBalanceDepositExecutor(container))
+                .build();
+
+        // shop balance
+        CommandSpec shopBalanceCommmand = CommandSpec.builder()
+                .child(shopBalanceDepositCommmand, "deposit")
+                .child(shopBalanceWithdrawCommmand, "withdraw")
+                .build();
+
+        // shop item sell
+        CommandSpec shopItemSellCommand = CommandSpec.builder()
+                .description(Text.of("Sell an item to the shop you are currenlty standing in"))
+                .permission("playershopsrpg.command.item.sell")
+                .arguments(GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.integer(Text.of("ItemAmount")))
+                .executor(new ShopSellItemExecutor(container))
+                .build();
+
+        // shop item buy
+        CommandSpec shopItemBuyCommand = CommandSpec.builder()
+                .description(Text.of("Buy an item from the shop you are currenlty standing in"))
+                .permission("playershopsrpg.command.item.buy")
+                .arguments(GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.integer(Text.of("ItemAmount")))
+                .executor(new ShopBuyItemExecutor(container))
+                .build();
+
         // shop item remove
         CommandSpec shopItemRemoveCommand = CommandSpec.builder()
                 .description(Text.of("Remove an item from the shop you are currenlty standing in"))
@@ -67,6 +105,8 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopItemSetCommand, "set")
                 .child(shopItemAddCommand, "add")
                 .child(shopItemRemoveCommand, "remove")
+                .child(shopItemBuyCommand, "buy")
+                .child(shopItemSellCommand, "sell")
                 .build();
 
         // shop manager remove
@@ -165,6 +205,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopItemCommand, "item")
                 .child(shopSetCommand, "set")
                 .child(shopManagerCommand, "manager")
+                .child(shopBalanceCommmand, "balance")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");

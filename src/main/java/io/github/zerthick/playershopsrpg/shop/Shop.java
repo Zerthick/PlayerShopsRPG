@@ -7,6 +7,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.account.Account;
+import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
 
@@ -102,14 +103,20 @@ public class Shop {
         //Bounds Check
         if (index >= 0 && index < items.size()) {
             ShopItem item = items.get(index);
-            //First check if the shop has enough room otherwise only buy as much as we can hold
+
+            //Check if the shop does not buy this item
+            if (item.getItemBuyPrice() == -1) {
+                return new ShopTransactionResult(getName() + " does not buy " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "!");
+            }
+
+            //Check if the shop has enough room otherwise only buy as much as we can hold
             if ((amount + item.getItemAmount() > item.getItemMaxAmount()) && item.getItemMaxAmount() != -1) {
                 amount = item.getItemMaxAmount() - item.getItemAmount();
             }
 
             //Check if the player has enough of the item in their inventory to sell
             if (InventoryUtils.getItemCount(player.getInventory(), item.getItemStack()) < amount) {
-                return new ShopTransactionResult("You dont have " + amount + InventoryUtils.getItemName(item.getItemStack()) + "(s)!");
+                return new ShopTransactionResult("You dont have " + amount + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
             //If the shop has unlimited money we don't need to check it's account
@@ -141,7 +148,12 @@ public class Shop {
         if (index >= 0 && index < items.size()) {
             ShopItem item = items.get(index);
 
-            //First check if the player has enough room otherwise only sell as much as they can hold
+            //Check if the shop does not sell this item
+            if (item.getItemSellPrice() == -1) {
+                return new ShopTransactionResult(getName() + " does not sell " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "!");
+            }
+
+            //Check if the player has enough room otherwise only sell as much as they can hold
             int availableSpace = InventoryUtils.getAvailableSpace(player.getInventory(), item.getItemStack());
             if (availableSpace < amount) {
                 amount = availableSpace;
@@ -149,7 +161,7 @@ public class Shop {
 
             //Check if the shop has enough of the item in their inventory to sell
             if (item.getItemAmount() < amount) {
-                return new ShopTransactionResult(getName() + " doesn't have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()) + "(s)!");
+                return new ShopTransactionResult(getName() + " doesn't have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
             //Withdraw the money from the players's account
@@ -345,6 +357,52 @@ public class Shop {
         ShopItemUtils.sendShopBuyView(player, this, unlimitedStock);
 
         return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult depositFunds(Player player, BigDecimal amount) {
+        //If the player is not the owner of the shop return a message to the player
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult("You are not the owner of this shop!");
+        }
+        EconManager manager = EconManager.getInstance();
+
+        Optional<UniqueAccount> playerAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
+        Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
+
+        if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
+            shopAccountOptional.get().transfer(playerAccountOptional.get(), manager.getDefaultCurrency(), amount, Cause.of(NamedCause.notifier(this)));
+        }
+
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult withdrawFunds(Player player, BigDecimal amount) {
+        //If the player is not the owner of the shop return a message to the player
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult("You are not the owner of this shop!");
+        }
+        EconManager manager = EconManager.getInstance();
+
+        Optional<UniqueAccount> playerAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
+        Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
+
+        if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
+            playerAccountOptional.get().transfer(shopAccountOptional.get(), manager.getDefaultCurrency(), amount, Cause.of(NamedCause.notifier(this)));
+        }
+
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public BigDecimal getBalance() {
+
+        EconManager manager = EconManager.getInstance();
+
+        Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
+
+        if (shopAccountOptional.isPresent()) {
+            return shopAccountOptional.get().getBalance(manager.getDefaultCurrency());
+        }
+        return BigDecimal.valueOf(0);
     }
 
     public boolean hasOwnerPermissions(Player player) {
