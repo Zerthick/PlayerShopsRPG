@@ -5,8 +5,14 @@ import io.github.zerthick.playershopsrpg.cmd.PlayerShopsRPGCommandRegister;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionSelectBuffer;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
+import io.github.zerthick.playershopsrpg.utils.config.ConfigManager;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import org.slf4j.Logger;
+import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
@@ -20,7 +26,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.chat.ChatTypes;
 
-import java.util.HashMap;
+import java.nio.file.Path;
 import java.util.Optional;
 
 @Plugin(id = "playershopsrpg", name = "PlayerShopsRPG", version = "0.0.1")
@@ -35,6 +41,21 @@ public class PlayerShopsRPG {
     @Inject
     private PluginContainer instance;
 
+    //Config Stuff
+    @Inject
+    @DefaultConfig(sharedRoot = false)
+    private Path defaultConfig;
+    @Inject
+    @DefaultConfig(sharedRoot = false)
+    private ConfigurationLoader<CommentedConfigurationNode> configLoader;
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private Path defaultConfigDir;
+    @Inject
+    private GuiceObjectMapperFactory mapperFactory;
+
+    private ConfigManager configManager;
+
     public ShopManager getShopManager() {
         return shopManager;
     }
@@ -47,14 +68,30 @@ public class PlayerShopsRPG {
         return logger;
     }
 
+    public Path getDefaultConfig() {
+        return defaultConfig;
+    }
+
+    public ConfigurationLoader<CommentedConfigurationNode> getConfigLoader() {
+        return configLoader;
+    }
+
+    public Path getDefaultConfigDir() {
+        return defaultConfigDir;
+    }
+
+    public GuiceObjectMapperFactory getMapperFactory() {
+        return mapperFactory;
+    }
+
     public PluginContainer getInstance() {
         return instance;
     }
 
     @Listener
     public void onGameInit(GameInitializationEvent event){
-        //TODO load config
-        shopManager = new ShopManager(new HashMap<>());
+        configManager = new ConfigManager(this);
+        shopManager = configManager.loadShops();
     }
 
     @Listener
@@ -107,6 +144,6 @@ public class PlayerShopsRPG {
 
     @Listener
     public void onServerStop(GameStoppedEvent event) {
-
+        configManager.saveShops();
     }
 }

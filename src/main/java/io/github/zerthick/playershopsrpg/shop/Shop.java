@@ -2,11 +2,12 @@ package io.github.zerthick.playershopsrpg.shop;
 
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
@@ -14,14 +15,22 @@ import org.spongepowered.api.service.economy.transaction.TransactionResult;
 import java.math.BigDecimal;
 import java.util.*;
 
+@ConfigSerializable
 public class Shop {
 
+    @Setting
     private final UUID shopUUID;
+    @Setting
     private String name;
+    @Setting
     private UUID ownerUUID;
+    @Setting
     private Set<UUID> managerUUIDset;
+    @Setting
     private List<ShopItem> items;
+    @Setting
     private boolean unlimitedMoney;
+    @Setting
     private boolean unlimitedStock;
 
     /**
@@ -38,27 +47,6 @@ public class Shop {
         items = new ArrayList<>();
         unlimitedMoney = false;
         unlimitedStock = false;
-    }
-
-    /**
-     * Full Constructor, used only for Object Serialization/Deserialization
-     *
-     * @param shopUUID The UUID of the shop.
-     * @param name The name of the shop.
-     * @param ownerUUID The UUID of the owner player.
-     * @param managerUUIDset The UUID set of the manager players.
-     * @param items The ShopItem set of the items contained within the shop.
-     * @param unlimitedMoney Whether or not the shop can buy items without spending money.
-     * @param unlimitedStock Whether or not the shop never runs out of items to sell.
-     */
-    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock) {
-        this.shopUUID = shopUUID;
-        this.name = name;
-        this.ownerUUID = ownerUUID;
-        this.managerUUIDset = managerUUIDset;
-        this.items = items;
-        this.unlimitedMoney = unlimitedMoney;
-        this.unlimitedStock = unlimitedStock;
     }
 
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
@@ -126,16 +114,24 @@ public class Shop {
                 return ShopTransactionResult.SUCCESS;
             }
 
-            //Withdraw the money from the shop's account if it doesn't have unlimited money
+            //Transfer the funds from the shop's account to the player's account if it doesn't have unlimited money
             EconManager manager = EconManager.getInstance();
-            Account account = manager.getOrCreateAccount(getUUID()).get();
-            TransactionResult result = account.withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()), Cause.of(NamedCause.notifier(this)));
-            if (result.getResult() == ResultType.SUCCESS) {
-                item.setItemAmount(item.getItemAmount() + amount);
-                InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
-                return ShopTransactionResult.SUCCESS;
-            } else {
-                return new ShopTransactionResult(getName() + " doesn't have enough funds!");
+            Optional<UniqueAccount> playerAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
+            Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
+
+            if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
+
+                TransactionResult result = shopAccountOptional.get().transfer(playerAccountOptional.get(),
+                        manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()),
+                        Cause.of(NamedCause.notifier(this)));
+
+                if (result.getResult() == ResultType.SUCCESS) {
+                    item.setItemAmount(item.getItemAmount() + amount);
+                    InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
+                    return ShopTransactionResult.SUCCESS;
+                } else {
+                    return new ShopTransactionResult(getName() + " doesn't have enough funds!");
+                }
             }
         }
 
@@ -164,16 +160,24 @@ public class Shop {
                 return new ShopTransactionResult(getName() + " doesn't have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
-            //Withdraw the money from the players's account
+            //Transfer the funds from the player's account to the shop's account
             EconManager manager = EconManager.getInstance();
-            Account account = manager.getOrCreateAccount(player.getUniqueId()).get();
-            TransactionResult result = account.withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()), Cause.of(NamedCause.notifier(this)));
-            if (result.getResult() == ResultType.SUCCESS) {
-                item.setItemAmount(item.getItemAmount() - amount);
-                InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
-                return ShopTransactionResult.SUCCESS;
-            } else {
-                return new ShopTransactionResult("You don't have enough funds!");
+            Optional<UniqueAccount> playerAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
+            Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
+
+            if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
+
+                TransactionResult result = playerAccountOptional.get().transfer(shopAccountOptional.get(),
+                        manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemSellPrice()),
+                        Cause.of(NamedCause.notifier(this)));
+
+                if (result.getResult() == ResultType.SUCCESS) {
+                    item.setItemAmount(item.getItemAmount() - amount);
+                    InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
+                    return ShopTransactionResult.SUCCESS;
+                } else {
+                    return new ShopTransactionResult("You don't have enough funds!");
+                }
             }
         }
 

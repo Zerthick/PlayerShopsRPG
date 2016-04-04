@@ -4,6 +4,7 @@ import com.flowpowered.math.vector.Vector3i;
 import io.github.zerthick.playershopsrpg.region.Region;
 
 public class ShopContainer {
+
     private Shop shop;
     private Region shopRegion;
 
@@ -18,5 +19,9 @@ public class ShopContainer {
 
     public Shop getShop() {
         return shop;
+    }
+
+    public Region getShopRegion() {
+        return shopRegion;
     }
 }
