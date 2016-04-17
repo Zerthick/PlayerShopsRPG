@@ -24,17 +24,19 @@ public class ConfigManager {
 
     private PlayerShopsRPG plugin;
     private Logger logger;
-    private TypeSerializerCollection serializers;
     private ConfigurationOptions configOptions;
 
     public ConfigManager(PlayerShopsRPG plugin) {
         this.plugin = plugin;
         logger = plugin.getLogger();
-        serializers = TypeSerializers.getDefaultSerializers().newChild();
-        serializers.registerType(TypeToken.of(ShopContainer.class), new ShopContainerSerializer())
-                .registerType(new TypeToken<Set<ShopContainer>>() {
-                }, new ShopContainerSetSerializer());
-        configOptions = ConfigurationOptions.defaults().setObjectMapperFactory(plugin.getMapperFactory()).setSerializers(serializers);
+
+        TypeSerializerCollection serializers = TypeSerializers.getDefaultSerializers().newChild();
+        serializers.registerType(new TypeToken<Set<ShopContainer>>() {
+        }, new ShopContainerSetSerializer());
+        serializers.registerType(TypeToken.of(ShopContainer.class), new ShopContainerSerializer());
+
+        configOptions = ConfigurationOptions.defaults().setSerializers(serializers);
+
     }
 
     public ShopManager loadShops() {
