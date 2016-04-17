@@ -1,21 +1,13 @@
 package io.github.zerthick.playershopsrpg.shop;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-@ConfigSerializable
 public class ShopItem {
 
-    @Setting
     private final ItemStack itemStack;
-    @Setting
     private int itemAmount;
-    @Setting
     private int itemMaxAmount;
-    @Setting
     private double itemBuyPrice;
-    @Setting
     private double itemSellPrice;
 
     public ShopItem(ItemStack itemStack, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {

@@ -1,16 +1,12 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import com.flowpowered.math.vector.Vector3i;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.*;
 
-@ConfigSerializable
 public class ShopManager {
 
-    @Setting("shops")
     private Map<UUID, Set<ShopContainer>> shopMap;
 
     public ShopManager(Map<UUID, Set<ShopContainer>> shopMap) {
@@ -46,5 +42,9 @@ public class ShopManager {
 
     public Optional<ShopContainer> removeShop(Player player) {
         return removeShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
+    }
+
+    public Map<UUID, Set<ShopContainer>> getShopMap() {
+        return shopMap;
     }
 }

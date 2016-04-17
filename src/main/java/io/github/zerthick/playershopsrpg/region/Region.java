@@ -8,4 +8,5 @@ public interface Region {
 
     boolean contains(Vector3i location);
 
+    String getType();
 }

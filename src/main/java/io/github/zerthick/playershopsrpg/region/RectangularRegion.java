@@ -1,19 +1,19 @@
 package io.github.zerthick.playershopsrpg.region;
 
 import com.flowpowered.math.vector.Vector3i;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
-@ConfigSerializable
 public class RectangularRegion implements Region{
 
-    @Setting(comment = "Lower left corner")
     private Vector3i a;
-    @Setting(comment = "Upper right corner")
     private Vector3i b;
 
     public RectangularRegion(Vector3i parA, Vector3i parB) {
         normalize(parA, parB);
+    }
+
+    @Override
+    public String getType() {
+        return "rectangular";
     }
 
     @Override
@@ -54,8 +54,16 @@ public class RectangularRegion implements Region{
                 y >= this.a.getY() && y <= this.b.getY());
     }
 
+    public Vector3i getB() {
+        return b;
+    }
+
+    public Vector3i getA() {
+        return a;
+    }
+
     @Override
     public String toString() {
-        return a.toString() + " " + b.toString();
+        return getA().toString() + " " + getB().toString();
     }
 }

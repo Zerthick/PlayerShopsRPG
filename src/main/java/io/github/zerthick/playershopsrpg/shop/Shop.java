@@ -2,8 +2,6 @@ package io.github.zerthick.playershopsrpg.shop;
 
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -15,22 +13,14 @@ import org.spongepowered.api.service.economy.transaction.TransactionResult;
 import java.math.BigDecimal;
 import java.util.*;
 
-@ConfigSerializable
 public class Shop {
 
-    @Setting
     private final UUID shopUUID;
-    @Setting
     private String name;
-    @Setting
     private UUID ownerUUID;
-    @Setting
     private Set<UUID> managerUUIDset;
-    @Setting
     private List<ShopItem> items;
-    @Setting
     private boolean unlimitedMoney;
-    @Setting
     private boolean unlimitedStock;
 
     /**
@@ -47,6 +37,16 @@ public class Shop {
         items = new ArrayList<>();
         unlimitedMoney = false;
         unlimitedStock = false;
+    }
+
+    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock) {
+        this.shopUUID = shopUUID;
+        this.name = name;
+        this.ownerUUID = ownerUUID;
+        this.managerUUIDset = managerUUIDset;
+        this.items = items;
+        this.unlimitedMoney = unlimitedMoney;
+        this.unlimitedStock = unlimitedStock;
     }
 
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
@@ -427,5 +427,25 @@ public class Shop {
 
     public List<ShopItem> getItems() {
         return items;
+    }
+
+    public UUID getShopUUID() {
+        return shopUUID;
+    }
+
+    public UUID getOwnerUUID() {
+        return ownerUUID;
+    }
+
+    public Set<UUID> getManagerUUIDset() {
+        return managerUUIDset;
+    }
+
+    public boolean isUnlimitedMoney() {
+        return unlimitedMoney;
+    }
+
+    public boolean isUnlimitedStock() {
+        return unlimitedStock;
     }
 }

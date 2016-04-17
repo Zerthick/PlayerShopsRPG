@@ -9,7 +9,6 @@ import io.github.zerthick.playershopsrpg.utils.config.ConfigManager;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
@@ -51,8 +50,6 @@ public class PlayerShopsRPG {
     @Inject
     @ConfigDir(sharedRoot = false)
     private Path defaultConfigDir;
-    @Inject
-    private GuiceObjectMapperFactory mapperFactory;
 
     private ConfigManager configManager;
 
@@ -78,10 +75,6 @@ public class PlayerShopsRPG {
 
     public Path getDefaultConfigDir() {
         return defaultConfigDir;
-    }
-
-    public GuiceObjectMapperFactory getMapperFactory() {
-        return mapperFactory;
     }
 
     public PluginContainer getInstance() {
