@@ -1,5 +1,6 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.callback.CallBackExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager.ShopAddManagerExecutor;
@@ -194,6 +195,12 @@ public class PlayerShopsRPGCommandRegister {
                 .executor(new ShopSelectExecutor(container))
                 .build();
 
+        // shop callBack
+        CommandSpec shopCallBackCommand = CommandSpec.builder()
+                .arguments(GenericArguments.string(Text.of("message")), GenericArguments.remainingJoinedStrings(Text.of("command")))
+                .executor(new CallBackExecutor(container))
+                .build();
+
         // shop
         CommandSpec shopCommand = CommandSpec.builder()
                 .permission("playershopsrpg.command.help")
@@ -206,6 +213,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopSetCommand, "set")
                 .child(shopManagerCommand, "manager")
                 .child(shopBalanceCommmand, "balance")
+                .child(shopCallBackCommand, "callBack")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");

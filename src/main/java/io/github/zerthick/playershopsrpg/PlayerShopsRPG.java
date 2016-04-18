@@ -2,6 +2,7 @@ package io.github.zerthick.playershopsrpg;
 
 import com.google.inject.Inject;
 import io.github.zerthick.playershopsrpg.cmd.PlayerShopsRPGCommandRegister;
+import io.github.zerthick.playershopsrpg.cmd.callback.CallBackBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionSelectBuffer;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
@@ -19,6 +20,7 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedEvent;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -34,6 +36,7 @@ public class PlayerShopsRPG {
     private ShopManager shopManager;
     private EconManager econManager;
     private RegionSelectBuffer regionSelectBuffer;
+    private CallBackBuffer callBackBuffer;
 
     @Inject
     private Logger logger;
@@ -59,6 +62,10 @@ public class PlayerShopsRPG {
 
     public RegionSelectBuffer getRegionSelectBuffer() {
         return regionSelectBuffer;
+    }
+
+    public CallBackBuffer getCallBackBuffer() {
+        return callBackBuffer;
     }
 
     public Logger getLogger() {
@@ -92,6 +99,9 @@ public class PlayerShopsRPG {
         // Initialize Region Select Buffer
         regionSelectBuffer = new RegionSelectBuffer();
 
+        // Initialize CallBack Buffer
+        callBackBuffer = new CallBackBuffer();
+
         // Register Commands
         PlayerShopsRPGCommandRegister commandRegister = new PlayerShopsRPGCommandRegister(instance);
         commandRegister.registerCmds();
@@ -120,6 +130,14 @@ public class PlayerShopsRPG {
             RegionBuffer regionBuffer = regionBufferOptional.get();
             regionBuffer.addBack(event.getTargetBlock().getPosition());
             player.sendMessage(ChatTypes.CHAT, regionBuffer.getProgressionMessage());
+            event.setCancelled(true);
+        }
+    }
+
+    @Listener
+    public void onPlayerSendChat(MessageChannelEvent.Chat event, @Root Player player) {
+        if (callBackBuffer.hasCallBack(player)) {
+            callBackBuffer.executeCallBack(player, event.getRawMessage().toPlain());
             event.setCancelled(true);
         }
     }

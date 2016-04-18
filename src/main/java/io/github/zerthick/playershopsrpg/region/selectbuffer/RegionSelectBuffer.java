@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class RegionSelectBuffer {
 
-    Map<UUID, RegionBuffer> regionBufferMap;
+    private Map<UUID, RegionBuffer> regionBufferMap;
 
     public RegionSelectBuffer() {
         regionBufferMap = new HashMap<>();
