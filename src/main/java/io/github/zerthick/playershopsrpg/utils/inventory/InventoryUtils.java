@@ -77,9 +77,15 @@ public class InventoryUtils {
 
         ItemStack copy = itemStack.copy();
         copy.setQuantity(-1);
-
-        inventory.query(copy).poll(total);
-
+        while (total > 0) {
+            if (total > copy.getMaxStackQuantity()) {
+                inventory.query(copy).poll(copy.getMaxStackQuantity());
+                total -= copy.getMaxStackQuantity();
+            } else {
+                inventory.query(copy).poll(total);
+                total = 0;
+            }
+        }
         return underflow;
     }
 

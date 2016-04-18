@@ -107,12 +107,7 @@ public class Shop {
                 return new ShopTransactionResult("You dont have " + amount + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
-            //If the shop has unlimited money we don't need to check it's account
-            if (unlimitedMoney) {
-                item.setItemAmount(item.getItemAmount() + amount);
-                InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
-                return ShopTransactionResult.SUCCESS;
-            }
+
 
             //Transfer the funds from the shop's account to the player's account if it doesn't have unlimited money
             EconManager manager = EconManager.getInstance();
@@ -121,10 +116,17 @@ public class Shop {
 
             if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
 
-                TransactionResult result = shopAccountOptional.get().transfer(playerAccountOptional.get(),
-                        manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()),
-                        Cause.of(NamedCause.notifier(this)));
+                TransactionResult result;
 
+                if (unlimitedMoney) {
+                    result = playerAccountOptional.get().deposit(manager.getDefaultCurrency(),
+                            BigDecimal.valueOf(amount * item.getItemBuyPrice()),
+                            Cause.of(NamedCause.notifier(this)));
+                } else {
+                    result = shopAccountOptional.get().transfer(playerAccountOptional.get(),
+                            manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()),
+                            Cause.of(NamedCause.notifier(this)));
+                }
                 if (result.getResult() == ResultType.SUCCESS) {
                     item.setItemAmount(item.getItemAmount() + amount);
                     InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
@@ -167,10 +169,17 @@ public class Shop {
 
             if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
 
-                TransactionResult result = playerAccountOptional.get().transfer(shopAccountOptional.get(),
-                        manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemSellPrice()),
-                        Cause.of(NamedCause.notifier(this)));
+                TransactionResult result;
 
+                if (unlimitedMoney) {
+                    result = playerAccountOptional.get().withdraw(manager.getDefaultCurrency(),
+                            BigDecimal.valueOf(amount * item.getItemSellPrice()),
+                            Cause.of(NamedCause.notifier(this)));
+                } else {
+                    result = playerAccountOptional.get().transfer(shopAccountOptional.get(),
+                            manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemSellPrice()),
+                            Cause.of(NamedCause.notifier(this)));
+                }
                 if (result.getResult() == ResultType.SUCCESS) {
                     item.setItemAmount(item.getItemAmount() - amount);
                     InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
