@@ -214,7 +214,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopSetCommand, "set")
                 .child(shopManagerCommand, "manager")
                 .child(shopBalanceCommmand, "balance")
-                .child(shopCallBackCommand, "callBack")
+                .child(shopCallBackCommand, "callBack", "cb")
                 .build();
 
         Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");

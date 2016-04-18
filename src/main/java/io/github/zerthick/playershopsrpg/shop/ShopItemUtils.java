@@ -44,10 +44,10 @@ public class ShopItemUtils {
             //Add the appropriate actions to the text
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
             Text buy = Text.builder("Buy")
-                    .onClick(TextActions.runCommand("/shop callBack \"How many " + itemName.toPlain() + " would you like to buy?\" shop item buy " + i + " %c"))
+                    .onClick(TextActions.runCommand("/shop cb \"How many " + itemName.toPlain() + " would you like to buy?\" shop item buy " + i + " %c"))
                     .style(TextStyles.UNDERLINE).build();
             Text sell = Text.builder("Sell")
-                    .onClick(TextActions.runCommand("/shop callBack \"How many " + itemName.toPlain() + " would you like to sell?\" shop item sell " + i + " %c"))
+                    .onClick(TextActions.runCommand("/shop cb \"How many " + itemName.toPlain() + " would you like to sell?\" shop item sell " + i + " %c"))
                     .style(TextStyles.UNDERLINE).build();
 
             //Build the full line of text
@@ -89,6 +89,77 @@ public class ShopItemUtils {
 
     public static void sendShopManagerView(Player player, Shop shop) {
 
+        //First build up the contents of the shop
+        List<Text> contents = new ArrayList<>();
+        List<ShopItem> items = shop.getItems();
+        if (items.isEmpty()) {
+            contents.add(Text.of(TextColors.BLUE, "No items to display."));
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            ShopItem item = items.get(i);
+
+            Text itemAmount;
+            if (shop.isUnlimitedStock()) {
+                itemAmount = Text.of("\u221E");
+            } else {
+                itemAmount = Text.of(item.getItemAmount() == -1 ? "--" : String.valueOf(item.getItemAmount()));
+            }
+
+            //Grab the necessary info we need from the item and add appropriate actions
+            Text itemName = InventoryUtils.getItemName(item.getItemStack());
+            Text itemMax = Text.builder(item.getItemMaxAmount() == -1 ? "\u221E" : String.valueOf(item.getItemMaxAmount()))
+                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " max (-1 for infinite):\" shop item set max " + i + " %c"))
+                    .style(TextStyles.UNDERLINE).build();
+            Text itemSell = Text.builder(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()))
+                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + "buy price (-1 for none):\" shop item set buy " + i + " %c"))
+                    .style(TextStyles.UNDERLINE).build();
+            Text itemBuy = Text.builder(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()))
+                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + "sell price (-1 for none):\" shop item set sell " + i + " %c"))
+                    .style(TextStyles.UNDERLINE).build();
+
+            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
+            /*Text add = Text.builder("Add")
+                    .onClick(TextActions.runCommand("/shop callBack \"How many " + itemName.toPlain() + " would you like to add?\" shop item add " + i + " %c"))
+                    .style(TextStyles.UNDERLINE).build();*/
+            Text remove = Text.builder("Remove")
+                    .onClick(TextActions.runCommand("/shop cb \"How many " + itemName.toPlain() + " would you like to remove?\" shop item remove " + i + " %c"))
+                    .style(TextStyles.UNDERLINE).build();
+
+            //Build the full line of text
+            Text fullLine = Text.of(itemName, " ", itemAmount, "/", itemMax, " | ", itemBuy, " | ", itemSell, " ", remove);
+
+            //Add the text to the shop display
+            contents.add(fullLine);
+        }
+
+        //Builder header
+        Text header;
+        if (shop.isUnlimitedMoney()) {
+            header = Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of("\u221E"));
+        } else {
+            header = Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, shop.getBalance());
+        }
+
+        Text browse = Text.builder("Browse")
+                .onClick(TextActions.runCommand("/shop browse"))
+                .style(TextStyles.UNDERLINE).build();
+        header = header.concat(Text.of("  |  ", browse));
+
+        if (shop.hasOwnerPermissions(player)) {
+            Text owner = Text.builder("Owner")
+                    .onClick(TextActions.runCommand("/shop browse owner"))
+                    .style(TextStyles.UNDERLINE).build();
+            header = header.concat(Text.of("  |  ", owner));
+        }
+        header = header.concat(Text.of("\n"));
+
+        pagServ.builder()
+                .title(Text.of(shop.getName()))
+                .header(header)
+                .padding(Text.of(TextColors.BLUE, "-"))
+                .contents(contents)
+                .sendTo(player);
     }
 
     public static void sendShopOwnerView(Player player, Shop shop) {
