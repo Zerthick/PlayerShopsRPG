@@ -112,10 +112,10 @@ public class ShopItemUtils {
                     .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " max (-1 for infinite):\" shop item set max " + i + " %c"))
                     .style(TextStyles.UNDERLINE).build();
             Text itemSell = Text.builder(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()))
-                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + "buy price (-1 for none):\" shop item set buy " + i + " %c"))
+                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " buy price (-1 for none):\" shop item set buy " + i + " %c"))
                     .style(TextStyles.UNDERLINE).build();
             Text itemBuy = Text.builder(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()))
-                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + "sell price (-1 for none):\" shop item set sell " + i + " %c"))
+                    .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " sell price (-1 for none):\" shop item set sell " + i + " %c"))
                     .style(TextStyles.UNDERLINE).build();
 
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
