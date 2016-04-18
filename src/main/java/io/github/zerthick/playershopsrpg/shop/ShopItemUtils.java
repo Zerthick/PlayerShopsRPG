@@ -16,7 +16,7 @@ public class ShopItemUtils {
 
     private static PaginationService pagServ = Sponge.getServiceManager().provide(PaginationService.class).get();
 
-    public static void sendShopBuyView(Player player, Shop shop, boolean unlimitedStock) {
+    public static void sendShopBuyView(Player player, Shop shop) {
 
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
@@ -29,7 +29,7 @@ public class ShopItemUtils {
             ShopItem item = items.get(i);
 
             Text itemAmount;
-            if (unlimitedStock) {
+            if (shop.isUnlimitedStock()) {
                 itemAmount = Text.of("\u221E");
             } else {
                 itemAmount = Text.of(item.getItemAmount() == -1 ? "--" : String.valueOf(item.getItemAmount()));
@@ -58,7 +58,12 @@ public class ShopItemUtils {
         }
 
         //Builder header
-        Text header = Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, shop.getBalance());
+        Text header;
+        if (shop.isUnlimitedMoney()) {
+            header = Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of("\u221E"));
+        } else {
+            header = Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, shop.getBalance());
+        }
         if (shop.hasManagerPermissions(player)) {
             Text manager = Text.builder("Manager")
                     .onClick(TextActions.runCommand("/shop browse manager"))
@@ -79,6 +84,14 @@ public class ShopItemUtils {
                 .padding(Text.of(TextColors.BLUE, "-"))
                 .contents(contents)
                 .sendTo(player);
+
+    }
+
+    public static void sendShopManagerView(Player player, Shop shop) {
+
+    }
+
+    public static void sendShopOwnerView(Player player, Shop shop) {
 
     }
 }

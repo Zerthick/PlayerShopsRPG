@@ -14,6 +14,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class ShopBrowseExecutor extends AbstractCmdExecutor {
@@ -22,17 +24,42 @@ public class ShopBrowseExecutor extends AbstractCmdExecutor {
         super(pluginContainer);
     }
 
+    public static Map<String, String> selectChoices() {
+        Map<String, String> selectChoices = new HashMap<>();
+        selectChoices.put("manager", "manager");
+        selectChoices.put("owner", "owner");
+        return selectChoices;
+    }
+
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
         if (src instanceof Player) {
             Player player = (Player) src;
 
+            String selectType = "default";
+
+            Optional<String> selectTypeOptional = args.getOne(Text.of("SelectionType"));
+
+            if (selectTypeOptional.isPresent()) {
+                selectType = selectTypeOptional.get();
+            }
+
             Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
             if (shopContainerOptional.isPresent()) {
                 ShopContainer shopContainer = shopContainerOptional.get();
                 Shop shop = shopContainer.getShop();
-                ShopTransactionResult transactionResult = shop.showBuyView(player);
+                ShopTransactionResult transactionResult = ShopTransactionResult.EMPTY;
+                switch (selectType) {
+                    case "default":
+                        transactionResult = shop.showBuyView(player);
+                        break;
+                    case "manager":
+                        transactionResult = shop.showManagerView(player);
+                        break;
+                    case "owner":
+                        transactionResult = shop.showOwnerView(player);
+                }
                 if (transactionResult != ShopTransactionResult.SUCCESS) {
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
                 }

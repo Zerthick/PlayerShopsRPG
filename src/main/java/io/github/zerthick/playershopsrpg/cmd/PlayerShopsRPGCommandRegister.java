@@ -169,6 +169,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopBrowseCommand = CommandSpec.builder()
                 .description(Text.of("Browses the shop you are currently standing in"))
                 .permission("playershopsrpg.command.browse")
+                .arguments(GenericArguments.optional(GenericArguments.choices(Text.of("SelectionType"), ShopBrowseExecutor.selectChoices())))
                 .executor(new ShopBrowseExecutor(container))
                 .build();
 

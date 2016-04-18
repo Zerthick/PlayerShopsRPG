@@ -367,8 +367,28 @@ public class Shop {
     }
 
     public ShopTransactionResult showBuyView(Player player) {
-        ShopItemUtils.sendShopBuyView(player, this, unlimitedStock);
+        ShopItemUtils.sendShopBuyView(player, this);
 
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult showManagerView(Player player) {
+
+        if (!hasManagerPermissions(player)) {
+            return new ShopTransactionResult("You are not a manager of this shop!");
+        }
+
+        ShopItemUtils.sendShopManagerView(player, this);
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult showOwnerView(Player player) {
+
+        if (!hasManagerPermissions(player)) {
+            return new ShopTransactionResult("You are not the owner of this shop!");
+        }
+
+        ShopItemUtils.sendShopOwnerView(player, this);
         return ShopTransactionResult.SUCCESS;
     }
 
