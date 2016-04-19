@@ -35,7 +35,7 @@ public class ShopBalanceDepositExecutor extends AbstractCmdExecutor {
                 if (shopContainerOptional.isPresent()) {
                     ShopContainer shopContainer = shopContainerOptional.get();
                     Shop shop = shopContainer.getShop();
-                    ShopTransactionResult transactionResult = shop.depositFunds(player, BigDecimal.valueOf(doubleArgumentOptional.get()));
+                    ShopTransactionResult transactionResult = shop.withdrawFunds(player, BigDecimal.valueOf(doubleArgumentOptional.get()));
                     if (transactionResult != ShopTransactionResult.SUCCESS) {
                         player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
                     }
