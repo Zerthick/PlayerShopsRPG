@@ -233,7 +233,10 @@ public class ShopItemUtils {
                         .onClick(TextActions.runCommand("/shop item destroy " + i))
                         .style(TextStyles.UNDERLINE).build();
 
-                contents.add(Text.of(InventoryUtils.getItemName(items.get(i).getItemStack()), " ", destroyItem));
+                Text itemName = InventoryUtils.getItemName(items.get(i).getItemStack());
+                itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack())).style(TextStyles.UNDERLINE).build();
+
+                contents.add(Text.of(itemName, " ", destroyItem));
             }
         }
 

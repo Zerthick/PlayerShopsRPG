@@ -104,7 +104,7 @@ public class Shop {
 
             //Check if the player has enough of the item in their inventory to sell
             if (InventoryUtils.getItemCount(player.getInventory(), item.getItemStack()) < amount) {
-                return new ShopTransactionResult("You dont have " + amount + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
+                return new ShopTransactionResult("You dont have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
 
@@ -456,10 +456,6 @@ public class Shop {
 
     public List<ShopItem> getItems() {
         return items;
-    }
-
-    public UUID getShopUUID() {
-        return shopUUID;
     }
 
     public UUID getOwnerUUID() {
