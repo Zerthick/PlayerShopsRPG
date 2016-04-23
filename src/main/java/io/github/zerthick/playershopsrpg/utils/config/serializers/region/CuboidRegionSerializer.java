@@ -21,15 +21,15 @@ package io.github.zerthick.playershopsrpg.utils.config.serializers.region;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
-import io.github.zerthick.playershopsrpg.region.RectangularRegion;
+import io.github.zerthick.playershopsrpg.region.CuboidRegion;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
-public class RectangularRegionSerializer implements TypeSerializer<RectangularRegion> {
+public class CuboidRegionSerializer implements TypeSerializer<CuboidRegion> {
 
     @Override
-    public RectangularRegion deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
+    public CuboidRegion deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
         int aX = value.getNode("parA", "x").getInt();
         int aY = value.getNode("parA", "y").getInt();
         int aZ = value.getNode("parA", "z").getInt();
@@ -38,11 +38,11 @@ public class RectangularRegionSerializer implements TypeSerializer<RectangularRe
         int bY = value.getNode("parB", "y").getInt();
         int bZ = value.getNode("parB", "z").getInt();
 
-        return new RectangularRegion(new Vector3i(aX, aY, aZ), new Vector3i(bX, bY, bZ));
+        return new CuboidRegion(new Vector3i(aX, aY, aZ), new Vector3i(bX, bY, bZ));
     }
 
     @Override
-    public void serialize(TypeToken<?> type, RectangularRegion obj, ConfigurationNode value) throws ObjectMappingException {
+    public void serialize(TypeToken<?> type, CuboidRegion obj, ConfigurationNode value) throws ObjectMappingException {
         Vector3i parA = obj.getA();
         Vector3i parB = obj.getB();
 

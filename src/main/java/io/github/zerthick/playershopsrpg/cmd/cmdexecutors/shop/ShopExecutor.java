@@ -37,10 +37,10 @@ public class ShopExecutor extends AbstractCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        src.sendMessage(Text.of(TextColors.DARK_GREEN, container.getName(),
-                TextColors.GREEN, " version: ", TextColors.DARK_GREEN,
-                container.getVersion().get(), TextColors.GREEN, " by ",
-                TextColors.DARK_GREEN, "Zerthick"));
+        src.sendMessage(Text.of(TextColors.AQUA, container.getName(),
+                TextColors.BLUE, " version: ", TextColors.AQUA,
+                container.getVersion().get(), TextColors.BLUE, " by ",
+                TextColors.AQUA, "Zerthick"));
 
         return CommandResult.success();
     }

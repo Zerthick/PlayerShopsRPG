@@ -20,7 +20,7 @@
 package io.github.zerthick.playershopsrpg.utils.config.serializers.shop;
 
 import com.google.common.reflect.TypeToken;
-import io.github.zerthick.playershopsrpg.region.RectangularRegion;
+import io.github.zerthick.playershopsrpg.region.CuboidRegion;
 import io.github.zerthick.playershopsrpg.region.Region;
 import io.github.zerthick.playershopsrpg.shop.Shop;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
@@ -37,8 +37,8 @@ public class ShopContainerSerializer implements TypeSerializer<ShopContainer> {
         Region region = null;
         String RegionType = value.getNode("region", "type").getString();
         switch (RegionType) {
-            case "rectangular":
-                region = value.getNode("region", "data").getValue(TypeToken.of(RectangularRegion.class));
+            case "cuboid":
+                region = value.getNode("region", "data").getValue(TypeToken.of(CuboidRegion.class));
         }
 
         return new ShopContainer(shop, region);
@@ -49,9 +49,9 @@ public class ShopContainerSerializer implements TypeSerializer<ShopContainer> {
         value.getNode("shop").setValue(TypeToken.of(Shop.class), obj.getShop());
 
         switch (obj.getShopRegion().getType()) {
-            case "rectangular":
-                value.getNode("region", "type").setValue("rectangular");
-                value.getNode("region", "data").setValue(TypeToken.of(RectangularRegion.class), (RectangularRegion) obj.getShopRegion());
+            case "cuboid":
+                value.getNode("region", "type").setValue("cuboid");
+                value.getNode("region", "data").setValue(TypeToken.of(CuboidRegion.class), (CuboidRegion) obj.getShopRegion());
         }
     }
 }

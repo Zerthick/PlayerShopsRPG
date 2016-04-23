@@ -20,7 +20,7 @@
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
-import io.github.zerthick.playershopsrpg.region.selectbuffer.RectangularRegionBuffer;
+import io.github.zerthick.playershopsrpg.region.selectbuffer.CuboidRegionBuffer;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -44,7 +44,7 @@ public class ShopSelectExecutor extends AbstractCmdExecutor {
 
     public static Map<String, String> selectChoices() {
         Map<String, String> selectChoices = new HashMap<>();
-        selectChoices.put("rectangular", "rectangular");
+        selectChoices.put("cuboid", "cuboid");
         selectChoices.put("clear", "clear");
         return selectChoices;
     }
@@ -65,8 +65,8 @@ public class ShopSelectExecutor extends AbstractCmdExecutor {
             }
 
             switch (selectType) {
-                case "rectangular":
-                    RectangularRegionBuffer regionBuffer = new RectangularRegionBuffer();
+                case "cuboid":
+                    CuboidRegionBuffer regionBuffer = new CuboidRegionBuffer();
                     plugin.getRegionSelectBuffer().addBuffer(player.getUniqueId(), regionBuffer);
                     player.sendMessage(ChatTypes.CHAT, regionBuffer.getProgressionMessage());
                     break;

@@ -20,14 +20,14 @@
 package io.github.zerthick.playershopsrpg.region.selectbuffer;
 
 import com.flowpowered.math.vector.Vector3i;
-import io.github.zerthick.playershopsrpg.region.RectangularRegion;
+import io.github.zerthick.playershopsrpg.region.CuboidRegion;
 import io.github.zerthick.playershopsrpg.region.Region;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-public class RectangularRegionBuffer implements RegionBuffer {
+public class CuboidRegionBuffer implements RegionBuffer {
 
     final int maxCapacity = 2;
 
@@ -35,7 +35,7 @@ public class RectangularRegionBuffer implements RegionBuffer {
 
     Vector3i[] vector3iTuple;
 
-    public RectangularRegionBuffer() {
+    public CuboidRegionBuffer() {
         vector3iTuple = new Vector3i[2];
     }
 
@@ -60,7 +60,7 @@ public class RectangularRegionBuffer implements RegionBuffer {
     @Override
     public Optional<Region> getRegion() {
         if (currentCapacity == 2) {
-            return Optional.of(new RectangularRegion(vector3iTuple[0], vector3iTuple[1]));
+            return Optional.of(new CuboidRegion(vector3iTuple[0], vector3iTuple[1]));
         }
         return Optional.empty();
     }

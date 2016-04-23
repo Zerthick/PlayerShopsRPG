@@ -21,18 +21,18 @@ package io.github.zerthick.playershopsrpg.region;
 
 import com.flowpowered.math.vector.Vector3i;
 
-public class RectangularRegion implements Region{
+public class CuboidRegion implements Region {
 
     private Vector3i a;
     private Vector3i b;
 
-    public RectangularRegion(Vector3i parA, Vector3i parB) {
+    public CuboidRegion(Vector3i parA, Vector3i parB) {
         normalize(parA, parB);
     }
 
     @Override
     public String getType() {
-        return "rectangular";
+        return "cuboid";
     }
 
     @Override
