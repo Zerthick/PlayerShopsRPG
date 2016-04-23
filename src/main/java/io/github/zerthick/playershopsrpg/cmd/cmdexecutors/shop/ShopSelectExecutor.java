@@ -56,7 +56,7 @@ public class ShopSelectExecutor extends AbstractCmdExecutor {
 
             Player player = (Player) src;
 
-            String selectType = "rectangular";
+            String selectType = "cuboid";
 
             Optional<String> selectTypeOptional = args.getOne(Text.of("SelectionType"));
 
