@@ -102,7 +102,7 @@ public class PlayerShopsRPGCommandRegister {
         // shop item set
         CommandSpec shopItemSetCommand = CommandSpec.builder()
                 .description(Text.of("Set various attributes of a shop item (max amount / buy price / sell price"))
-                .permission("playershopsrpg.command.item.destroy")
+                .permission("playershopsrpg.command.item.set")
                 .arguments(GenericArguments.choices(Text.of("SelectionType"), ShopSetItemExecutor.selectChoices()),
                         GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.doubleNum(Text.of("DoubleArgument")))
                 .executor(new ShopSetItemExecutor(container))
@@ -125,7 +125,6 @@ public class PlayerShopsRPGCommandRegister {
 
         // shop item
         CommandSpec shopItemCommand = CommandSpec.builder()
-                .permission("playershopsrpg.command.item")
                 .child(shopItemCreateCommand, "create")
                 .child(shopItemDestroyCommand, "destroy")
                 .child(shopItemSetCommand, "set")
@@ -153,7 +152,6 @@ public class PlayerShopsRPGCommandRegister {
 
         // shop manager
         CommandSpec shopManagerCommand = CommandSpec.builder()
-                .permission("playershopsrpg.command.manager")
                 .child(shopManagerAddCommand, "add")
                 .child(shopManagerRemoveCommand, "remove")
                 .build();
@@ -241,7 +239,6 @@ public class PlayerShopsRPGCommandRegister {
 
         // shop
         CommandSpec shopCommand = CommandSpec.builder()
-                .permission("playershopsrpg.command.help")
                 .executor(new ShopExecutor(container))
                 .child(shopSelectCommmand, "select")
                 .child(shopCreateCommand, "create")

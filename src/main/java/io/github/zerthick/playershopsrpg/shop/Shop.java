@@ -461,11 +461,11 @@ public class Shop {
     }
 
     public boolean hasOwnerPermissions(Player player) {
-        return ownerUUID.equals(player.getUniqueId()) || player.hasPermission("playershopsrpg.override.owner");
+        return ownerUUID.equals(player.getUniqueId()) || player.hasPermission("playershopsrpg.bypass.owner");
     }
 
     public boolean hasManagerPermissions(Player player) {
-        return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission("playershopsrpg.override.manager") ||
+        return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission("playershopsrpg.bypass.manager") ||
                 hasOwnerPermissions(player);
     }
 
