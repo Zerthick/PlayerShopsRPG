@@ -37,13 +37,19 @@ public class ShopCreateItemExecutor extends AbstractCmdExecutor {
                 ShopTransactionResult transactionResult;
                 if (player.getItemInHand().isPresent()) {
                     ItemStack item = player.getItemInHand().get();
-                    transactionResult = shop.createItem(player, item);
+                    //Check if this shop is allowed to hold this item
+                    if (plugin.getShopTypeManager().isItemStackAllowed(item, shop.getType())) {
+                        transactionResult = shop.createItem(player, item);
 
-                    if (transactionResult != ShopTransactionResult.SUCCESS) {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
+                        if (transactionResult != ShopTransactionResult.SUCCESS) {
+                            player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
+                        } else {
+                            player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ",
+                                    TextColors.AQUA, InventoryUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
+                        }
                     } else {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ",
-                                TextColors.AQUA, InventoryUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, shop.getType(),
+                                "s are not allowed to buy and sell ", InventoryUtils.getItemName(item), "!"));
                     }
                 }
             } else {

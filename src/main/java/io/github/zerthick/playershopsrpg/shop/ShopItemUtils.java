@@ -169,6 +169,11 @@ public class ShopItemUtils {
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
 
+        //Display shop type if present
+        if (!shop.getType().equals("")) {
+            contents.add(Text.of(TextColors.BLUE, "Shop Type: ", TextColors.WHITE, shop.getType()));
+        }
+
         //Add option to change shop name
         Text changeShopName = Text.builder("Change")
                 .onClick(TextActions.runCommand("/shop cb \"Enter new shop name:\" shop set name %c"))

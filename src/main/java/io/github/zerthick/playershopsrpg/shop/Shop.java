@@ -22,6 +22,7 @@ public class Shop {
     private List<ShopItem> items;
     private boolean unlimitedMoney;
     private boolean unlimitedStock;
+    private String type;
 
     /**
      * Basic Constructor, used for creating shops for the first time
@@ -37,9 +38,10 @@ public class Shop {
         items = new ArrayList<>();
         unlimitedMoney = false;
         unlimitedStock = false;
+        type = "";
     }
 
-    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock) {
+    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type) {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
@@ -47,6 +49,7 @@ public class Shop {
         this.items = items;
         this.unlimitedMoney = unlimitedMoney;
         this.unlimitedStock = unlimitedStock;
+        this.type = type;
     }
 
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
@@ -439,11 +442,12 @@ public class Shop {
     }
 
     public boolean hasOwnerPermissions(Player player) {
-        return ownerUUID.equals(player.getUniqueId());
+        return ownerUUID.equals(player.getUniqueId()) || player.hasPermission("playershopsrpg.override.owner");
     }
 
     public boolean hasManagerPermissions(Player player) {
-        return managerUUIDset.contains(player.getUniqueId()) || hasOwnerPermissions(player);
+        return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission("playershopsrpg.override.manager") ||
+                hasOwnerPermissions(player);
     }
 
     public String getName() {
@@ -472,5 +476,13 @@ public class Shop {
 
     public boolean isUnlimitedStock() {
         return unlimitedStock;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

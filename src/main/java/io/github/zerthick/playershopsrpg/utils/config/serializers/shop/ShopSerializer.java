@@ -7,7 +7,10 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ShopSerializer implements TypeSerializer<Shop> {
 
@@ -16,13 +19,14 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         UUID shopUUID = value.getNode("shopUUID").getValue(TypeToken.of(UUID.class));
         String name = value.getNode("shopName").getString();
         UUID ownerUUID = value.getNode("ownerUUID").getValue(TypeToken.of(UUID.class));
-        Set<UUID> managerUUIDset = new HashSet<>();
-        managerUUIDset.addAll(value.getNode("managerSet").getList(TypeToken.of(UUID.class)));
+        Set<UUID> managerUUIDset = value.getNode("managerSet").getList(TypeToken.of(UUID.class))
+                .stream().collect(Collectors.toSet());
         List<ShopItem> items = value.getNode("items").getList(TypeToken.of(ShopItem.class));
         boolean unlimitedMoney = value.getNode("unlimitedMoney").getBoolean();
         boolean unlimitedStock = value.getNode("unlimitedStock").getBoolean();
+        String shopType = value.getNode("type").getString();
 
-        return new Shop(shopUUID, name, ownerUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock);
+        return new Shop(shopUUID, name, ownerUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType);
     }
 
     @Override
@@ -31,13 +35,12 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         value.getNode("shopName").setValue(obj.getName());
         value.getNode("ownerUUID").setValue(TypeToken.of(UUID.class), obj.getOwnerUUID());
         Set<UUID> managerUUIDSet = obj.getManagerUUIDset();
-        List<UUID> managerUUIDList = new ArrayList<>();
-        managerUUIDList.addAll(managerUUIDSet);
         value.getNode("managerSet").setValue(new TypeToken<List<UUID>>() {
-        }, managerUUIDList);
+        }, managerUUIDSet.stream().collect(Collectors.toList()));
         value.getNode("items").setValue(new TypeToken<List<ShopItem>>() {
         }, obj.getItems());
         value.getNode("unlimitedMoney").setValue(obj.isUnlimitedMoney());
         value.getNode("unlimitedStock").setValue(obj.isUnlimitedStock());
+        value.getNode("type").setValue(obj.getType());
     }
 }

@@ -7,10 +7,13 @@ import io.github.zerthick.playershopsrpg.shop.Shop;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
 import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
+import io.github.zerthick.playershopsrpg.shop.type.ShopType;
+import io.github.zerthick.playershopsrpg.shop.type.ShopTypeManager;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.region.RectangularRegionSerializer;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.ShopContainerSerializer;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.ShopItemSerializer;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.ShopSerializer;
+import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.type.ShopTypeSerializer;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -21,10 +24,9 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConfigManager {
-
-    private CommentedConfigurationNode shopsConfig;
 
     private PlayerShopsRPG plugin;
     private Logger logger;
@@ -38,6 +40,7 @@ public class ConfigManager {
                 .registerType(TypeToken.of(Shop.class), new ShopSerializer())
                 .registerType(TypeToken.of(ShopContainer.class), new ShopContainerSerializer())
                 .registerType(TypeToken.of(RectangularRegion.class), new RectangularRegionSerializer())
+                .registerType(TypeToken.of(ShopType.class), new ShopTypeSerializer())
         ;
     }
 
@@ -47,17 +50,12 @@ public class ConfigManager {
 
         if (shopsFile.exists()) {
             try {
-                shopsConfig = loader.load();
+                CommentedConfigurationNode shopsConfig = loader.load();
 
-                Map<UUID, Set<ShopContainer>> shopContainerMap = new HashMap<>();
-                Map<UUID, List<ShopContainer>> shopContainerMapList =
+                Map<UUID, Set<ShopContainer>> shopContainerMap =
                         shopsConfig.getValue(new TypeToken<Map<UUID, List<ShopContainer>>>() {
-                        });
-                for (UUID uuid : shopContainerMapList.keySet()) {
-                    Set<ShopContainer> shopContainerSet = new HashSet<>();
-                    shopContainerSet.addAll(shopContainerMapList.get(uuid));
-                    shopContainerMap.put(uuid, shopContainerSet);
-                }
+                        }, new HashMap<>())
+                                .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().collect(Collectors.toSet())));
 
                 return new ShopManager(shopContainerMap);
             } catch (IOException e) {
@@ -75,21 +73,55 @@ public class ConfigManager {
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
         try {
-            shopsConfig = loader.load();
+            CommentedConfigurationNode shopsConfig = loader.load();
 
-            Map<UUID, Set<ShopContainer>> shopContainerMap = plugin.getShopManager().getShopMap();
-            Map<UUID, List<ShopContainer>> shopContainerMapList = new HashMap<>();
-            for (UUID uuid : shopContainerMap.keySet()) {
-                List<ShopContainer> shopContainerList = new ArrayList<>();
-                shopContainerList.addAll(shopContainerMap.get(uuid));
-                shopContainerMapList.put(uuid, shopContainerList);
-            }
+            Map<UUID, List<ShopContainer>> shopContainerMap = plugin.getShopManager().getShopMap()
+                    .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().collect(Collectors.toList())));
 
             shopsConfig.setValue(new TypeToken<Map<UUID, List<ShopContainer>>>() {
-            }, shopContainerMapList);
+            }, shopContainerMap);
             loader.save(shopsConfig);
         } catch (IOException | ObjectMappingException e) {
             logger.warn("Error saving shops config! Error:" + e.getMessage());
         }
+    }
+
+    public ShopTypeManager loadShopTypes() {
+        File shopTypesFile = new File(plugin.getDefaultConfigDir().toFile(), "shopTypes.config");
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopTypesFile).build();
+
+        if (shopTypesFile.exists()) {
+            try {
+                CommentedConfigurationNode shopTypes = loader.load();
+                return new ShopTypeManager(shopTypes.getValue(new TypeToken<Map<String, ShopType>>() {
+                }, new HashMap<>()));
+            } catch (IOException e) {
+                logger.warn("Error loading shop types config! Error:" + e.getMessage());
+            } catch (ObjectMappingException e) {
+                logger.warn("Error mapping shop types config! Error:" + e.getMessage());
+            }
+        }
+
+        //Build Default shop types
+        Map<String, ShopType> defaultTypes = new HashMap<>();
+
+        //Blacksmith
+        Set<String> allowedItems = new HashSet<>();
+        allowedItems.add("minecraft:diamond_block");
+        allowedItems.add("minecraft:iron_ingot");
+        defaultTypes.put("Blacksmith", new ShopType(allowedItems));
+
+        try {
+            CommentedConfigurationNode shopTypes = loader.load();
+            shopTypes.setValue(new TypeToken<Map<String, ShopType>>() {
+            }, defaultTypes);
+            loader.save(shopTypes);
+        } catch (IOException e) {
+            logger.warn("Error loading shop types default config! Error:" + e.getMessage());
+        } catch (ObjectMappingException e) {
+            logger.warn("Error mapping shop types config! Error:" + e.getMessage());
+        }
+
+        return new ShopTypeManager(defaultTypes);
     }
 }

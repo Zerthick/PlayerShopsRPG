@@ -1,5 +1,6 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.callback.CallBackExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.*;
@@ -11,12 +12,17 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class PlayerShopsRPGCommandRegister {
 
     private PluginContainer container;
+    private PlayerShopsRPG plugin;
 
     public PlayerShopsRPGCommandRegister(PluginContainer container) {
         this.container = container;
+        plugin = container.getInstance().get() instanceof PlayerShopsRPG ? (PlayerShopsRPG) container.getInstance().get() : null;
     }
 
     public void registerCmds() {
@@ -133,6 +139,17 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopManagerRemoveCommand, "remove")
                 .build();
 
+        // shop set type <type>
+        Map<String, String> shopTypeChoices = plugin.getShopTypeManager().getShopTypes()
+                .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getKey));
+        shopTypeChoices.put("none", "none");
+        CommandSpec shopSetTypeCommand = CommandSpec.builder()
+                .description(Text.of("Set the type of the shop you are currently standing in"))
+                .permission("playershopsrpg.command.set.type")
+                .arguments(GenericArguments.choices(Text.of("TypeArgument"), shopTypeChoices))
+                .executor(new ShopSetTypeExecutor(container))
+                .build();
+
         // shop set name <name>
         CommandSpec shopSetNameCommmand = CommandSpec.builder()
                 .description(Text.of("Set the name of the shop you are currently standing in"))
@@ -163,6 +180,7 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopSetUnlimitedCommand, "unlimited")
                 .child(shopSetOwnerCommand, "owner")
                 .child(shopSetNameCommmand, "name")
+                .child(shopSetTypeCommand, "type")
                 .build();
 
         // shop browse

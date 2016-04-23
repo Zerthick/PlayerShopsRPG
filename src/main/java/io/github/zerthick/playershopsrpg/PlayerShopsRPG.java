@@ -6,6 +6,7 @@ import io.github.zerthick.playershopsrpg.cmd.callback.CallBackBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionSelectBuffer;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
+import io.github.zerthick.playershopsrpg.shop.type.ShopTypeManager;
 import io.github.zerthick.playershopsrpg.utils.config.ConfigManager;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -37,6 +38,7 @@ public class PlayerShopsRPG {
     private EconManager econManager;
     private RegionSelectBuffer regionSelectBuffer;
     private CallBackBuffer callBackBuffer;
+    private ShopTypeManager shopTypeManager;
 
     @Inject
     private Logger logger;
@@ -68,6 +70,10 @@ public class PlayerShopsRPG {
         return callBackBuffer;
     }
 
+    public ShopTypeManager getShopTypeManager() {
+        return shopTypeManager;
+    }
+
     public Logger getLogger() {
         return logger;
     }
@@ -92,6 +98,7 @@ public class PlayerShopsRPG {
     public void onGameInit(GameInitializationEvent event){
         configManager = new ConfigManager(this);
         shopManager = configManager.loadShops();
+        shopTypeManager = configManager.loadShopTypes();
     }
 
     @Listener
