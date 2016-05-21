@@ -180,7 +180,7 @@ public class Shop {
             }
 
             //Check if the shop has enough of the item in their inventory to sell
-            if (item.getItemAmount() < amount) {
+            if ((item.getItemAmount() < amount) && !unlimitedStock) {
                 return new ShopTransactionResult(getName() + " doesn't have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
