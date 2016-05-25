@@ -76,6 +76,7 @@ public class ShopItemUtils {
 
             //Add the text to the shop display
             contents.add(fullLine);
+            contents.add(Text.of(""));
         }
 
         //Build header
@@ -152,6 +153,7 @@ public class ShopItemUtils {
 
             //Add the text to the shop display
             contents.add(fullLine);
+            contents.add(Text.of(""));
         }
 
         //Build header
@@ -261,6 +263,7 @@ public class ShopItemUtils {
                 itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack())).style(TextStyles.UNDERLINE).build();
 
                 contents.add(Text.of(itemName, " ", destroyItem));
+                contents.add(Text.of(""));
             }
         }
 
