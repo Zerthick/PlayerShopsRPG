@@ -76,6 +76,9 @@ public class ConfigManager {
                         }, new HashMap<>())
                                 .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().collect(Collectors.toSet())));
 
+                if(shopContainerMap == null) {
+                    shopContainerMap = new HashMap<>();
+                }
                 return new ShopManager(shopContainerMap);
             } catch (IOException e) {
                 logger.warn("Error loading shops config! Error:" + e.getMessage());

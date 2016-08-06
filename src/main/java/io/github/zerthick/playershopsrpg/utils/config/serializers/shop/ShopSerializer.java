@@ -44,8 +44,10 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         boolean unlimitedMoney = value.getNode("unlimitedMoney").getBoolean();
         boolean unlimitedStock = value.getNode("unlimitedStock").getBoolean();
         String shopType = value.getNode("type").getString();
+        double price = value.getNode("price").getDouble(-1);
+        double rent = value.getNode("rent").getDouble(-1);
 
-        return new Shop(shopUUID, name, ownerUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType);
+        return new Shop(shopUUID, name, ownerUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType, price, rent);
     }
 
     @Override
@@ -61,5 +63,7 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         value.getNode("unlimitedMoney").setValue(obj.isUnlimitedMoney());
         value.getNode("unlimitedStock").setValue(obj.isUnlimitedStock());
         value.getNode("type").setValue(obj.getType());
+        value.getNode("price").setValue(obj.getPrice());
+        value.getNode("rent").setValue(obj.getRent());
     }
 }

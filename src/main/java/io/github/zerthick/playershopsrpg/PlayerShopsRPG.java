@@ -52,7 +52,7 @@ import java.util.Optional;
 
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
-        version = "0.1.3",
+        version = "0.2.1",
         description = "A region-based player shop plugin.")
 public class PlayerShopsRPG {
 
@@ -147,6 +147,7 @@ public class PlayerShopsRPG {
         if (regionBufferOptional.isPresent()) {
             RegionBuffer regionBuffer = regionBufferOptional.get();
             regionBuffer.addFront(event.getTargetBlock().getPosition());
+            getLogger().info(event.getTargetBlock().getPosition().toString());
             player.sendMessage(ChatTypes.CHAT, regionBuffer.getProgressionMessage());
             event.setCancelled(true);
         }
@@ -158,6 +159,7 @@ public class PlayerShopsRPG {
         if (regionBufferOptional.isPresent()) {
             RegionBuffer regionBuffer = regionBufferOptional.get();
             regionBuffer.addBack(event.getTargetBlock().getPosition());
+            getLogger().info(event.getTargetBlock().getPosition().toString());
             player.sendMessage(ChatTypes.CHAT, regionBuffer.getProgressionMessage());
             event.setCancelled(true);
         }

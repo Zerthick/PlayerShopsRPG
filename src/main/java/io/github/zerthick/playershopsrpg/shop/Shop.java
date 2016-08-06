@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.shop;
 
+import io.github.zerthick.playershopsrpg.permissions.Permissions;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.entity.living.player.Player;
@@ -34,6 +35,12 @@ import java.util.*;
 
 public class Shop {
 
+    public static final String YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP = "You are not the owner of this shop!";
+    public static final String THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP = "The specified item is already in this shop!";
+    public static final String THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP = "The specified item is not in this shop!";
+    public static final String YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP = "You are not a manager of this shop!";
+    public static final String YOU_DON_T_HAVE_ENOUGH_FUNDS = "You don't have enough funds!";
+
     private final UUID shopUUID;
     private String name;
     private UUID ownerUUID;
@@ -42,6 +49,8 @@ public class Shop {
     private boolean unlimitedMoney;
     private boolean unlimitedStock;
     private String type;
+    private double price;
+    private double rent;
 
     /**
      * Basic Constructor, used for creating shops for the first time
@@ -58,9 +67,11 @@ public class Shop {
         unlimitedMoney = false;
         unlimitedStock = false;
         type = "";
+        price = -1;
+        rent = -1;
     }
 
-    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type) {
+    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type, double price, double rent) {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
@@ -69,19 +80,21 @@ public class Shop {
         this.unlimitedMoney = unlimitedMoney;
         this.unlimitedStock = unlimitedStock;
         this.type = type;
+        this.price = price;
+        this.rent = rent;
     }
 
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
 
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         //If the item already exists return a message to the player
         for (ShopItem item : items) {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
-                return new ShopTransactionResult("The specified item is already in this shop!");
+                return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP);
             }
         }
 
@@ -97,7 +110,7 @@ public class Shop {
 
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         //Bounds Check
@@ -105,7 +118,7 @@ public class Shop {
             items.remove(index);
             return ShopTransactionResult.SUCCESS;
         }
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult buyItem(Player player, int index, int amount) {
@@ -128,8 +141,6 @@ public class Shop {
             if (InventoryUtils.getItemCount(player.getInventory(), item.getItemStack()) < amount) {
                 return new ShopTransactionResult("You dont have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
-
-
 
             //Transfer the funds from the shop's account to the player's account if it doesn't have unlimited money
             EconManager manager = EconManager.getInstance();
@@ -159,7 +170,7 @@ public class Shop {
             }
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult sellItem(Player player, int index, int amount) {
@@ -207,19 +218,19 @@ public class Shop {
                     InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
                     return ShopTransactionResult.SUCCESS;
                 } else {
-                    return new ShopTransactionResult("You don't have enough funds!");
+                    return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
                 }
             }
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult addItem(Player player, ItemStack itemStack, int amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not a manager of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
         }
 
         //If the item exists add to it's total to the shopitem and remove it from the player's inventory
@@ -237,14 +248,14 @@ public class Shop {
             }
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult removeItem(Player player, int index, int amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not a manager of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
         }
 
         //Bounds Check
@@ -260,14 +271,14 @@ public class Shop {
             return ShopTransactionResult.SUCCESS;
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult setItemMax(Player player, int index, int amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not a manager of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
         }
 
         //Bounds Check
@@ -282,14 +293,14 @@ public class Shop {
             return new ShopTransactionResult("The max item amount must be either -1 (for infinite) or a positive number!");
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult setItemBuyPrice(Player player, int index, double amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not a manager of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
         }
 
         //Bounds Check
@@ -304,14 +315,14 @@ public class Shop {
             return new ShopTransactionResult("The item buy price must be either -1 (for not buying) or a positive number!");
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult setItemSellPrice(Player player, int index, double amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not a manager of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
         }
 
         //Bounds Check
@@ -326,14 +337,14 @@ public class Shop {
             return new ShopTransactionResult("The item sell price must be either -1 (for not selling) or a positive number!");
         }
 
-        return new ShopTransactionResult("The specified item is not in this shop!");
+        return new ShopTransactionResult(THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
     public ShopTransactionResult setOwner(Player player, UUID ownerUUID) {
 
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         this.ownerUUID = ownerUUID;
@@ -344,7 +355,7 @@ public class Shop {
 
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         managerUUIDset.add(managerUUID);
@@ -355,7 +366,7 @@ public class Shop {
 
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         if (!managerUUIDset.contains(managerUUID)) {
@@ -379,13 +390,61 @@ public class Shop {
     }
 
     public ShopTransactionResult setName(Player player, String name) {
-        //If the player is not the owner of the shop return a message to the player
+
+        // /If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         this.name = name;
         return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult setPrice(Player player, double price) {
+
+        // If the player is not the owner of the shop return a message to the player
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
+        }
+
+        this.price = price;
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult setRent(Player player, double rent) {
+
+        // If the player is not the owner of the shop return a message to the player
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
+        }
+
+        this.rent = rent;
+        return ShopTransactionResult.SUCCESS;
+    }
+
+    public ShopTransactionResult buyShop(Player player) {
+
+        if (price == -1) {
+            return new ShopTransactionResult("This shop is not for sale!");
+        }
+
+        // Transfer funds from the purchaser to the owner
+        EconManager manager = EconManager.getInstance();
+        Optional<UniqueAccount> playerAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
+        Optional<UniqueAccount> ownerAccountOptional = manager.getOrCreateAccount(ownerUUID);
+
+        TransactionResult result =
+                playerAccountOptional.get()
+                        .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price), Cause.of(NamedCause.notifier(this)));
+
+        if(result.getResult() == ResultType.SUCCESS) {
+            this.ownerUUID = player.getUniqueId();
+            price = -1;
+            managerUUIDset.clear();
+            return ShopTransactionResult.SUCCESS;
+        } else {
+            return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
+        }
     }
 
     public ShopTransactionResult showBuyView(Player player) {
@@ -404,10 +463,11 @@ public class Shop {
         return ShopTransactionResult.SUCCESS;
     }
 
+
     public ShopTransactionResult showOwnerView(Player player) {
 
-        if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
         ShopItemUtils.sendShopOwnerView(player, this);
@@ -417,7 +477,7 @@ public class Shop {
     public ShopTransactionResult depositFunds(Player player, BigDecimal amount) {
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
         EconManager manager = EconManager.getInstance();
 
@@ -434,7 +494,7 @@ public class Shop {
     public ShopTransactionResult withdrawFunds(Player player, BigDecimal amount) {
         //If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
-            return new ShopTransactionResult("You are not the owner of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
         EconManager manager = EconManager.getInstance();
 
@@ -461,11 +521,11 @@ public class Shop {
     }
 
     public boolean hasOwnerPermissions(Player player) {
-        return ownerUUID.equals(player.getUniqueId()) || player.hasPermission("playershopsrpg.bypass.owner");
+        return ownerUUID.equals(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_OWNER);
     }
 
     public boolean hasManagerPermissions(Player player) {
-        return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission("playershopsrpg.bypass.manager") ||
+        return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_MANAGER) ||
                 hasOwnerPermissions(player);
     }
 
@@ -504,4 +564,8 @@ public class Shop {
     public void setType(String type) {
         this.type = type;
     }
+
+    public double getPrice() { return price; }
+
+    public double getRent() { return rent; }
 }

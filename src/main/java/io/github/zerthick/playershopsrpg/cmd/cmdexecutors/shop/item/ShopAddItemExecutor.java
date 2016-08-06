@@ -27,6 +27,7 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -53,7 +54,7 @@ public class ShopAddItemExecutor extends AbstractCmdExecutor {
                 ShopContainer shopContainer = shopContainerOptional.get();
                 Shop shop = shopContainer.getShop();
                 ShopTransactionResult transactionResult;
-                Optional<ItemStack> itemStackOptional = player.getItemInHand();
+                Optional<ItemStack> itemStackOptional = player.getItemInHand(HandTypes.MAIN_HAND);
                 if (itemStackOptional.isPresent()) {
                     ItemStack item = itemStackOptional.get();
                     transactionResult = shop.addItem(player, item, item.getQuantity());

@@ -42,6 +42,7 @@ public class ShopItemUtils {
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
         List<ShopItem> items = shop.getItems();
+
         if (items.isEmpty()) {
             contents.add(Text.of(TextColors.BLUE, "No items to display."));
         }
@@ -190,6 +191,13 @@ public class ShopItemUtils {
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
 
+        //Add option to put shop up for sale
+        Text putUpForSale = Text.builder("Put Up For Sale")
+                .onClick(TextActions.runCommand("/shop cb \"Enter price (-1 to cancel sale):\" shop set price %c"))
+                .style(TextStyles.UNDERLINE).build();
+
+        contents.add(Text.of(TextColors.BLUE, putUpForSale));
+
         //Display shop type if present
         if (!shop.getType().equals("")) {
             contents.add(Text.of(TextColors.BLUE, "Shop Type: ", TextColors.WHITE, shop.getType()));
@@ -206,6 +214,7 @@ public class ShopItemUtils {
         Text changeShopOwner = Text.builder("Change")
                 .onClick(TextActions.runCommand("/shop cb \"Enter new shop owner:\" shop set owner %c"))
                 .style(TextStyles.UNDERLINE).build();
+
         String ownerName;
         Optional<Player> ownerOptional = Sponge.getServer().getPlayer(shop.getOwnerUUID());
         if (ownerOptional.isPresent()) {
@@ -213,7 +222,7 @@ public class ShopItemUtils {
         } else {
             ownerName = "Unknown";
         }
-        contents.add(Text.of(TextColors.BLUE, "Shop Owner: ", TextColors.WHITE, ownerName, " ", changeShopName));
+        contents.add(Text.of(TextColors.BLUE, "Shop Owner: ", TextColors.WHITE, ownerName, " ", changeShopOwner));
 
         //Add option to deposit and withdraw shop funds
         Text deposit = Text.builder("Deposit")
