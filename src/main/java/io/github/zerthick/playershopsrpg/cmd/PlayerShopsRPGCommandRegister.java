@@ -20,6 +20,7 @@
 package io.github.zerthick.playershopsrpg.cmd;
 
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.callback.CallBackExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.*;
@@ -49,9 +50,9 @@ public class PlayerShopsRPGCommandRegister {
 
         // shop buy <name>
         CommandSpec shopBuyCommand = CommandSpec.builder()
-                .description(Text.of("But the shop you are currently standing in"))
+                .description(Text.of("Buy the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY)
-                .arguments(GenericArguments.string(Text.of("NameArgument")))
+                .arguments(GenericArguments.string(CommandArgs.NAME_ARGUMENT))
                 .executor(new ShopBuyExecutor(container))
                 .build();
 
@@ -59,7 +60,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopBalanceWithdrawCommmand = CommandSpec.builder()
                 .description(Text.of("Transfer funds from the shop's account to your account"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_BALANCE_WITHDRAW)
-                .arguments(GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT))
                 .executor(new ShopBalanceWithdrawExecutor(container))
                 .build();
 
@@ -67,7 +68,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopBalanceDepositCommmand = CommandSpec.builder()
                 .description(Text.of("Transfer funds from your account to the shop's account"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_BALANCE_DEPOSIT)
-                .arguments(GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT))
                 .executor(new ShopBalanceDepositExecutor(container))
                 .build();
 
@@ -81,7 +82,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopItemSellCommand = CommandSpec.builder()
                 .description(Text.of("Sell an item to the shop you are currenlty standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SELL)
-                .arguments(GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.integer(Text.of("ItemAmount")))
+                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT))
                 .executor(new ShopSellItemExecutor(container))
                 .build();
 
@@ -89,7 +90,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopItemBuyCommand = CommandSpec.builder()
                 .description(Text.of("Buy an item from the shop you are currenlty standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY)
-                .arguments(GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.integer(Text.of("ItemAmount")))
+                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT))
                 .executor(new ShopBuyItemExecutor(container))
                 .build();
 
@@ -97,7 +98,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopItemRemoveCommand = CommandSpec.builder()
                 .description(Text.of("Remove an item from the shop you are currenlty standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)
-                .arguments(GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.integer(Text.of("ItemAmount")))
+                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT))
                 .executor(new ShopRemoveItemExecutor(container))
                 .build();
 
@@ -112,8 +113,8 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopItemSetCommand = CommandSpec.builder()
                 .description(Text.of("Set various attributes of a shop item (max amount / buy price / sell price"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SET)
-                .arguments(GenericArguments.choices(Text.of("SelectionType"), ShopSetItemExecutor.selectChoices()),
-                        GenericArguments.integer(Text.of("ItemIndex")), GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .arguments(GenericArguments.choices(CommandArgs.SELECTION_TYPE, ShopSetItemExecutor.selectChoices()),
+                        GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT))
                 .executor(new ShopSetItemExecutor(container))
                 .build();
 
@@ -121,7 +122,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopItemDestroyCommand = CommandSpec.builder()
                 .description(Text.of("Destroy an item in the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_DESTROY)
-                .arguments(GenericArguments.integer(Text.of("ItemIndex")))
+                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX))
                 .executor(new ShopDestroyItemExecutor(container))
                 .build();
 
@@ -147,7 +148,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopManagerRemoveCommand = CommandSpec.builder()
                 .description(Text.of("Add a manager to the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_MANAGER_REMOVE)
-                .arguments(GenericArguments.user(Text.of("UserArgument")))
+                .arguments(GenericArguments.user(CommandArgs.USER_ARGUMENT))
                 .executor(new ShopRemoveManagerExecutor(container))
                 .build();
 
@@ -155,7 +156,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopManagerAddCommand = CommandSpec.builder()
                 .description(Text.of("Add a manager to the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_MANAGER_ADD)
-                .arguments(GenericArguments.user(Text.of("UserArgument")))
+                .arguments(GenericArguments.user(CommandArgs.USER_ARGUMENT))
                 .executor(new ShopAddManagerExecutor(container))
                 .build();
 
@@ -169,7 +170,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetPriceCommmand = CommandSpec.builder()
                 .description(Text.of("Set the purchase price of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)
-                .arguments(GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT))
                 .executor(new ShopSetPriceExecutor(container))
                 .build();
 
@@ -177,7 +178,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetRentCommmand = CommandSpec.builder()
                 .description(Text.of("Set the rent price of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_RENT)
-                .arguments(GenericArguments.doubleNum(Text.of("DoubleArgument")))
+                .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT))
                 .executor(new ShopSetRentExecutor(container))
                 .build();
 
@@ -188,7 +189,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetTypeCommand = CommandSpec.builder()
                 .description(Text.of("Set the type of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_TYPE)
-                .arguments(GenericArguments.choices(Text.of("TypeArgument"), shopTypeChoices))
+                .arguments(GenericArguments.choices(CommandArgs.TYPE_ARGUMENT, shopTypeChoices))
                 .executor(new ShopSetTypeExecutor(container))
                 .build();
 
@@ -196,7 +197,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetNameCommmand = CommandSpec.builder()
                 .description(Text.of("Set the name of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_NAME)
-                .arguments(GenericArguments.remainingJoinedStrings(Text.of("NameArgument")))
+                .arguments(GenericArguments.remainingJoinedStrings(CommandArgs.NAME_ARGUMENT))
                 .executor(new ShopSetNameExecutor(container))
                 .build();
 
@@ -204,7 +205,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetOwnerCommand = CommandSpec.builder()
                 .description(Text.of("Set the owner of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_OWNER)
-                .arguments(GenericArguments.user(Text.of("UserArgument")))
+                .arguments(GenericArguments.user(CommandArgs.USER_ARGUMENT))
                 .executor(new ShopSetOwnerExecutor(container))
                 .build();
 
@@ -212,7 +213,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetUnlimitedCommand = CommandSpec.builder()
                 .description(Text.of("Set the shop you are currently standing in to have unlimited stock or money"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_UNLIMITED)
-                .arguments(GenericArguments.choices(Text.of("SelectionType"), ShopSetUnlimitedExecutor.selectChoices()), GenericArguments.bool(Text.of("BooleanArgument")))
+                .arguments(GenericArguments.choices(CommandArgs.SELECTION_TYPE, ShopSetUnlimitedExecutor.selectChoices()), GenericArguments.bool(CommandArgs.BOOLEAN_ARGUMENT))
                 .executor(new ShopSetUnlimitedExecutor(container))
                 .build();
 
@@ -231,7 +232,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopBrowseCommand = CommandSpec.builder()
                 .description(Text.of("Browses the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_BROWSE)
-                .arguments(GenericArguments.optional(GenericArguments.choices(Text.of("SelectionType"), ShopBrowseExecutor.selectChoices())))
+                .arguments(GenericArguments.optional(GenericArguments.choices(CommandArgs.SELECTION_TYPE, ShopBrowseExecutor.selectChoices())))
                 .executor(new ShopBrowseExecutor(container))
                 .build();
 
@@ -246,7 +247,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopCreateCommand = CommandSpec.builder()
                 .description(Text.of("Creates a shop in the region selected by shop select command"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_CREATE)
-                .arguments(GenericArguments.remainingJoinedStrings(Text.of("ShopName")))
+                .arguments(GenericArguments.remainingJoinedStrings(CommandArgs.SHOP_NAME))
                 .executor(new ShopCreateExecutor(container))
                 .build();
 
@@ -254,13 +255,13 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSelectCommmand = CommandSpec.builder()
                 .description(Text.of("Selects a region to create a shop"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SELECT)
-                .arguments(GenericArguments.optional(GenericArguments.choices(Text.of("SelectionType"), ShopSelectExecutor.selectChoices())))
+                .arguments(GenericArguments.optional(GenericArguments.choices(CommandArgs.SELECTION_TYPE, ShopSelectExecutor.selectChoices())))
                 .executor(new ShopSelectExecutor(container))
                 .build();
 
         // shop callBack
         CommandSpec shopCallBackCommand = CommandSpec.builder()
-                .arguments(GenericArguments.string(Text.of("message")), GenericArguments.remainingJoinedStrings(Text.of("command")))
+                .arguments(GenericArguments.string(CommandArgs.MESSAGE), GenericArguments.remainingJoinedStrings(CommandArgs.COMMAND))
                 .executor(new CallBackExecutor(container))
                 .build();
 

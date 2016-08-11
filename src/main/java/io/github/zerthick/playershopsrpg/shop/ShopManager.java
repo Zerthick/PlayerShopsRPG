@@ -40,7 +40,7 @@ public class ShopManager {
         }
     }
 
-    public Optional<ShopContainer> getShop(UUID worldUUID, Vector3i location){
+    public Optional<ShopContainer> getShop(UUID worldUUID, Vector3i location) {
         for (ShopContainer shopContainer : shopMap.getOrDefault(worldUUID, new HashSet<>())) {
             if (shopContainer.isShop(location)) {
                 return Optional.of(shopContainer);
@@ -53,14 +53,22 @@ public class ShopManager {
         return getShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
     }
 
-    public Optional<ShopContainer> getShopByUUID(Player player, UUID shopUUID) {
-        ShopContainer shopContainer = shopUUIDMap.get(shopUUID);
-        if (shopContainer != null) {
-            if (shopContainer.isShop(player.getLocation().getBlockPosition())) {
-                return Optional.of(shopContainer);
+    public Optional<ShopContainer> getShopByUUID(UUID shopUUID) {
+        return Optional.ofNullable(shopUUIDMap.get(shopUUID));
+    }
+
+    public Optional<ShopContainer> getShopByUUID(UUID shopUUID, Vector3i location) {
+        Optional<ShopContainer> shopContainerOptional = getShopByUUID(shopUUID);
+        if (shopContainerOptional.isPresent()) {
+            if (shopContainerOptional.get().isShop(location)) {
+                return shopContainerOptional;
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<ShopContainer> getShopByUUID(UUID shopUUID, Player player) {
+        return getShopByUUID(shopUUID, player.getLocation().getBlockPosition());
     }
 
     public void addShop(UUID worldUUID, ShopContainer shopContainer) {
