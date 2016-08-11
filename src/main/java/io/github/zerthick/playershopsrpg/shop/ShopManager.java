@@ -23,13 +23,21 @@ import com.flowpowered.math.vector.Vector3i;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ShopManager {
 
     private Map<UUID, Set<ShopContainer>> shopMap;
 
+    private Map<UUID, ShopContainer> shopUUIDMap;
+
     public ShopManager(Map<UUID, Set<ShopContainer>> shopMap) {
+
         this.shopMap = shopMap;
+        shopUUIDMap = new HashMap<>();
+        for (Set<ShopContainer> shopContainerSet : this.shopMap.values()) {
+            shopUUIDMap.putAll(shopContainerSet.stream().collect(Collectors.toMap(c -> c.getShop().getUUID(), c -> c)));
+        }
     }
 
     public Optional<ShopContainer> getShop(UUID worldUUID, Vector3i location){
@@ -45,16 +53,29 @@ public class ShopManager {
         return getShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
     }
 
+    public Optional<ShopContainer> getShopByUUID(Player player, UUID shopUUID) {
+        ShopContainer shopContainer = shopUUIDMap.get(shopUUID);
+        if (shopContainer != null) {
+            if (shopContainer.isShop(player.getLocation().getBlockPosition())) {
+                return Optional.of(shopContainer);
+            }
+        }
+        return Optional.empty();
+    }
+
     public void addShop(UUID worldUUID, ShopContainer shopContainer) {
         Set<ShopContainer> shopContainers = shopMap.getOrDefault(worldUUID, new HashSet<>());
         shopContainers.add(shopContainer);
         shopMap.put(worldUUID, shopContainers);
+        shopUUIDMap.put(shopContainer.getShop().getUUID(), shopContainer);
     }
 
     public Optional<ShopContainer> removeShop(UUID worldUUID, Vector3i location){
         Optional<ShopContainer> shopOptional = getShop(worldUUID, location);
         if(shopOptional.isPresent()){
-            shopMap.get(worldUUID).remove(shopOptional.get());
+            ShopContainer container = shopOptional.get();
+            shopMap.get(worldUUID).remove(container);
+            shopUUIDMap.remove(container.getShop().getUUID());
         }
         return shopOptional;
     }
