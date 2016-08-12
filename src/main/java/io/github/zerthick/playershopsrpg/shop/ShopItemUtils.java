@@ -199,7 +199,7 @@ public class ShopItemUtils {
         contents.add(Text.of(TextColors.BLUE, putUpForSale));
 
         //Display shop type if present
-        if (!shop.getType().equals("")) {
+        if (!shop.getType().isEmpty()) {
             contents.add(Text.of(TextColors.BLUE, "Shop Type: ", TextColors.WHITE, shop.getType()));
         }
 

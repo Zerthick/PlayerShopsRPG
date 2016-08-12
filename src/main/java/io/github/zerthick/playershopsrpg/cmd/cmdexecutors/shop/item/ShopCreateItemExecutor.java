@@ -19,9 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
-import io.github.zerthick.playershopsrpg.shop.Shop;
-import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.command.CommandException;
@@ -29,16 +27,13 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.Optional;
-
-public class ShopCreateItemExecutor extends AbstractCmdExecutor {
+public class ShopCreateItemExecutor extends AbstractShopTransactionCmdExecutor {
 
     public ShopCreateItemExecutor(PluginContainer pluginContainer) {
         super(pluginContainer);
@@ -47,38 +42,29 @@ public class ShopCreateItemExecutor extends AbstractCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        if (src instanceof Player) {
-            Player player = (Player) src;
+        return super.executeTransaction(src, args, (player, arg, shop) -> {
 
-            Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
-            if (shopContainerOptional.isPresent()) {
-                ShopContainer shopContainer = shopContainerOptional.get();
-                Shop shop = shopContainer.getShop();
-                ShopTransactionResult transactionResult;
-                if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
-                    ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
-                    //Check if this shop is allowed to hold this item
-                    if (plugin.getShopTypeManager().isItemStackAllowed(item, shop.getType())) {
-                        transactionResult = shop.createItem(player, item);
+            if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
 
-                        if (transactionResult != ShopTransactionResult.SUCCESS) {
-                            player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
-                        } else {
-                            player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ",
-                                    TextColors.AQUA, InventoryUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
-                        }
-                    } else {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, shop.getType(),
-                                "s are not allowed to buy and sell ", InventoryUtils.getItemName(item), "!"));
+                ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
+                ShopTransactionResult transactionResult = ShopTransactionResult.EMPTY;
+
+                //Check if this shop is allowed to hold this item
+                if (plugin.getShopTypeManager().isItemStackAllowed(item, shop.getType())) {
+                    transactionResult = shop.createItem(player, item);
+
+                    if (transactionResult == ShopTransactionResult.SUCCESS) {
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ",
+                                TextColors.AQUA, InventoryUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
                     }
+                } else {
+                    transactionResult = new ShopTransactionResult(shop.getType() +
+                            "s are not allowed to buy and sell " + InventoryUtils.getItemName(item) + "!");
                 }
-            } else {
-                player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
-            }
-            return CommandResult.success();
-        }
 
-        src.sendMessage(Text.of("You cannot create items in shops from the console!"));
-        return CommandResult.success();
+                return transactionResult;
+            }
+            return ShopTransactionResult.EMPTY;
+        }, "You cannot create items in shops from the console!");
     }
 }

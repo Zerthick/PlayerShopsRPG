@@ -19,23 +19,18 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
-import io.github.zerthick.playershopsrpg.shop.Shop;
-import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.chat.ChatTypes;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-public class ShopSetNameExecutor extends AbstractCmdExecutor {
+public class ShopSetNameExecutor extends AbstractShopTransactionCmdExecutor {
 
     public ShopSetNameExecutor(PluginContainer pluginContainer) {
         super(pluginContainer);
@@ -44,32 +39,12 @@ public class ShopSetNameExecutor extends AbstractCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        if (src instanceof Player) {
-            Player player = (Player) src;
-
-            Optional<String> nameArgumentOptional = args.getOne(Text.of("NameArgument"));
-
-            if (nameArgumentOptional.isPresent()) {
-                String nameArg = nameArgumentOptional.get();
-
-                Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
-                if (shopContainerOptional.isPresent()) {
-                    ShopContainer shopContainer = shopContainerOptional.get();
-                    Shop shop = shopContainer.getShop();
-                    ShopTransactionResult transactionResult = shop.setName(player, nameArg);
-
-                    if (transactionResult != ShopTransactionResult.SUCCESS) {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
-                    }
-                } else {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
-                }
-
-                return CommandResult.success();
+        return super.executeTransaction(src, args, (player, arg, shop) -> {
+            Optional<String> nameArgOptional = arg.getOne(CommandArgs.SHOP_NAME);
+            if (nameArgOptional.isPresent()) {
+                return shop.setName(player, nameArgOptional.get());
             }
-        }
-
-        src.sendMessage(Text.of("You cannot set shop attributes from the console!"));
-        return CommandResult.success();
+            return ShopTransactionResult.EMPTY;
+        }, "You cannot set shop names from the console!");
     }
 }

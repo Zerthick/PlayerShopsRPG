@@ -19,25 +19,20 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
-import io.github.zerthick.playershopsrpg.shop.Shop;
-import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.chat.ChatTypes;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ShopSetUnlimitedExecutor extends AbstractCmdExecutor {
+public class ShopSetUnlimitedExecutor extends AbstractShopTransactionCmdExecutor {
 
     public ShopSetUnlimitedExecutor(PluginContainer pluginContainer) {
         super(pluginContainer);
@@ -53,45 +48,31 @@ public class ShopSetUnlimitedExecutor extends AbstractCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        if (src instanceof Player) {
-            Player player = (Player) src;
+        return super.executeTransaction(src, args, (player, arg, shop) -> {
 
-            Optional<String> selectTypeOptional = args.getOne(Text.of("SelectionType"));
-            Optional<Boolean> booleanArgumentOptional = args.getOne(Text.of("BooleanArgument"));
+            Optional<String> selectTypeOptional = arg.getOne(CommandArgs.SELECTION_TYPE);
+            Optional<Boolean> booleanArgumentOptional = arg.getOne(CommandArgs.BOOLEAN_ARGUMENT);
 
             if (selectTypeOptional.isPresent() && booleanArgumentOptional.isPresent()) {
                 String selectType = selectTypeOptional.get();
                 Boolean booleanArg = booleanArgumentOptional.get();
 
-                Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
-                if (shopContainerOptional.isPresent()) {
-                    ShopContainer shopContainer = shopContainerOptional.get();
-                    Shop shop = shopContainer.getShop();
-                    ShopTransactionResult transactionResult;
+                ShopTransactionResult transactionResult;
 
-                    switch (selectType) {
-                        case "money":
-                            transactionResult = shop.setUnlimitedMoney(player, booleanArg);
-                            break;
-                        case "stock":
-                            transactionResult = shop.setUnlimitedStock(player, booleanArg);
-                            break;
-                        default:
-                            transactionResult = new ShopTransactionResult("Unknown shop attribute!");
-                    }
-
-                    if (transactionResult != ShopTransactionResult.SUCCESS) {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
-                    }
-                } else {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
+                switch (selectType) {
+                    case "money":
+                        transactionResult = shop.setUnlimitedMoney(player, booleanArg);
+                        break;
+                    case "stock":
+                        transactionResult = shop.setUnlimitedStock(player, booleanArg);
+                        break;
+                    default:
+                        transactionResult = new ShopTransactionResult("Unknown shop attribute!");
                 }
 
-                return CommandResult.success();
+                return transactionResult;
             }
-        }
-
-        src.sendMessage(Text.of("You cannot set shop attributes from the console!"));
-        return CommandResult.success();
+            return ShopTransactionResult.EMPTY;
+        }, "You cannot set unlimited attributes from the console!");
     }
 }

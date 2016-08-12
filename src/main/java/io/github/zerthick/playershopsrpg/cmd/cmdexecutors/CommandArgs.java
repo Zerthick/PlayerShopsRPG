@@ -23,7 +23,6 @@ import org.spongepowered.api.text.LiteralText;
 import org.spongepowered.api.text.Text;
 
 public class CommandArgs {
-    public static final LiteralText NAME_ARGUMENT = Text.of("NameArgument");
     public static final LiteralText DOUBLE_ARGUMENT = Text.of("DoubleArgument");
     public static final LiteralText ITEM_INDEX = Text.of("ItemIndex");
     public static final LiteralText ITEM_AMOUNT = Text.of("ItemAmount");
@@ -32,6 +31,7 @@ public class CommandArgs {
     public static final LiteralText TYPE_ARGUMENT = Text.of("TypeArgument");
     public static final LiteralText BOOLEAN_ARGUMENT = Text.of("BooleanArgument");
     public static final LiteralText SHOP_NAME = Text.of("ShopName");
-    public static final LiteralText MESSAGE = Text.of("message");
-    public static final LiteralText COMMAND = Text.of("command");
+    public static final LiteralText SHOP_UUID = Text.of("ShopUUID");
+    public static final LiteralText MESSAGE = Text.of("Message");
+    public static final LiteralText COMMAND = Text.of("Command");
 }

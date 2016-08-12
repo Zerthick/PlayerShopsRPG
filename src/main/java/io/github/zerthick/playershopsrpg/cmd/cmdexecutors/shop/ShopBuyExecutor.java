@@ -1,22 +1,36 @@
+/*
+ * Copyright (C) 2016  Zerthick
+ *
+ * This file is part of PlayerShopsRPG.
+ *
+ * PlayerShopsRPG is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PlayerShopsRPG is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with PlayerShopsRPG.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
-import io.github.zerthick.playershopsrpg.shop.Shop;
-import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.chat.ChatTypes;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-public class ShopBuyExecutor extends AbstractCmdExecutor {
+public class ShopBuyExecutor extends AbstractShopTransactionCmdExecutor {
 
     public ShopBuyExecutor(PluginContainer pluginContainer) {
         super(pluginContainer);
@@ -25,36 +39,17 @@ public class ShopBuyExecutor extends AbstractCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        if (src instanceof Player) {
-            Player player = (Player) src;
-
-            Optional<String> nameArgumentOptional = args.getOne(Text.of("NameArgument"));
-
+        return super.executeTransaction(src, args, (player, arg, shop) -> {
+            Optional<String> nameArgumentOptional = arg.getOne(CommandArgs.SHOP_NAME);
             if (nameArgumentOptional.isPresent()) {
                 String nameArg = nameArgumentOptional.get();
-
-                Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
-                if (shopContainerOptional.isPresent()) {
-                    ShopContainer shopContainer = shopContainerOptional.get();
-                    Shop shop = shopContainer.getShop();
-                    if(nameArg.equalsIgnoreCase(shop.getName())) {
-                        ShopTransactionResult transactionResult = shop.buyShop(player);
-
-                        if (transactionResult != ShopTransactionResult.SUCCESS) {
-                            player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
-                        }
-                    } else {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "That is not the name of this shop!"));
-                    }
+                if (nameArg.equalsIgnoreCase(shop.getName())) {
+                    return shop.buyShop(player);
                 } else {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
+                    return new ShopTransactionResult("That is not the name of this shop!");
                 }
-
-                return CommandResult.success();
             }
-        }
-
-        src.sendMessage(Text.of("You cannot buy shops from the console!"));
-        return CommandResult.success();
+            return ShopTransactionResult.EMPTY;
+        }, "You cannot buy shops from the console!");
     }
 }
