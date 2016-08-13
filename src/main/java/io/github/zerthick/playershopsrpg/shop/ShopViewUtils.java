@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.shop;
 
+import io.github.zerthick.playershopsrpg.cmd.callback.CallBackBuffer;
 import io.github.zerthick.playershopsrpg.permissions.Permissions;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
@@ -43,6 +44,9 @@ public class ShopViewUtils {
     public static void sendShopBuyView(Player player, Shop shop) {
         //Currency Symbol
         Text curSym = EconManager.getInstance().getDefaultCurrency().getSymbol();
+
+        //Callback buffer
+        CallBackBuffer cb = CallBackBuffer.getInstance();
 
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
@@ -73,13 +77,13 @@ public class ShopViewUtils {
             Text buy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY)) {
                 buy = Text.builder("Buy")
-                        .onClick(TextActions.runCommand("/shop cb \"How many " + itemName.toPlain() + " would you like to buy?\" shop item buy " + i + " %c " + shop.getUUID()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to buy?", "shop item buy " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             Text sell = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SELL)) {
                 sell = Text.builder("Sell")
-                        .onClick(TextActions.runCommand("/shop cb \"How many " + itemName.toPlain() + " would you like to sell?\" shop item sell " + i + " %c " + shop.getUUID()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to sell?", "shop item sell " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
 
@@ -130,6 +134,9 @@ public class ShopViewUtils {
         //Currency Symbol
         Text curSym = EconManager.getInstance().getDefaultCurrency().getSymbol();
 
+        //Callback buffer
+        CallBackBuffer cb = CallBackBuffer.getInstance();
+
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
         List<ShopItem> items = shop.getItems();
@@ -152,13 +159,13 @@ public class ShopViewUtils {
             Text itemMax = Text.EMPTY, itemSell = Text.EMPTY, itemBuy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SET)) {
                 itemMax = Text.builder(item.getItemMaxAmount() == -1 ? INFINITY : String.valueOf(item.getItemMaxAmount()))
-                        .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " max (-1 for infinite):\" shop item set max " + i + " %c " + shop.getUUID()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " max amount (-1 for infinite):", "shop item set max " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
                 itemSell = Text.builder(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()))
-                        .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " buy price (-1 for none):\" shop item set buy " + i + " %c " + shop.getUUID()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " buy price (-1 for none):", "shop item set buy " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
                 itemBuy = Text.builder(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()))
-                        .onClick(TextActions.runCommand("/shop cb \"Enter " + itemName.toPlain() + " sell price (-1 for none):\" shop item set sell " + i + " %c " + shop.getUUID()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " sell price (-1 for none):", "shop item set sell " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
@@ -166,7 +173,7 @@ public class ShopViewUtils {
             Text remove = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)) {
                 remove = Text.builder("Remove")
-                        .onClick(TextActions.runCommand("/shop cb \"How many " + itemName.toPlain() + " would you like to remove?\" shop item remove " + i + " %c" + shop.getUUID()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to remove?", " shop item remove " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             //Build the full line of text
@@ -214,13 +221,16 @@ public class ShopViewUtils {
         //Currency Symbol
         Text curSym = EconManager.getInstance().getDefaultCurrency().getSymbol();
 
+        //Callback buffer
+        CallBackBuffer cb = CallBackBuffer.getInstance();
+
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
 
         //Add option to put shop up for sale
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)) {
             Text putUpForSale = Text.builder("Put Up For Sale")
-                    .onClick(TextActions.runCommand("/shop cb \"Enter price (-1 to cancel sale):\" shop set price %c " + shop.getUUID()))
+                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
             contents.add(Text.of(TextColors.BLUE, putUpForSale, "\n"));
         }
@@ -234,7 +244,7 @@ public class ShopViewUtils {
         Text changeShopName = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_NAME)) {
             changeShopName = Text.builder("Change")
-                    .onClick(TextActions.runCommand("/shop cb \"Enter new shop name:\" shop set name \"%c\" " + shop.getUUID()))
+                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter new shop name:", "shop set name \"%c\" " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
         contents.add(Text.of(TextColors.BLUE, "Shop Name: ", TextColors.WHITE, shop.getName(), " ", changeShopName));
@@ -243,7 +253,7 @@ public class ShopViewUtils {
         Text changeShopOwner = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_OWNER)) {
             changeShopOwner = Text.builder("Change")
-                    .onClick(TextActions.runCommand("/shop cb \"Enter new shop owner:\" shop set owner %c " + shop.getUUID()))
+                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter new shop owner:", "shop set owner %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
         String ownerName;
@@ -259,14 +269,14 @@ public class ShopViewUtils {
         Text deposit = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BALANCE_DEPOSIT)) {
             deposit = Text.builder("Deposit")
-                    .onClick(TextActions.runCommand("/shop cb \"How much would you like to deposit?\" shop balance deposit %c " + shop.getUUID()))
+                    .onClick(TextActions.executeCallback(cb.getCallBack("How much would you like to deposit?", "shop balance deposit %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
 
         Text withdraw = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BALANCE_WITHDRAW)) {
             withdraw = Text.builder("Withdraw")
-                    .onClick(TextActions.runCommand("/shop cb \"How much would you like to withdraw?\" shop balance withdraw %c " + shop.getUUID()))
+                    .onClick(TextActions.executeCallback(cb.getCallBack("How much would you like to withdraw?", "shop balance withdraw %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
 
@@ -278,7 +288,7 @@ public class ShopViewUtils {
         Text addManager = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_MANAGER_ADD)) {
             Text.builder("Add Manager")
-                    .onClick(TextActions.runCommand("/shop cb \"Enter manager:\" shop manager add %c " + shop.getUUID()))
+                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter manager:", "shop manager add %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
         contents.add(Text.of(TextColors.BLUE, "Managers: ", TextColors.WHITE, addManager));

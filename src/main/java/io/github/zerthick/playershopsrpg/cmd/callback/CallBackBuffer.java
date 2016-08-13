@@ -20,18 +20,31 @@
 package io.github.zerthick.playershopsrpg.cmd.callback;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class CallBackBuffer {
 
+    private static CallBackBuffer instance = null;
+
     private Map<UUID, String> callBackMap;
 
-    public CallBackBuffer() {
+    protected CallBackBuffer() {
         callBackMap = new HashMap<>();
+    }
+
+    public static CallBackBuffer getInstance() {
+        if (instance == null) {
+            instance = new CallBackBuffer();
+        }
+        return instance;
     }
 
     public boolean hasCallBack(Player player) {
@@ -46,5 +59,15 @@ public class CallBackBuffer {
         if (hasCallBack(player)) {
             Sponge.getGame().getCommandManager().process(player, callBackMap.remove(player.getUniqueId()).replace("%c", callBackValue));
         }
+    }
+
+    public Consumer<CommandSource> getCallBack(String msg, String command) {
+        return commandSource -> {
+            if (commandSource instanceof Player) {
+                Player player = (Player) commandSource;
+                player.sendMessage(Text.of(TextColors.BLUE, msg));
+                addCallBack(player, command);
+            }
+        };
     }
 }

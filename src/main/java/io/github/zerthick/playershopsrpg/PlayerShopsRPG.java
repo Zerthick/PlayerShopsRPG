@@ -59,7 +59,6 @@ public class PlayerShopsRPG {
     private ShopManager shopManager;
     private EconManager econManager;
     private RegionSelectBuffer regionSelectBuffer;
-    private CallBackBuffer callBackBuffer;
     private ShopTypeManager shopTypeManager;
 
     @Inject
@@ -86,10 +85,6 @@ public class PlayerShopsRPG {
 
     public RegionSelectBuffer getRegionSelectBuffer() {
         return regionSelectBuffer;
-    }
-
-    public CallBackBuffer getCallBackBuffer() {
-        return callBackBuffer;
     }
 
     public ShopTypeManager getShopTypeManager() {
@@ -128,9 +123,6 @@ public class PlayerShopsRPG {
         // Initialize Region Select Buffer
         regionSelectBuffer = new RegionSelectBuffer();
 
-        // Initialize CallBack Buffer
-        callBackBuffer = new CallBackBuffer();
-
         // Register Commands
         PlayerShopsRPGCommandRegister commandRegister = new PlayerShopsRPGCommandRegister(instance);
         commandRegister.registerCmds();
@@ -167,6 +159,7 @@ public class PlayerShopsRPG {
 
     @Listener
     public void onPlayerSendChat(MessageChannelEvent.Chat event, @Root Player player) {
+        CallBackBuffer callBackBuffer = CallBackBuffer.getInstance();
         if (callBackBuffer.hasCallBack(player)) {
             callBackBuffer.executeCallBack(player, event.getRawMessage().toPlain());
             event.setCancelled(true);
