@@ -139,7 +139,6 @@ public class PlayerShopsRPG {
         if (regionBufferOptional.isPresent()) {
             RegionBuffer regionBuffer = regionBufferOptional.get();
             regionBuffer.addFront(event.getTargetBlock().getPosition());
-            getLogger().info(event.getTargetBlock().getPosition().toString());
             player.sendMessage(ChatTypes.CHAT, regionBuffer.getProgressionMessage());
             event.setCancelled(true);
         }
@@ -151,7 +150,6 @@ public class PlayerShopsRPG {
         if (regionBufferOptional.isPresent()) {
             RegionBuffer regionBuffer = regionBufferOptional.get();
             regionBuffer.addBack(event.getTargetBlock().getPosition());
-            getLogger().info(event.getTargetBlock().getPosition().toString());
             player.sendMessage(ChatTypes.CHAT, regionBuffer.getProgressionMessage());
             event.setCancelled(true);
         }

@@ -47,11 +47,11 @@ public class PlayerShopsRPGCommandRegister {
 
     public void registerCmds() {
 
-        // shop buy <name>
+        // shop buy
         CommandSpec shopBuyCommand = CommandSpec.builder()
                 .description(Text.of("Buy the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY)
-                .arguments(GenericArguments.string(CommandArgs.SHOP_NAME), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopBuyExecutor(container))
                 .build();
 

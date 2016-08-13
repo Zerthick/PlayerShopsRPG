@@ -20,9 +20,12 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import com.flowpowered.math.vector.Vector3i;
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ShopManager {
@@ -31,13 +34,18 @@ public class ShopManager {
 
     private Map<UUID, ShopContainer> shopUUIDMap;
 
-    public ShopManager(Map<UUID, Set<ShopContainer>> shopMap) {
+    private Map<UUID, UUID> playerShopCache;
 
+    private PlayerShopsRPG plugin;
+
+    public ShopManager(Map<UUID, Set<ShopContainer>> shopMap, PlayerShopsRPG plugin) {
         this.shopMap = shopMap;
         shopUUIDMap = new HashMap<>();
         for (Set<ShopContainer> shopContainerSet : this.shopMap.values()) {
             shopUUIDMap.putAll(shopContainerSet.stream().collect(Collectors.toMap(c -> c.getShop().getUUID(), c -> c)));
         }
+        playerShopCache = new HashMap<>();
+        this.plugin = plugin;
     }
 
     public Optional<ShopContainer> getShop(UUID worldUUID, Vector3i location) {
@@ -50,7 +58,21 @@ public class ShopManager {
     }
 
     public Optional<ShopContainer> getShop(Player player) {
-        return getShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
+
+        // Check player cache first
+        if (playerShopCache.containsKey(player.getUniqueId())) {
+            Optional<ShopContainer> shopContainerOptional = getShopByUUID(playerShopCache.get(player.getUniqueId()), player);
+            if (shopContainerOptional.isPresent()) {
+                return shopContainerOptional;
+            }
+        }
+
+        Optional<ShopContainer> shopContainerOptional = getShop(player.getWorld().getUniqueId(), player.getLocation().getBlockPosition());
+        if (shopContainerOptional.isPresent()) {
+            updateCache(player, shopContainerOptional.get());
+        }
+        return shopContainerOptional;
+
     }
 
     public Optional<ShopContainer> getShopByUUID(UUID shopUUID) {
@@ -94,5 +116,10 @@ public class ShopManager {
 
     public Map<UUID, Set<ShopContainer>> getShopMap() {
         return shopMap;
+    }
+
+    private void updateCache(Player player, ShopContainer shopContainer) {
+        playerShopCache.put(player.getUniqueId(), shopContainer.getShop().getUUID());
+        Sponge.getScheduler().createTaskBuilder().delay(5, TimeUnit.MINUTES).execute(() -> playerShopCache.remove(player.getUniqueId())).submit(plugin);
     }
 }

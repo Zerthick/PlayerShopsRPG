@@ -79,7 +79,7 @@ public class ConfigManager {
                 if(shopContainerMap == null) {
                     shopContainerMap = new HashMap<>();
                 }
-                return new ShopManager(shopContainerMap);
+                return new ShopManager(shopContainerMap, plugin);
             } catch (IOException e) {
                 logger.warn("Error loading shops config! Error:" + e.getMessage());
             } catch (ObjectMappingException e) {
@@ -87,7 +87,7 @@ public class ConfigManager {
             }
         }
 
-        return new ShopManager(new HashMap<>());
+        return new ShopManager(new HashMap<>(), plugin);
     }
 
     public void saveShops() {

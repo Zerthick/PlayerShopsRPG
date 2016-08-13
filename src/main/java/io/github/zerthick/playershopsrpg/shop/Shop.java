@@ -407,6 +407,10 @@ public class Shop {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
+        if (price != -1 && price < 0) {
+            return new ShopTransactionResult("You can't sell a shop for a negative price!");
+        }
+
         this.price = price;
         return ShopTransactionResult.SUCCESS;
     }
@@ -416,6 +420,10 @@ public class Shop {
         // If the player is not the owner of the shop return a message to the player
         if (!hasOwnerPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
+        }
+
+        if (rent != -1 && rent < 0) {
+            return new ShopTransactionResult("You can't rent a shop for a negative price!");
         }
 
         this.rent = rent;
@@ -456,7 +464,7 @@ public class Shop {
     public ShopTransactionResult showManagerView(Player player) {
 
         if (!hasManagerPermissions(player)) {
-            return new ShopTransactionResult("You are not a manager of this shop!");
+            return new ShopTransactionResult(YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
         }
 
         ShopViewUtils.sendShopManagerView(player, this);
@@ -517,7 +525,7 @@ public class Shop {
         if (shopAccountOptional.isPresent()) {
             return shopAccountOptional.get().getBalance(manager.getDefaultCurrency());
         }
-        return BigDecimal.valueOf(0);
+        return BigDecimal.ZERO;
     }
 
     public boolean hasOwnerPermissions(Player player) {
@@ -545,7 +553,7 @@ public class Shop {
         return ownerUUID;
     }
 
-    public Set<UUID> getManagerUUIDset() {
+    public Set<UUID> getManagerUUIDSet() {
         return managerUUIDset;
     }
 

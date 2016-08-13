@@ -20,15 +20,11 @@
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
-import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
-import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.plugin.PluginContainer;
-
-import java.util.Optional;
 
 public class ShopBuyExecutor extends AbstractShopTransactionCmdExecutor {
 
@@ -39,17 +35,6 @@ public class ShopBuyExecutor extends AbstractShopTransactionCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        return super.executeTransaction(src, args, (player, arg, shop) -> {
-            Optional<String> nameArgumentOptional = arg.getOne(CommandArgs.SHOP_NAME);
-            if (nameArgumentOptional.isPresent()) {
-                String nameArg = nameArgumentOptional.get();
-                if (nameArg.equalsIgnoreCase(shop.getName())) {
-                    return shop.buyShop(player);
-                } else {
-                    return new ShopTransactionResult("That is not the name of this shop!");
-                }
-            }
-            return ShopTransactionResult.EMPTY;
-        }, "You cannot buy shops from the console!");
+        return super.executeTransaction(src, args, (player, arg, shop) -> shop.buyShop(player), "You cannot buy shops from the console!");
     }
 }

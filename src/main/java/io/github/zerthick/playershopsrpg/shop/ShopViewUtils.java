@@ -31,6 +31,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +43,6 @@ public class ShopViewUtils {
     private static PaginationService pagServ = Sponge.getServiceManager().provide(PaginationService.class).get();
 
     public static void sendShopBuyView(Player player, Shop shop) {
-        //Currency Symbol
-        Text curSym = EconManager.getInstance().getDefaultCurrency().getSymbol();
 
         //Callback buffer
         CallBackBuffer cb = CallBackBuffer.getInstance();
@@ -69,26 +68,40 @@ public class ShopViewUtils {
             //Grab the necessary info we need from the item
             Text itemName = InventoryUtils.getItemName(item.getItemStack());
             Text itemMax = Text.of(item.getItemMaxAmount() == -1 ? INFINITY : String.valueOf(item.getItemMaxAmount()));
-            Text itemSell = Text.of(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()));
-            Text itemBuy = Text.of(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()));
+            Text itemSell = Text.of(item.getItemBuyPrice() == -1 ? "--" : formatCurrency(item.getItemBuyPrice()));
+            Text itemBuy = Text.of(item.getItemSellPrice() == -1 ? "--" : formatCurrency(item.getItemSellPrice()));
 
             //Add the appropriate actions to the text
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
             Text buy = Text.EMPTY;
-            if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY)) {
-                buy = Text.builder("Buy")
-                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to buy?", "shop item buy " + i + " %c " + shop.getUUID())))
-                        .style(TextStyles.UNDERLINE).build();
+            if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY) && item.getItemSellPrice() != -1) {
+                if (item.getItemAmount() != 0) {
+                    buy = Text.builder("Buy")
+                            .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to buy?", "shop item buy " + i + " %c " + shop.getUUID())))
+                            .style(TextStyles.UNDERLINE).build();
+                } else {
+                    buy = Text.builder("Buy")
+                            .onHover(TextActions.showText(Text.of(shop.getName(), " is sold out of ", itemName, "!")))
+                            .color(TextColors.DARK_GRAY)
+                            .style(TextStyles.UNDERLINE).build();
+                }
             }
             Text sell = Text.EMPTY;
-            if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SELL)) {
-                sell = Text.builder("Sell")
-                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to sell?", "shop item sell " + i + " %c " + shop.getUUID())))
-                        .style(TextStyles.UNDERLINE).build();
+            if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SELL) && item.getItemBuyPrice() != -1) {
+                if (item.getItemAmount() != item.getItemMaxAmount()) {
+                    sell = Text.builder("Sell")
+                            .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to sell?", "shop item sell " + i + " %c " + shop.getUUID())))
+                            .style(TextStyles.UNDERLINE).build();
+                } else {
+                    sell = Text.builder("Sell")
+                            .onHover(TextActions.showText(Text.of(shop.getName(), " is fully stocked with ", itemName, "!")))
+                            .color(TextColors.DARK_GRAY)
+                            .style(TextStyles.UNDERLINE).build();
+                }
             }
 
             //Build the full line of text
-            Text fullLine = Text.of(itemName, " ", itemAmount, "/", itemMax, " | ", curSym, itemBuy, " | ", curSym, itemSell, " ", buy, " ", sell);
+            Text fullLine = Text.of(itemName, " ", itemAmount, "/", itemMax, " | ", itemBuy, " | ", itemSell, " ", buy, " ", sell);
 
             //Add the text to the shop display
             contents.add(fullLine);
@@ -98,13 +111,13 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", curSym, shop.getPrice()));
+            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice())));
         }
 
         if (shop.isUnlimitedMoney()) {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, curSym, Text.of(INFINITY)));
+            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
         } else {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, curSym, shop.getBalance()));
+            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance())));
         }
 
         if (shop.hasManagerPermissions(player)) {
@@ -131,8 +144,6 @@ public class ShopViewUtils {
     }
 
     public static void sendShopManagerView(Player player, Shop shop) {
-        //Currency Symbol
-        Text curSym = EconManager.getInstance().getDefaultCurrency().getSymbol();
 
         //Callback buffer
         CallBackBuffer cb = CallBackBuffer.getInstance();
@@ -161,10 +172,10 @@ public class ShopViewUtils {
                 itemMax = Text.builder(item.getItemMaxAmount() == -1 ? INFINITY : String.valueOf(item.getItemMaxAmount()))
                         .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " max amount (-1 for infinite):", "shop item set max " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
-                itemSell = Text.builder(item.getItemBuyPrice() == -1 ? "--" : String.valueOf(item.getItemBuyPrice()))
+                itemSell = Text.builder(item.getItemBuyPrice() == -1 ? "--" : formatCurrency(item.getItemBuyPrice()).toPlain())
                         .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " buy price (-1 for none):", "shop item set buy " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
-                itemBuy = Text.builder(item.getItemSellPrice() == -1 ? "--" : String.valueOf(item.getItemSellPrice()))
+                itemBuy = Text.builder(item.getItemSellPrice() == -1 ? "--" : formatCurrency(item.getItemSellPrice()).toPlain())
                         .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " sell price (-1 for none):", "shop item set sell " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
@@ -173,7 +184,7 @@ public class ShopViewUtils {
             Text remove = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)) {
                 remove = Text.builder("Remove")
-                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to remove?", " shop item remove " + i + " %c " + shop.getUUID())))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to remove?", "shop item remove " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             //Build the full line of text
@@ -187,13 +198,13 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", curSym, shop.getPrice()));
+            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice())));
         }
 
         if (shop.isUnlimitedMoney()) {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, curSym, Text.of(INFINITY)));
+            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
         } else {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, curSym, shop.getBalance()));
+            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance())));
         }
 
         Text browse = Text.builder("Browse")
@@ -218,8 +229,6 @@ public class ShopViewUtils {
     }
 
     public static void sendShopOwnerView(Player player, Shop shop) {
-        //Currency Symbol
-        Text curSym = EconManager.getInstance().getDefaultCurrency().getSymbol();
 
         //Callback buffer
         CallBackBuffer cb = CallBackBuffer.getInstance();
@@ -232,7 +241,7 @@ public class ShopViewUtils {
             Text putUpForSale = Text.builder("Put Up For Sale")
                     .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
-            contents.add(Text.of(TextColors.BLUE, putUpForSale, "\n"));
+            contents.add(Text.of(TextColors.WHITE, putUpForSale, "\n"));
         }
 
         //Display shop type if present
@@ -280,20 +289,20 @@ public class ShopViewUtils {
                     .style(TextStyles.UNDERLINE).build();
         }
 
-        contents.add(Text.of(TextColors.BLUE, "Shop Balance: ", TextColors.WHITE, shop.getBalance(), " ", deposit, " ", withdraw));
+        contents.add(Text.of(TextColors.BLUE, "Shop Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance()), " ", deposit, " ", withdraw));
 
         //Add option to add and remove managers
         contents.add(Text.of(""));
 
         Text addManager = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_MANAGER_ADD)) {
-            Text.builder("Add Manager")
+            addManager = Text.builder("Add Manager")
                     .onClick(TextActions.executeCallback(cb.getCallBack("Enter manager:", "shop manager add %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
         contents.add(Text.of(TextColors.BLUE, "Managers: ", TextColors.WHITE, addManager));
 
-        for (UUID manager : shop.getManagerUUIDset()) {
+        for (UUID manager : shop.getManagerUUIDSet()) {
             Optional<Player> managerOptional = Sponge.getServer().getPlayer(manager);
             if (managerOptional.isPresent()) {
                 String managerName = managerOptional.get().getName();
@@ -321,6 +330,7 @@ public class ShopViewUtils {
                 if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_DESTROY)) {
                     destroyItem = Text.builder("Destroy")
                             .onClick(TextActions.runCommand("/shop item destroy " + i))
+                            .color(TextColors.RED)
                             .style(TextStyles.UNDERLINE).build();
                 }
 
@@ -335,13 +345,13 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", curSym, shop.getPrice()));
+            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice())));
         }
 
         if (shop.isUnlimitedMoney()) {
             header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
         } else {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, shop.getBalance()));
+            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance())));
         }
 
         Text browse = Text.builder("Browse")
@@ -363,5 +373,13 @@ public class ShopViewUtils {
                 .padding(Text.of(TextColors.BLUE, "-"))
                 .contents(contents)
                 .sendTo(player);
+    }
+
+    private static Text formatCurrency(BigDecimal value) {
+        return EconManager.getInstance().getDefaultCurrency().format(value);
+    }
+
+    private static Text formatCurrency(Double value) {
+        return formatCurrency(BigDecimal.valueOf(value));
     }
 }

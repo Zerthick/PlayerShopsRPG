@@ -22,7 +22,6 @@ package io.github.zerthick.playershopsrpg.shop.type;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Map;
-import java.util.Set;
 
 public class ShopTypeManager {
 
@@ -51,9 +50,5 @@ public class ShopTypeManager {
 
     public boolean isShopType(String shopType) {
         return shopTypes.containsKey(shopType);
-    }
-
-    public Set<String> getTypes() {
-        return shopTypes.keySet();
     }
 }

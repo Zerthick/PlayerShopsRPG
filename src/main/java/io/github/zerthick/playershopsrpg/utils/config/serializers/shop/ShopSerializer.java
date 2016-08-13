@@ -55,7 +55,7 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         value.getNode("shopUUID").setValue(TypeToken.of(UUID.class), obj.getUUID());
         value.getNode("shopName").setValue(obj.getName());
         value.getNode("ownerUUID").setValue(TypeToken.of(UUID.class), obj.getOwnerUUID());
-        Set<UUID> managerUUIDSet = obj.getManagerUUIDset();
+        Set<UUID> managerUUIDSet = obj.getManagerUUIDSet();
         value.getNode("managerSet").setValue(new TypeToken<List<UUID>>() {
         }, managerUUIDSet.stream().collect(Collectors.toList()));
         value.getNode("items").setValue(new TypeToken<List<ShopItem>>() {
