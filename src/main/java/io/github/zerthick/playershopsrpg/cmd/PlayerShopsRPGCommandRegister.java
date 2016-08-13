@@ -199,7 +199,7 @@ public class PlayerShopsRPGCommandRegister {
         CommandSpec shopSetNameCommmand = CommandSpec.builder()
                 .description(Text.of("Set the name of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_NAME)
-                .arguments(GenericArguments.remainingJoinedStrings(CommandArgs.SHOP_NAME), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.string(CommandArgs.SHOP_NAME), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopSetNameExecutor(container))
                 .build();
 
@@ -230,12 +230,26 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopSetRentCommmand, "rent")
                 .build();
 
+        // shop browse manager
+        CommandSpec shopBrowseManagerCommand = CommandSpec.builder()
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopBrowseManagerExecutor(container))
+                .build();
+
+        // shop browse owner
+        CommandSpec shopBrowseOwnerCommand = CommandSpec.builder()
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopBrowseOwnerExecutor(container))
+                .build();
+
         // shop browse
         CommandSpec shopBrowseCommand = CommandSpec.builder()
                 .description(Text.of("Browses the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_BROWSE)
-                .arguments(GenericArguments.optional(GenericArguments.choices(CommandArgs.SELECTION_TYPE, ShopBrowseExecutor.selectChoices())), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopBrowseExecutor(container))
+                .child(shopBrowseManagerCommand, "manager")
+                .child(shopBrowseOwnerCommand, "owner")
                 .build();
 
         // shop destroy

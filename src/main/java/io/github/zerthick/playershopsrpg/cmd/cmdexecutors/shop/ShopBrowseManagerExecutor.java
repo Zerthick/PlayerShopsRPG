@@ -26,25 +26,15 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import java.util.HashMap;
-import java.util.Map;
+public class ShopBrowseManagerExecutor extends AbstractShopTransactionCmdExecutor {
 
-public class ShopBrowseExecutor extends AbstractShopTransactionCmdExecutor {
-
-    public ShopBrowseExecutor(PluginContainer pluginContainer) {
+    public ShopBrowseManagerExecutor(PluginContainer pluginContainer) {
         super(pluginContainer);
-    }
-
-    public static Map<String, String> selectChoices() {
-        Map<String, String> selectChoices = new HashMap<>();
-        selectChoices.put("manager", "manager");
-        selectChoices.put("owner", "owner");
-        return selectChoices;
     }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        return super.executeTransaction(src, args, (player, arg, shop) -> shop.showBuyView(player), "You cannot browse shops from the console!");
+        return super.executeTransaction(src, args, (player, arg, shop) -> shop.showManagerView(player), "You cannot browse shops from the console!");
     }
 }

@@ -75,8 +75,8 @@ public class Shop {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
-        this.managerUUIDset = managerUUIDset;
-        this.items = items;
+        this.managerUUIDset = new HashSet<>(managerUUIDset);
+        this.items = new ArrayList<>(items);
         this.unlimitedMoney = unlimitedMoney;
         this.unlimitedStock = unlimitedStock;
         this.type = type;
@@ -448,7 +448,7 @@ public class Shop {
     }
 
     public ShopTransactionResult showBuyView(Player player) {
-        ShopItemUtils.sendShopBuyView(player, this);
+        ShopViewUtils.sendShopBuyView(player, this);
 
         return ShopTransactionResult.SUCCESS;
     }
@@ -459,7 +459,7 @@ public class Shop {
             return new ShopTransactionResult("You are not a manager of this shop!");
         }
 
-        ShopItemUtils.sendShopManagerView(player, this);
+        ShopViewUtils.sendShopManagerView(player, this);
         return ShopTransactionResult.SUCCESS;
     }
 
@@ -470,7 +470,7 @@ public class Shop {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
-        ShopItemUtils.sendShopOwnerView(player, this);
+        ShopViewUtils.sendShopOwnerView(player, this);
         return ShopTransactionResult.SUCCESS;
     }
 
@@ -568,4 +568,12 @@ public class Shop {
     public double getPrice() { return price; }
 
     public double getRent() { return rent; }
+
+    public boolean isForSale() {
+        return getPrice() >= 0;
+    }
+
+    public boolean isForRent() {
+        return getRent() >= 0;
+    }
 }
