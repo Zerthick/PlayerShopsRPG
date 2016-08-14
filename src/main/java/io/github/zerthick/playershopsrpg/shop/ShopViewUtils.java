@@ -81,7 +81,7 @@ public class ShopViewUtils {
                             .style(TextStyles.UNDERLINE).build();
                 } else {
                     buy = Text.builder("Buy")
-                            .onHover(TextActions.showText(Text.of(shop.getName(), " is sold out of ", itemName, "!")))
+                            .onHover(TextActions.showText(Text.of(shop.getName(), " is sold out of ", itemName.toPlain(), "!")))
                             .color(TextColors.DARK_GRAY)
                             .style(TextStyles.UNDERLINE).build();
                 }
@@ -94,7 +94,7 @@ public class ShopViewUtils {
                             .style(TextStyles.UNDERLINE).build();
                 } else {
                     sell = Text.builder("Sell")
-                            .onHover(TextActions.showText(Text.of(shop.getName(), " is fully stocked with ", itemName, "!")))
+                            .onHover(TextActions.showText(Text.of(shop.getName(), " is fully stocked with ", itemName.toPlain(), "!")))
                             .color(TextColors.DARK_GRAY)
                             .style(TextStyles.UNDERLINE).build();
                 }
@@ -111,7 +111,7 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice())));
+            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
@@ -198,7 +198,7 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice())));
+            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
@@ -238,10 +238,17 @@ public class ShopViewUtils {
 
         //Add option to put shop up for sale
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)) {
-            Text putUpForSale = Text.builder("Put Up For Sale")
-                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
-                    .style(TextStyles.UNDERLINE).build();
-            contents.add(Text.of(TextColors.WHITE, putUpForSale, "\n"));
+            Text putUpForSale;
+            if (shop.isForSale()) {
+                putUpForSale = formatCurrency(shop.getPrice()).toBuilder()
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
+                        .style(TextStyles.UNDERLINE).build();
+            } else {
+                putUpForSale = Text.builder("Put Up For Sale")
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
+                        .style(TextStyles.UNDERLINE).build();
+            }
+            contents.add(Text.of(TextColors.BLUE, "Sale: ", TextColors.WHITE, putUpForSale, "\n"));
         }
 
         //Display shop type if present
@@ -345,7 +352,7 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice())));
+            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
