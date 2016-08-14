@@ -25,7 +25,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -42,7 +41,7 @@ public class ShopAddItemExecutor extends AbstractShopTransactionCmdExecutor {
 
         return super.executeTransaction(src, args, (player, arg, shop) -> {
 
-            Optional<ItemStack> itemStackOptional = player.getItemInHand(HandTypes.MAIN_HAND);
+            Optional<ItemStack> itemStackOptional = player.getItemInHand();
 
             if (itemStackOptional.isPresent()) {
 
