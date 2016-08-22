@@ -120,6 +120,11 @@ public class ShopManager {
 
     private void updateCache(Player player, ShopContainer shopContainer) {
         playerShopCache.put(player.getUniqueId(), shopContainer.getShop().getUUID());
-        Sponge.getScheduler().createTaskBuilder().delay(5, TimeUnit.MINUTES).execute(() -> playerShopCache.remove(player.getUniqueId())).submit(plugin);
+        Sponge.getScheduler().createTaskBuilder().delay(5, TimeUnit.MINUTES).execute(() ->
+        {
+            if (playerShopCache.get(player.getUniqueId()).equals(shopContainer.getShop().getUUID())) {
+                playerShopCache.remove(player.getUniqueId());
+            }
+        }).submit(plugin);
     }
 }
