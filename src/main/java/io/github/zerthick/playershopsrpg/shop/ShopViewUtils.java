@@ -126,7 +126,7 @@ public class ShopViewUtils {
                     .style(TextStyles.UNDERLINE).build();
             header = header.concat(Text.of("  |  ", manager));
         }
-        if (shop.hasOwnerPermissions(player)) {
+        if (shop.hasRenterPermissions(player)) {
             Text owner = Text.builder("Owner")
                     .onClick(TextActions.runCommand("/shop browse owner " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();
@@ -212,7 +212,7 @@ public class ShopViewUtils {
                 .style(TextStyles.UNDERLINE).build();
         header = header.concat(Text.of("  |  ", browse));
 
-        if (shop.hasOwnerPermissions(player)) {
+        if (shop.hasRenterPermissions(player)) {
             Text owner = Text.builder("Owner")
                     .onClick(TextActions.runCommand("/shop browse owner " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();
@@ -366,7 +366,7 @@ public class ShopViewUtils {
                 .style(TextStyles.UNDERLINE).build();
         header = header.concat(Text.of("  |  ", browse));
 
-        if (shop.hasOwnerPermissions(player)) {
+        if (shop.hasRenterPermissions(player)) {
             Text manager = Text.builder("Manager")
                     .onClick(TextActions.runCommand("/shop browse manager " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();

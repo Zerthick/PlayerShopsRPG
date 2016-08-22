@@ -44,6 +44,7 @@ public class Shop {
     private final UUID shopUUID;
     private String name;
     private UUID ownerUUID;
+    private UUID renterUUID;
     private Set<UUID> managerUUIDset;
     private List<ShopItem> items;
     private boolean unlimitedMoney;
@@ -62,6 +63,7 @@ public class Shop {
         shopUUID = UUID.randomUUID();
         this.name = name;
         this.ownerUUID = ownerUUID;
+        renterUUID = null;
         managerUUIDset = new HashSet<>();
         items = new ArrayList<>();
         unlimitedMoney = false;
@@ -71,10 +73,11 @@ public class Shop {
         rent = -1;
     }
 
-    public Shop(UUID shopUUID, String name, UUID ownerUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type, double price, double rent) {
+    public Shop(UUID shopUUID, String name, UUID ownerUUID, UUID renterUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type, double price, double rent) {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
+        this.renterUUID = renterUUID;
         this.managerUUIDset = new HashSet<>(managerUUIDset);
         this.items = new ArrayList<>(items);
         this.unlimitedMoney = unlimitedMoney;
@@ -87,7 +90,7 @@ public class Shop {
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
 
         //If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
@@ -109,7 +112,7 @@ public class Shop {
     public ShopTransactionResult destroyItem(Player player, int index) {
 
         //If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
@@ -354,7 +357,7 @@ public class Shop {
     public ShopTransactionResult addManager(Player player, UUID managerUUID) {
 
         //If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
@@ -365,7 +368,7 @@ public class Shop {
     public ShopTransactionResult removeManager(Player player, UUID managerUUID) {
 
         //If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
@@ -392,7 +395,7 @@ public class Shop {
     public ShopTransactionResult setName(Player player, String name) {
 
         // /If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
@@ -432,7 +435,7 @@ public class Shop {
 
     public ShopTransactionResult buyShop(Player player) {
 
-        if (price == -1) {
+        if (!isForSale()) {
             return new ShopTransactionResult("This shop is not for sale!");
         }
 
@@ -446,13 +449,45 @@ public class Shop {
                         .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price), Cause.of(NamedCause.notifier(this)));
 
         if(result.getResult() == ResultType.SUCCESS) {
-            this.ownerUUID = player.getUniqueId();
+            ownerUUID = player.getUniqueId();
             price = -1;
+            rent = -1;
             managerUUIDset.clear();
             return ShopTransactionResult.SUCCESS;
         } else {
             return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
         }
+    }
+
+    public ShopTransactionResult rentShop(Player player, BigDecimal amount) {
+
+        if (!isForRent()) {
+            return new ShopTransactionResult("This shop is not for rent!");
+        }
+
+        // Transfer funds from the purchaser to the owner
+        EconManager manager = EconManager.getInstance();
+        Optional<UniqueAccount> renterAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
+        Optional<UniqueAccount> ownerAccountOptional = manager.getOrCreateAccount(ownerUUID);
+
+        TransactionResult result =
+                renterAccountOptional.get()
+                        .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price), Cause.of(NamedCause.notifier(this)));
+
+        if (result.getResult() == ResultType.SUCCESS) {
+            renterUUID = player.getUniqueId();
+            price = -1;
+            rent = -1;
+            managerUUIDset.clear();
+            return ShopTransactionResult.SUCCESS;
+        } else {
+            return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
+        }
+    }
+
+    public void rentExpire() {
+        managerUUIDset.clear();
+        renterUUID = null;
     }
 
     public ShopTransactionResult showBuyView(Player player) {
@@ -474,7 +509,7 @@ public class Shop {
 
     public ShopTransactionResult showOwnerView(Player player) {
 
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
@@ -484,7 +519,7 @@ public class Shop {
 
     public ShopTransactionResult depositFunds(Player player, BigDecimal amount) {
         //If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
         EconManager manager = EconManager.getInstance();
@@ -501,7 +536,7 @@ public class Shop {
 
     public ShopTransactionResult withdrawFunds(Player player, BigDecimal amount) {
         //If the player is not the owner of the shop return a message to the player
-        if (!hasOwnerPermissions(player)) {
+        if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
         EconManager manager = EconManager.getInstance();
@@ -532,9 +567,17 @@ public class Shop {
         return ownerUUID.equals(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_OWNER);
     }
 
+    public boolean hasRenterPermissions(Player player) {
+        if (renterUUID != null) { //If the shop is being rented check the renter
+            return renterUUID.equals(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_OWNER);
+        } else { // The shop is not being rented, use the owner instead
+            return hasOwnerPermissions(player);
+        }
+    }
+
     public boolean hasManagerPermissions(Player player) {
         return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_MANAGER) ||
-                hasOwnerPermissions(player);
+                hasRenterPermissions(player);
     }
 
     public String getName() {
@@ -551,6 +594,10 @@ public class Shop {
 
     public UUID getOwnerUUID() {
         return ownerUUID;
+    }
+
+    public UUID getRenterUUID() {
+        return renterUUID;
     }
 
     public Set<UUID> getManagerUUIDSet() {

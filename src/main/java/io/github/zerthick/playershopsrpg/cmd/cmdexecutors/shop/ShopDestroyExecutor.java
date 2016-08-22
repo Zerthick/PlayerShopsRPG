@@ -21,7 +21,6 @@ package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
-import io.github.zerthick.playershopsrpg.permissions.Permissions;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -50,7 +49,7 @@ public class ShopDestroyExecutor extends AbstractCmdExecutor {
             Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
             if (shopContainerOptional.isPresent()) {
                 ShopContainer shopContainer = shopContainerOptional.get();
-                if (shopContainer.getShop().hasOwnerPermissions(player) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_OWNER)) {
+                if (shopContainer.getShop().hasOwnerPermissions(player)) {
                     shopManager.removeShop(player);
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully destroyed ", TextColors.AQUA, shopContainer.getShop().getName(), TextColors.BLUE, "!"));
                 } else {
