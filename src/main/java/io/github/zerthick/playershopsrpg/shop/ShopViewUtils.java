@@ -316,7 +316,7 @@ public class ShopViewUtils {
                 renterName = "Unknown";
             }
             String expireTime = ShopRentManager.getInstance().getShopExpireTime(shop).format(DateTimeFormatter.ofPattern("MMM d yyyy  hh:mm a", player.getLocale()));
-            contents.add(Text.of(TextColors.BLUE, "Shop Renter: ", TextColors.WHITE, renterName, " ", TextColors.AQUA, expireTime));
+            contents.add(Text.of(TextColors.BLUE, "Shop Renter: ", TextColors.WHITE, renterName, TextColors.BLUE, " until ", TextColors.AQUA, expireTime));
         }
 
         //Add option to deposit and withdraw shop funds
