@@ -32,6 +32,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -112,6 +113,10 @@ public class ShopViewUtils {
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
             header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
+        }
+
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT) && shop.isForRent()) {
+            header = header.concat(Text.of(TextColors.AQUA, "FOR RENT: ", formatCurrency(shop.getRent()), "/hr\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
@@ -201,6 +206,10 @@ public class ShopViewUtils {
             header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
         }
 
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT) && shop.isForRent()) {
+            header = header.concat(Text.of(TextColors.AQUA, "FOR RENT: ", formatCurrency(shop.getRent()), "/hr\n"));
+        }
+
         if (shop.isUnlimitedMoney()) {
             header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
         } else {
@@ -251,6 +260,22 @@ public class ShopViewUtils {
             contents.add(Text.of(TextColors.BLUE, "Sale: ", TextColors.WHITE, putUpForSale, "\n"));
         }
 
+        //Add option to put shop up for rent
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)) {
+            Text putUpForRent;
+            if (shop.isForRent()) {
+                putUpForRent = formatCurrency(shop.getRent()).toBuilder()
+                        .append(Text.of("/hr"))
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop rent hourly rate (-1 to cancel renting):", "shop set rent %c " + shop.getUUID())))
+                        .style(TextStyles.UNDERLINE).build();
+            } else {
+                putUpForRent = Text.builder("Put Up For Rent")
+                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop rent hourly rate (-1 to cancel sale):", "shop set rent %c " + shop.getUUID())))
+                        .style(TextStyles.UNDERLINE).build();
+            }
+            contents.add(Text.of(TextColors.BLUE, "Rent: ", TextColors.WHITE, putUpForRent, "\n"));
+        }
+
         //Display shop type if present
         if (!shop.getType().isEmpty()) {
             contents.add(Text.of(TextColors.BLUE, "Shop Type: ", TextColors.WHITE, shop.getType()));
@@ -280,6 +305,19 @@ public class ShopViewUtils {
             ownerName = "Unknown";
         }
         contents.add(Text.of(TextColors.BLUE, "Shop Owner: ", TextColors.WHITE, ownerName, " ", changeShopOwner));
+
+        //Display shop renter if present
+        if (shop.getRenterUUID() != null) {
+            String renterName;
+            Optional<Player> renterOptional = Sponge.getServer().getPlayer(shop.getRenterUUID());
+            if (renterOptional.isPresent()) {
+                renterName = renterOptional.get().getName();
+            } else {
+                renterName = "Unknown";
+            }
+            String expireTime = ShopRentManager.getInstance().getShopExpireTime(shop).format(DateTimeFormatter.ofPattern("MMM d yyyy  hh:mm a", player.getLocale()));
+            contents.add(Text.of(TextColors.BLUE, "Shop Renter: ", TextColors.WHITE, renterName, " ", TextColors.AQUA, expireTime));
+        }
 
         //Add option to deposit and withdraw shop funds
         Text deposit = Text.EMPTY;
@@ -353,6 +391,10 @@ public class ShopViewUtils {
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
             header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
+        }
+
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT) && shop.isForRent()) {
+            header = header.concat(Text.of(TextColors.AQUA, "FOR RENT: ", formatCurrency(shop.getRent()), "/hr\n"));
         }
 
         if (shop.isUnlimitedMoney()) {

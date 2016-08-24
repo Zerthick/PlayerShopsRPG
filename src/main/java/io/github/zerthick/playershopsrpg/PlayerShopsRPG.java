@@ -25,6 +25,7 @@ import io.github.zerthick.playershopsrpg.cmd.callback.CallBackBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionSelectBuffer;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
+import io.github.zerthick.playershopsrpg.shop.ShopRentManager;
 import io.github.zerthick.playershopsrpg.shop.type.ShopTypeManager;
 import io.github.zerthick.playershopsrpg.utils.config.ConfigManager;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
@@ -52,7 +53,7 @@ import java.util.Optional;
 
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
-        version = "0.3.0",
+        version = "0.4.0",
         description = "A region-based player shop plugin.")
 public class PlayerShopsRPG {
 
@@ -60,6 +61,7 @@ public class PlayerShopsRPG {
     private EconManager econManager;
     private RegionSelectBuffer regionSelectBuffer;
     private ShopTypeManager shopTypeManager;
+    private ShopRentManager shopRentManager;
 
     @Inject
     private Logger logger;
@@ -91,6 +93,10 @@ public class PlayerShopsRPG {
         return shopTypeManager;
     }
 
+    public ShopRentManager getShopRentManager() {
+        return shopRentManager;
+    }
+
     public Logger getLogger() {
         return logger;
     }
@@ -116,6 +122,8 @@ public class PlayerShopsRPG {
         configManager = new ConfigManager(this);
         shopManager = configManager.loadShops();
         shopTypeManager = configManager.loadShopTypes();
+        shopRentManager = ShopRentManager.getInstance();
+        shopRentManager.init(this, configManager.loadShopRent());
     }
 
     @Listener
@@ -178,5 +186,6 @@ public class PlayerShopsRPG {
     @Listener
     public void onServerStop(GameStoppedEvent event) {
         configManager.saveShops();
+        configManager.saveShopRent();
     }
 }

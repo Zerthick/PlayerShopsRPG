@@ -22,6 +22,7 @@ package io.github.zerthick.playershopsrpg.permissions;
 public class Permissions {
 
     public static final String PLAYERSHOPSRPG_COMMAND_BUY = "playershopsrpg.command.buy";
+    public static final String PLAYERSHOPSRPG_COMMAND_RENT = "playershopsrpg.command.rent";
     public static final String PLAYERSHOPSRPG_COMMAND_BALANCE_WITHDRAW = "playershopsrpg.command.balance.withdraw";
     public static final String PLAYERSHOPSRPG_COMMAND_BALANCE_DEPOSIT = "playershopsrpg.command.balance.deposit";
     public static final String PLAYERSHOPSRPG_COMMAND_ITEM_SELL = "playershopsrpg.command.item.sell";
@@ -39,7 +40,6 @@ public class Permissions {
     public static final String PLAYERSHOPSRPG_COMMAND_SET_NAME = "playershopsrpg.command.set.name";
     public static final String PLAYERSHOPSRPG_COMMAND_SET_OWNER = "playershopsrpg.command.set.owner";
     public static final String PLAYERSHOPSRPG_COMMAND_SET_UNLIMITED = "playershopsrpg.command.set.unlimited";
-    public static final String PLAYERSHOPSRPG_COMMAND_SET = "playershopsrpg.command.set";
     public static final String PLAYERSHOPSRPG_COMMAND_BROWSE = "playershopsrpg.command.browse";
     public static final String PLAYERSHOPSRPG_COMMAND_DESTROY = "playershopsrpg.command.destroy";
     public static final String PLAYERSHOPSRPG_COMMAND_CREATE = "playershopsrpg.command.create";

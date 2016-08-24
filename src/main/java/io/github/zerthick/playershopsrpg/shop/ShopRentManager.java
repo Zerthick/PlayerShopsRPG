@@ -19,15 +19,22 @@
 
 package io.github.zerthick.playershopsrpg.shop;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
+import org.spongepowered.api.Sponge;
+
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ShopRentManager {
 
     private static ShopRentManager instance = null;
 
     private Map<UUID, LocalDateTime> shopRentMap;
+    private ShopManager shopManager;
 
     protected ShopRentManager() {
         //Singleton Design Pattern
@@ -40,5 +47,35 @@ public class ShopRentManager {
         return instance;
     }
 
+    public void init(PlayerShopsRPG plugin, Map<UUID, LocalDateTime> shopRentMap) {
+        this.shopRentMap = shopRentMap;
+        shopManager = plugin.getShopManager();
 
+        Sponge.getScheduler().createTaskBuilder().interval(15, TimeUnit.MINUTES).execute(() -> {
+            Iterator<Map.Entry<UUID, LocalDateTime>> it = this.shopRentMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<UUID, LocalDateTime> entry = it.next();
+                if (LocalDateTime.now().isAfter(entry.getValue())) {
+                    Optional<ShopContainer> shopContainerOptional = shopManager.getShopByUUID(entry.getKey());
+                    if (shopContainerOptional.isPresent()) {
+                        shopContainerOptional.get().getShop().rentExpire();
+                    }
+                    it.remove();
+                }
+            }
+
+        }).submit(plugin);
+    }
+
+    public void rentShop(Shop shop, long durationInHours) {
+        shopRentMap.put(shop.getUUID(), LocalDateTime.now().plusHours(durationInHours));
+    }
+
+    public LocalDateTime getShopExpireTime(Shop shop) {
+        return shopRentMap.get(shop.getUUID());
+    }
+
+    public Map<UUID, LocalDateTime> getShopRentMap() {
+        return shopRentMap;
+    }
 }

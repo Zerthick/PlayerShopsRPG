@@ -461,8 +461,14 @@ public class Shop {
 
     public ShopTransactionResult rentShop(Player player, BigDecimal amount) {
 
-        if (!isForRent()) {
+        if (!isForRent() && !player.getUniqueId().equals(renterUUID)) {
             return new ShopTransactionResult("This shop is not for rent!");
+        }
+
+        long duration = amount.divide(BigDecimal.valueOf(rent), BigDecimal.ROUND_FLOOR).longValue();
+
+        if (duration < 1) {
+            return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
         }
 
         // Transfer funds from the purchaser to the owner
@@ -472,13 +478,14 @@ public class Shop {
 
         TransactionResult result =
                 renterAccountOptional.get()
-                        .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price), Cause.of(NamedCause.notifier(this)));
+                        .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price * duration), Cause.of(NamedCause.notifier(this)));
 
         if (result.getResult() == ResultType.SUCCESS) {
+            ShopRentManager.getInstance().rentShop(this, duration);
             renterUUID = player.getUniqueId();
             price = -1;
-            rent = -1;
             managerUUIDset.clear();
+
             return ShopTransactionResult.SUCCESS;
         } else {
             return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
@@ -629,6 +636,6 @@ public class Shop {
     }
 
     public boolean isForRent() {
-        return getRent() >= 0;
+        return getRenterUUID() == null && getRent() != -1;
     }
 }

@@ -38,6 +38,7 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         UUID shopUUID = value.getNode("shopUUID").getValue(TypeToken.of(UUID.class));
         String name = value.getNode("shopName").getString();
         UUID ownerUUID = value.getNode("ownerUUID").getValue(TypeToken.of(UUID.class));
+        UUID renterUUID = value.getNode("renterUUID").getValue(TypeToken.of(UUID.class));
         Set<UUID> managerUUIDset = value.getNode("managerSet").getList(TypeToken.of(UUID.class))
                 .stream().collect(Collectors.toSet());
         List<ShopItem> items = value.getNode("items").getList(TypeToken.of(ShopItem.class));
@@ -47,7 +48,7 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         double price = value.getNode("price").getDouble(-1);
         double rent = value.getNode("rent").getDouble(-1);
 
-        return new Shop(shopUUID, name, ownerUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType, price, rent);
+        return new Shop(shopUUID, name, ownerUUID, renterUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType, price, rent);
     }
 
     @Override
@@ -55,6 +56,7 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         value.getNode("shopUUID").setValue(TypeToken.of(UUID.class), obj.getUUID());
         value.getNode("shopName").setValue(obj.getName());
         value.getNode("ownerUUID").setValue(TypeToken.of(UUID.class), obj.getOwnerUUID());
+        value.getNode("renterUUID").setValue(TypeToken.of(UUID.class), obj.getRenterUUID());
         Set<UUID> managerUUIDSet = obj.getManagerUUIDSet();
         value.getNode("managerSet").setValue(new TypeToken<List<UUID>>() {
         }, managerUUIDSet.stream().collect(Collectors.toList()));

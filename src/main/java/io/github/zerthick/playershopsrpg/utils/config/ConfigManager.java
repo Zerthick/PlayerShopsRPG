@@ -42,6 +42,8 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,5 +147,41 @@ public class ConfigManager {
         }
 
         return new ShopTypeManager(defaultTypes);
+    }
+
+    public Map<UUID, LocalDateTime> loadShopRent() {
+        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.config");
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopRentFile).build();
+
+        if (shopRentFile.exists()) {
+            try {
+                CommentedConfigurationNode shopRentConfig = loader.load();
+                return shopRentConfig.getValue(new TypeToken<Map<UUID, Long>>() {
+                }, new HashMap<>()).entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> LocalDateTime.ofEpochSecond(entry.getValue(), 0, ZoneOffset.UTC)));
+            } catch (IOException e) {
+                logger.warn("Error loading shop rent config! Error:" + e.getMessage());
+            } catch (ObjectMappingException e) {
+                logger.warn("Error mapping shop rent config! Error:" + e.getMessage());
+            }
+        }
+
+        return new HashMap<>();
+    }
+
+    public void saveShopRent() {
+        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.config");
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopRentFile).build();
+
+        try {
+            CommentedConfigurationNode shopRentConfig = loader.load();
+
+            Map<UUID, Long> shopRentMap = plugin.getShopRentManager().getShopRentMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().toEpochSecond(ZoneOffset.UTC)));
+
+            shopRentConfig.setValue(new TypeToken<Map<UUID, Long>>() {
+            }, shopRentMap);
+            loader.save(shopRentConfig);
+        } catch (IOException | ObjectMappingException e) {
+            logger.warn("Error saving shop rent config! Error:" + e.getMessage());
+        }
     }
 }

@@ -47,6 +47,14 @@ public class PlayerShopsRPGCommandRegister {
 
     public void registerCmds() {
 
+        // shop rent
+        CommandSpec shopRentCommand = CommandSpec.builder()
+                .description(Text.of("Rent the shop you are currently standing in"))
+                .permission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT)
+                .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopRentExecutor(container))
+                .build();
+
         // shop buy
         CommandSpec shopBuyCommand = CommandSpec.builder()
                 .description(Text.of("Buy the shop you are currently standing in"))
@@ -168,7 +176,7 @@ public class PlayerShopsRPGCommandRegister {
                 .build();
 
         // shop set price <price>
-        CommandSpec shopSetPriceCommmand = CommandSpec.builder()
+        CommandSpec shopSetPriceCommand = CommandSpec.builder()
                 .description(Text.of("Set the purchase price of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)
                 .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
@@ -176,7 +184,7 @@ public class PlayerShopsRPGCommandRegister {
                 .build();
 
         // shop set rent <price>
-        CommandSpec shopSetRentCommmand = CommandSpec.builder()
+        CommandSpec shopSetRentCommand = CommandSpec.builder()
                 .description(Text.of("Set the rent price of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_RENT)
                 .arguments(GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
@@ -220,13 +228,12 @@ public class PlayerShopsRPGCommandRegister {
 
         // shop set
         CommandSpec shopSetCommand = CommandSpec.builder()
-                .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET)
                 .child(shopSetUnlimitedCommand, "unlimited")
                 .child(shopSetOwnerCommand, "owner")
                 .child(shopSetNameCommmand, "name")
                 .child(shopSetTypeCommand, "type")
-                .child(shopSetPriceCommmand, "price")
-                .child(shopSetRentCommmand, "rent")
+                .child(shopSetPriceCommand, "price")
+                .child(shopSetRentCommand, "rent")
                 .build();
 
         // shop browse manager
@@ -287,8 +294,9 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopManagerCommand, "manager")
                 .child(shopBalanceCommmand, "balance")
                 .child(shopBuyCommand, "buy")
+                .child(shopRentCommand, "rent")
                 .build();
 
-        Sponge.getGame().getCommandManager().register(container.getInstance().get(), shopCommand, "shop");
+        Sponge.getGame().getCommandManager().register(plugin, shopCommand, "shop");
     }
 }
