@@ -26,6 +26,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
@@ -141,7 +142,7 @@ public class Shop {
             }
 
             //Check if the player has enough of the item in their inventory to sell
-            if (InventoryUtils.getItemCount(player.getInventory(), item.getItemStack()) < amount) {
+            if (InventoryUtils.getItemCount((PlayerInventory) player.getInventory(), item.getItemStack()) < amount) {
                 return new ShopTransactionResult("You dont have " + amount + " " + InventoryUtils.getItemName(item.getItemStack()).toPlain() + "(s)!");
             }
 
@@ -165,7 +166,7 @@ public class Shop {
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
                     item.setItemAmount(item.getItemAmount() + amount);
-                    InventoryUtils.removeItem(player.getInventory(), item.getItemStack(), amount);
+                    InventoryUtils.removeItem((PlayerInventory) player.getInventory(), item.getItemStack(), amount);
                     return ShopTransactionResult.SUCCESS;
                 } else {
                     return new ShopTransactionResult(getName() + " doesn't have enough funds!");
@@ -188,7 +189,7 @@ public class Shop {
             }
 
             //Check if the player has enough room otherwise only sell as much as they can hold
-            int availableSpace = InventoryUtils.getAvailableSpace(player.getInventory(), item.getItemStack());
+            int availableSpace = InventoryUtils.getAvailableSpace((PlayerInventory) player.getInventory(), item.getItemStack());
             if (availableSpace < amount) {
                 amount = availableSpace;
             }
@@ -218,7 +219,7 @@ public class Shop {
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
                     item.setItemAmount(item.getItemAmount() - amount);
-                    InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
+                    InventoryUtils.addItem((PlayerInventory) player.getInventory(), item.getItemStack(), amount);
                     return ShopTransactionResult.SUCCESS;
                 } else {
                     return new ShopTransactionResult(YOU_DON_T_HAVE_ENOUGH_FUNDS);
@@ -244,7 +245,7 @@ public class Shop {
                     amount = item.getItemMaxAmount() - item.getItemAmount();
                 }
 
-                InventoryUtils.removeItem(player.getInventory(), itemStack, amount);
+                InventoryUtils.removeItem((PlayerInventory) player.getInventory(), itemStack, amount);
 
                 item.setItemAmount(item.getItemAmount() + amount);
                 return ShopTransactionResult.SUCCESS;
@@ -268,7 +269,7 @@ public class Shop {
                 amount = item.getItemAmount();
             }
 
-            InventoryUtils.addItem(player.getInventory(), item.getItemStack(), amount);
+            InventoryUtils.addItem((PlayerInventory) player.getInventory(), item.getItemStack(), amount);
 
             item.setItemAmount(item.getItemAmount() - amount);
             return ShopTransactionResult.SUCCESS;

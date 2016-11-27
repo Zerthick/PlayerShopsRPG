@@ -137,7 +137,7 @@ public class PlayerShopsRPG {
 
         // Log Start Up to Console
         getLogger().info(
-                instance.getName() + " version " + instance.getVersion().get()
+                instance.getName() + " version " + instance.getVersion().orElse("")
                         + " enabled!");
     }
 
