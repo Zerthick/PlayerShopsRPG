@@ -25,6 +25,7 @@ import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -73,7 +74,7 @@ public class ShopViewUtils {
             Text itemBuy = Text.of(item.getItemSellPrice() == -1 ? "--" : formatCurrency(item.getItemSellPrice()));
 
             //Add the appropriate actions to the text
-            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
+            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
             Text buy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY) && item.getItemSellPrice() != -1) {
                 if (item.getItemAmount() != 0) {
@@ -184,7 +185,7 @@ public class ShopViewUtils {
                         .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " sell price (-1 for none):", "shop item set sell " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
-            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
+            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
 
             Text remove = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)) {
@@ -299,22 +300,14 @@ public class ShopViewUtils {
         }
         String ownerName;
         Optional<Player> ownerOptional = Sponge.getServer().getPlayer(shop.getOwnerUUID());
-        if (ownerOptional.isPresent()) {
-            ownerName = ownerOptional.get().getName();
-        } else {
-            ownerName = "Unknown";
-        }
+        ownerName = ownerOptional.map(User::getName).orElse("Unknown");
         contents.add(Text.of(TextColors.BLUE, "Shop Owner: ", TextColors.WHITE, ownerName, " ", changeShopOwner));
 
         //Display shop renter if present
         if (shop.getRenterUUID() != null) {
             String renterName;
             Optional<Player> renterOptional = Sponge.getServer().getPlayer(shop.getRenterUUID());
-            if (renterOptional.isPresent()) {
-                renterName = renterOptional.get().getName();
-            } else {
-                renterName = "Unknown";
-            }
+            renterName = renterOptional.map(User::getName).orElse("Unknown");
             String expireTime = ShopRentManager.getInstance().getShopExpireTime(shop).format(DateTimeFormatter.ofPattern("MMM d yyyy  hh:mm a", player.getLocale()));
             contents.add(Text.of(TextColors.BLUE, "Shop Renter: ", TextColors.WHITE, renterName, TextColors.BLUE, " until ", TextColors.AQUA, expireTime));
         }
@@ -380,7 +373,7 @@ public class ShopViewUtils {
                 }
 
                 Text itemName = InventoryUtils.getItemName(items.get(i).getItemStack());
-                itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack())).style(TextStyles.UNDERLINE).build();
+                itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
 
                 contents.add(Text.of(itemName, " ", destroyItem));
                 contents.add(Text.of(""));
