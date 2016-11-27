@@ -17,30 +17,5 @@
  * along with PlayerShopsRPG.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id 'org.spongepowered.plugin' version '0.7'
-    id 'java'
-    id "com.qixalite.spongestart" version "1.5.2"
-}
+rootProject.name = 'PlayerShopsRPG'
 
-group 'io.github.zerthick'
-
-repositories {
-    mavenCentral()
-    maven {
-        name = 'sponge'
-        url = 'http://repo.spongepowered.org/maven'
-    }
-}
-
-spongestart {
-    eula true
-
-    //optional configs
-    spongeVanillaBuild '1.10.2-5.1.0-BETA-359'
-    vanillaServerFolder 'run/vanilla'
-}
-
-dependencies {
-    compile 'org.spongepowered:spongeapi:5.0.0'
-}
