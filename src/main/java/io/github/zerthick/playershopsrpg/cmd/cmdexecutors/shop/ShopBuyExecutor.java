@@ -19,17 +19,17 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.plugin.PluginContainer;
 
 public class ShopBuyExecutor extends AbstractShopTransactionCmdExecutor {
 
-    public ShopBuyExecutor(PluginContainer pluginContainer) {
-        super(pluginContainer);
+    public ShopBuyExecutor(PlayerShopsRPG plugin) {
+        super(plugin);
     }
 
     @Override

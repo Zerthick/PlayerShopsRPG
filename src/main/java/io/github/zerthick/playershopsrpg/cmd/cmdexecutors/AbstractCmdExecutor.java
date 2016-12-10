@@ -30,10 +30,10 @@ public abstract class AbstractCmdExecutor implements CommandExecutor {
     protected PlayerShopsRPG plugin;
     protected ShopManager shopManager;
 
-    public AbstractCmdExecutor(PluginContainer pluginContainer) {
+    public AbstractCmdExecutor(PlayerShopsRPG plugin) {
         super();
-        container = pluginContainer;
-        plugin = container.getInstance().get() instanceof PlayerShopsRPG ? (PlayerShopsRPG) container.getInstance().get() : null;
+        this.plugin = plugin;
+        container = plugin.getInstance();
         shopManager = plugin.getShopManager();
     }
 }

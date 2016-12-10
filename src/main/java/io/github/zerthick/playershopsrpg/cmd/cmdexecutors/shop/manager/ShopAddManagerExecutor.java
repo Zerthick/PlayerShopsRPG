@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
@@ -27,7 +28,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
@@ -36,8 +36,8 @@ import java.util.Optional;
 
 public class ShopAddManagerExecutor extends AbstractShopTransactionCmdExecutor {
 
-    public ShopAddManagerExecutor(PluginContainer pluginContainer) {
-        super(pluginContainer);
+    public ShopAddManagerExecutor(PlayerShopsRPG plugin) {
+        super(plugin);
     }
 
     @Override
@@ -53,6 +53,7 @@ public class ShopAddManagerExecutor extends AbstractShopTransactionCmdExecutor {
                             TextColors.AQUA, userArg.getName(), TextColors.BLUE, " as a manager of ", TextColors.AQUA,
                             shop.getName(), TextColors.BLUE, "!"));
                 }
+                return transactionResult;
             }
             return ShopTransactionResult.EMPTY;
         }, "You cannot add managers to shops from the console!");

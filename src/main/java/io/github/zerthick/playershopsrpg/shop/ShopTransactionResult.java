@@ -19,18 +19,24 @@
 
 package io.github.zerthick.playershopsrpg.shop;
 
+import org.spongepowered.api.text.Text;
+
 public class ShopTransactionResult {
 
-    public static final ShopTransactionResult SUCCESS = new ShopTransactionResult("SUCCESS");
-    public static final ShopTransactionResult EMPTY = new ShopTransactionResult("");
+    public static final ShopTransactionResult SUCCESS = new ShopTransactionResult(Text.of("SUCCESS"));
+    public static final ShopTransactionResult EMPTY = new ShopTransactionResult(Text.of(""));
 
-    private final String message;
+    private final Text message;
 
-    public ShopTransactionResult(String message) {
+    public ShopTransactionResult(Text message) {
         this.message = message;
     }
 
-    public String getMessage() {
+    public ShopTransactionResult(String message) {
+        this.message = Text.of(message);
+    }
+
+    public Text getMessage() {
         return message;
     }
 }

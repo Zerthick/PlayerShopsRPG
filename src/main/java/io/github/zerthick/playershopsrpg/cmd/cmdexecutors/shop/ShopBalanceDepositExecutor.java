@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
@@ -26,15 +27,14 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.plugin.PluginContainer;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 public class ShopBalanceDepositExecutor extends AbstractShopTransactionCmdExecutor {
 
-    public ShopBalanceDepositExecutor(PluginContainer pluginContainer) {
-        super(pluginContainer);
+    public ShopBalanceDepositExecutor(PlayerShopsRPG plugin) {
+        super(plugin);
     }
 
     @Override

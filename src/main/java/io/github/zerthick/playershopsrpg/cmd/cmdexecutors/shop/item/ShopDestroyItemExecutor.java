@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
@@ -26,7 +27,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
@@ -35,8 +35,8 @@ import java.util.Optional;
 
 public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor {
 
-    public ShopDestroyItemExecutor(PluginContainer pluginContainer) {
-        super(pluginContainer);
+    public ShopDestroyItemExecutor(PlayerShopsRPG plugin) {
+        super(plugin);
     }
 
     @Override

@@ -39,6 +39,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.slf4j.Logger;
+import org.spongepowered.api.asset.Asset;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,12 +50,11 @@ import java.util.stream.Collectors;
 
 public class ConfigManager {
 
+    private static ConfigManager instance = null;
     private PlayerShopsRPG plugin;
     private Logger logger;
 
-    public ConfigManager(PlayerShopsRPG plugin) {
-        this.plugin = plugin;
-        logger = plugin.getLogger();
+    private ConfigManager() {
 
         TypeSerializers.getDefaultSerializers()
                 .registerType(TypeToken.of(ShopItem.class), new ShopItemSerializer())
@@ -65,8 +65,20 @@ public class ConfigManager {
         ;
     }
 
+    public static ConfigManager getInstance() {
+        if (instance == null) {
+            instance = new ConfigManager();
+        }
+        return instance;
+    }
+
+    public void init(PlayerShopsRPG plugin) {
+        this.plugin = plugin;
+        this.logger = plugin.getLogger();
+    }
+
     public ShopManager loadShops() {
-        File shopsFile = new File(plugin.getDefaultConfigDir().toFile(), "shops.config");
+        File shopsFile = new File(plugin.getDefaultConfigDir().toFile(), "shops.conf");
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
         if (shopsFile.exists()) {
@@ -93,7 +105,7 @@ public class ConfigManager {
     }
 
     public void saveShops() {
-        File shopsFile = new File(plugin.getDefaultConfigDir().toFile(), "shops.config");
+        File shopsFile = new File(plugin.getDefaultConfigDir().toFile(), "shops.conf");
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
         try {
@@ -111,7 +123,7 @@ public class ConfigManager {
     }
 
     public ShopTypeManager loadShopTypes() {
-        File shopTypesFile = new File(plugin.getDefaultConfigDir().toFile(), "shopTypes.config");
+        File shopTypesFile = new File(plugin.getDefaultConfigDir().toFile(), "shopTypes.conf");
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopTypesFile).build();
 
         if (shopTypesFile.exists()) {
@@ -150,7 +162,7 @@ public class ConfigManager {
     }
 
     public Map<UUID, LocalDateTime> loadShopRent() {
-        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.config");
+        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.conf");
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopRentFile).build();
 
         if (shopRentFile.exists()) {
@@ -169,7 +181,7 @@ public class ConfigManager {
     }
 
     public void saveShopRent() {
-        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.config");
+        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.conf");
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopRentFile).build();
 
         try {
@@ -183,5 +195,33 @@ public class ConfigManager {
         } catch (IOException | ObjectMappingException e) {
             logger.warn("Error saving shop rent config! Error:" + e.getMessage());
         }
+    }
+
+    public Properties loadMessages() {
+        File messagesFile = new File(plugin.getDefaultConfigDir().toFile(), "messages.conf");
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(messagesFile).build();
+
+        Properties properties = new Properties();
+
+        if (!messagesFile.exists()) {
+            Asset defaultConfig = plugin.getInstance().getAsset("messages_en_US.conf").get();
+            try {
+                defaultConfig.copyToFile(messagesFile.toPath());
+                loader.save(loader.load());
+            } catch (IOException e) {
+                logger.warn("Error loading default messages config! Error:" + e.getMessage());
+            }
+        }
+
+        try {
+            CommentedConfigurationNode messagesConfig = loader.load();
+            messagesConfig.getNode("messages").getValue(new TypeToken<Map<String, String>>() {
+            }).entrySet().forEach(e -> properties.put(e.getKey(), e.getValue()));
+            return properties;
+        } catch (IOException | ObjectMappingException e) {
+            logger.warn("Error loading messages config! Error:" + e.getMessage());
+        }
+
+        return properties;
     }
 }

@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
@@ -26,7 +27,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.plugin.PluginContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +34,8 @@ import java.util.Optional;
 
 public class ShopSetUnlimitedExecutor extends AbstractShopTransactionCmdExecutor {
 
-    public ShopSetUnlimitedExecutor(PluginContainer pluginContainer) {
-        super(pluginContainer);
+    public ShopSetUnlimitedExecutor(PlayerShopsRPG plugin) {
+        super(plugin);
     }
 
     public static Map<String, String> selectChoices() {

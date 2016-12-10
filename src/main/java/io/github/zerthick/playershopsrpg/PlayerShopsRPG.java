@@ -29,8 +29,7 @@ import io.github.zerthick.playershopsrpg.shop.ShopRentManager;
 import io.github.zerthick.playershopsrpg.shop.type.ShopTypeManager;
 import io.github.zerthick.playershopsrpg.utils.config.ConfigManager;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
@@ -62,6 +61,7 @@ public class PlayerShopsRPG {
     private RegionSelectBuffer regionSelectBuffer;
     private ShopTypeManager shopTypeManager;
     private ShopRentManager shopRentManager;
+    private Messages messages;
 
     @Inject
     private Logger logger;
@@ -72,9 +72,6 @@ public class PlayerShopsRPG {
     @Inject
     @DefaultConfig(sharedRoot = false)
     private Path defaultConfig;
-    @Inject
-    @DefaultConfig(sharedRoot = false)
-    private ConfigurationLoader<CommentedConfigurationNode> configLoader;
     @Inject
     @ConfigDir(sharedRoot = false)
     private Path defaultConfigDir;
@@ -105,10 +102,6 @@ public class PlayerShopsRPG {
         return defaultConfig;
     }
 
-    public ConfigurationLoader<CommentedConfigurationNode> getConfigLoader() {
-        return configLoader;
-    }
-
     public Path getDefaultConfigDir() {
         return defaultConfigDir;
     }
@@ -119,11 +112,15 @@ public class PlayerShopsRPG {
 
     @Listener
     public void onGameInit(GameInitializationEvent event){
-        configManager = new ConfigManager(this);
+
+        configManager = ConfigManager.getInstance();
+        configManager.init(this);
+
         shopManager = configManager.loadShops();
         shopTypeManager = configManager.loadShopTypes();
         shopRentManager = ShopRentManager.getInstance();
         shopRentManager.init(this, configManager.loadShopRent());
+        messages = Messages.getInstance();
     }
 
     @Listener
@@ -132,7 +129,7 @@ public class PlayerShopsRPG {
         regionSelectBuffer = new RegionSelectBuffer();
 
         // Register Commands
-        PlayerShopsRPGCommandRegister commandRegister = new PlayerShopsRPGCommandRegister(instance);
+        PlayerShopsRPGCommandRegister commandRegister = new PlayerShopsRPGCommandRegister(this);
         commandRegister.registerCmds();
 
         // Log Start Up to Console
