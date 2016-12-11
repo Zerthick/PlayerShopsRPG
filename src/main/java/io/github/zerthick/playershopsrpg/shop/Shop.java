@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.shop;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.permissions.Permissions;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
@@ -130,10 +131,8 @@ public class Shop {
             //Check if the shop does not buy this item
             if (item.getItemBuyPrice() == -1) {
                 return new ShopTransactionResult(Messages.processDropins(Messages.SHOP_DOES_NOT_BUY_ITEM,
-                        Messages.dropinBuilder()
-                                .withDropin(Messages.DropinBuilder.DROPIN_SHOP_NAME, getName())
-                                .withDropin(Messages.DropinBuilder.DROPIN_ITEM_NAME, InventoryUtils.getItemName(item.getItemStack()).toPlain())
-                                .build()));
+                        ImmutableMap.of(Messages.DROPIN_SHOP_NAME, getName(), Messages.DROPIN_ITEM_NAME,
+                                InventoryUtils.getItemNamePlain(item.getItemStack()))));
             }
 
             //Check if the shop has enough room otherwise only buy as much as we can hold
@@ -144,10 +143,7 @@ public class Shop {
             //Check if the player has enough of the item in their inventory to sell
             if (InventoryUtils.getItemCount((PlayerInventory) player.getInventory(), item.getItemStack()) < amount) {
                 return new ShopTransactionResult(Messages.processDropins(Messages.PLAYER_DOES_NOT_HAVE_ENOUGH_ITEM,
-                        Messages.dropinBuilder()
-                                .withDropin(Messages.DropinBuilder.DROPIN_ITEM_AMOUNT, String.valueOf(amount))
-                                .withDropin(Messages.DropinBuilder.DROPIN_ITEM_NAME, InventoryUtils.getItemName(item.getItemStack()).toPlain())
-                                .build()));
+                        ImmutableMap.of(Messages.DROPIN_ITEM_AMOUNT, String.valueOf(amount), Messages.DROPIN_ITEM_NAME, InventoryUtils.getItemNamePlain(item.getItemStack()))));
             }
 
             //Transfer the funds from the shop's account to the player's account if it doesn't have unlimited money
@@ -174,9 +170,7 @@ public class Shop {
                     return ShopTransactionResult.SUCCESS;
                 } else {
                     return new ShopTransactionResult(Messages.processDropins(Messages.SHOP_DOES_NOT_HAVE_ENOUGH_FUNDS,
-                            Messages.dropinBuilder()
-                                    .withDropin(Messages.DropinBuilder.DROPIN_SHOP_NAME, getName())
-                                    .build()));
+                            ImmutableMap.of(Messages.DROPIN_SHOP_NAME, getName())));
                 }
             }
         }
@@ -193,10 +187,8 @@ public class Shop {
             //Check if the shop does not sell this item
             if (item.getItemSellPrice() == -1) {
                 return new ShopTransactionResult(Messages.processDropins(Messages.SHOP_DOES_NOT_SELL_ITEM,
-                        Messages.dropinBuilder()
-                                .withDropin(Messages.DropinBuilder.DROPIN_SHOP_NAME, getName())
-                                .withDropin(Messages.DropinBuilder.DROPIN_ITEM_NAME, InventoryUtils.getItemName(item.getItemStack()).toPlain())
-                                .build()));
+                        ImmutableMap.of(Messages.DROPIN_SHOP_NAME, getName(), Messages.DROPIN_ITEM_NAME,
+                                InventoryUtils.getItemNamePlain(item.getItemStack()))));
             }
 
             //Check if the player has enough room otherwise only sell as much as they can hold
@@ -208,11 +200,8 @@ public class Shop {
             //Check if the shop has enough of the item in their inventory to sell
             if ((item.getItemAmount() < amount) && !unlimitedStock) {
                 return new ShopTransactionResult(Messages.processDropins(Messages.SHOP_DOES_NOT_HAVE_ENOUGH_ITEM,
-                        Messages.dropinBuilder()
-                                .withDropin(Messages.DropinBuilder.DROPIN_SHOP_NAME, getName())
-                                .withDropin(Messages.DropinBuilder.DROPIN_ITEM_AMOUNT, String.valueOf(amount))
-                                .withDropin(Messages.DropinBuilder.DROPIN_ITEM_NAME, InventoryUtils.getItemName(item.getItemStack()).toPlain())
-                                .build()));
+                        ImmutableMap.of(Messages.DROPIN_SHOP_NAME, getName(), Messages.DROPIN_ITEM_AMOUNT, String.valueOf(amount)
+                                , Messages.DROPIN_ITEM_NAME, InventoryUtils.getItemNamePlain(item.getItemStack()))));
             }
 
             //Transfer the funds from the player's account to the shop's account
@@ -399,9 +388,7 @@ public class Shop {
             }
 
             return new ShopTransactionResult(Messages.processDropins(Messages.PLAYER_IS_NOT_A_MANAGER,
-                    Messages.dropinBuilder()
-                            .withDropin(Messages.DropinBuilder.DROPIN_PLAYER_NAME, managerName)
-                            .build()));
+                    ImmutableMap.of(Messages.DROPIN_PLAYER_NAME, managerName)));
         }
 
         managerUUIDset.remove(managerUUID);

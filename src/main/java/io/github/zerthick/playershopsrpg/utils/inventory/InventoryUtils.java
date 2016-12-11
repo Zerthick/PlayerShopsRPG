@@ -133,4 +133,8 @@ public class InventoryUtils {
     public static Text getItemName(ItemStack itemStack) {
         return itemStack.get(Keys.DISPLAY_NAME).orElse(Text.of(itemStack.getTranslation()));
     }
+
+    public static String getItemNamePlain(ItemStack itemStack) {
+        return getItemName(itemStack).toPlain();
+    }
 }
