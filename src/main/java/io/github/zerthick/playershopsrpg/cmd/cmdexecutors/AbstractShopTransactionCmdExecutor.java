@@ -56,7 +56,7 @@ public abstract class AbstractShopTransactionCmdExecutor extends AbstractCmdExec
 
                 ShopTransactionResult transactionResult = processor.processCommand(player, args, shop);
 
-                if (transactionResult != ShopTransactionResult.SUCCESS) {
+                if (transactionResult != ShopTransactionResult.SUCCESS && !transactionResult.getMessage().isEmpty()) {
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, transactionResult.getMessage()));
                 }
             } else {

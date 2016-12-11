@@ -27,11 +27,16 @@ import java.util.Properties;
 
 public class Messages {
 
+    // Drop-Ins
     public static final String DROPIN_PLAYER_NAME = "{PLAYER_NAME}";
     public static final String DROPIN_SHOP_NAME = "{SHOP_NAME}";
     public static final String DROPIN_ITEM_NAME = "{ITEM_NAME}";
     public static final String DROPIN_ITEM_AMOUNT = "{ITEM_AMOUNT}";
+
+
     private final static Properties messageProps = ConfigManager.getInstance().loadMessages();
+
+    //Shop Transactions
     public static final String YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP = messageProps.getProperty("YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP");
     public static final String THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP = messageProps.getProperty("THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP");
     public static final String THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP = messageProps.getProperty("THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP");
@@ -50,6 +55,10 @@ public class Messages {
     public static final String SHOP_DOES_NOT_SELL_ITEM = messageProps.getProperty("SHOP_DOES_NOT_SELL_ITEM");
     public static final String SHOP_DOES_NOT_HAVE_ENOUGH_ITEM = messageProps.getProperty("SHOP_DOES_NOT_HAVE_ENOUGH_ITEM");
     public static final String PLAYER_IS_NOT_A_MANAGER = messageProps.getProperty("PLAYER_IS_NOT_A_MANAGER");
+
+    //Commands
+
+
     private static Messages instance = null;
 
     private Messages() {
