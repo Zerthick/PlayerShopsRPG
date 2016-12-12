@@ -19,7 +19,6 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
-
 import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
@@ -36,9 +35,9 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-public class ShopDestroyExecutor extends AbstractCmdExecutor {
+public class ShopDestroyForceExecutor extends AbstractCmdExecutor {
 
-    public ShopDestroyExecutor(PlayerShopsRPG plugin) {
+    public ShopDestroyForceExecutor(PlayerShopsRPG plugin) {
         super(plugin);
     }
 
@@ -51,17 +50,12 @@ public class ShopDestroyExecutor extends AbstractCmdExecutor {
             Optional<ShopContainer> shopContainerOptional = shopManager.getShop(player);
             if (shopContainerOptional.isPresent()) {
                 ShopContainer shopContainer = shopContainerOptional.get();
-                if (shopContainer.getShop().isEmpty()) {
-                    if (shopContainer.getShop().hasOwnerPermissions(player)) {
-                        shopManager.removeShop(player);
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_SUCCESS,
-                                ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shopContainer.getShop().getName()))));
-                    } else {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.DESTROY_NO_PERMISSION));
-                    }
-                } else {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.processDropins(Messages.DESTROY_CONTAINS_ITEMS,
+                if (shopContainer.getShop().hasOwnerPermissions(player)) {
+                    shopManager.removeShop(player);
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_SUCCESS,
                             ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shopContainer.getShop().getName()))));
+                } else {
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.DESTROY_NO_PERMISSION));
                 }
             } else {
                 player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.YOU_ARE_NOT_IN_A_SHOP));

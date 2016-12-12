@@ -258,12 +258,21 @@ public class PlayerShopsRPGCommandRegister {
                 .child(shopBrowseOwnerCommand, "owner")
                 .build();
 
+        // shop destroy force
+        CommandSpec shopDestroyForceCommand = CommandSpec.builder()
+                .description(Text.of("Destroys the shop you are currently standing in, regardless of if it contains items."))
+                .permission(Permissions.PLAYERSHOPSRPG_COMMAND_DESTROY)
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopDestroyForceExecutor(plugin))
+                .build();
+
         // shop destroy
         CommandSpec shopDestroyCommand = CommandSpec.builder()
-                .description(Text.of("Destroys the shop you are currently standing in"))
+                .description(Text.of("Destroys the shop you are currently standing in if it doesn't contain items."))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_DESTROY)
                 .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopDestroyExecutor(plugin))
+                .child(shopDestroyForceCommand, "force")
                 .build();
 
         // shop create <Name>

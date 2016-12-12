@@ -86,6 +86,7 @@ public class Messages {
     public static final String CREATE_CONSOLE_REJECT = messageProps.getProperty("CREATE_CONSOLE_REJECT");
     public static final String DESTROY_SUCCESS = messageProps.getProperty("DESTROY_SUCCESS");
     public static final String DESTROY_NO_PERMISSION = messageProps.getProperty("DESTROY_NO_PERMISSION");
+    public static final String DESTROY_CONTAINS_ITEMS = messageProps.getProperty("DESTROY_CONTAINS_ITEMS");
     public static final String DESTROY_CONSOLE_REJECT = messageProps.getProperty("DESTROY_CONSOLE_REJECT");
     public static final String RENT_CONSOLE_REJECT = messageProps.getProperty("RENT_CONSOLE_REJECT");
     public static final String SELECT_CLEAR = messageProps.getProperty("SELECT_CLEAR");
@@ -145,7 +146,7 @@ public class Messages {
     public static final String UI_ADD_MANAGER_PROMPT = messageProps.getProperty("UI_ADD_MANAGER_PROMPT");
     public static final String UI_ITEMS = messageProps.getProperty("UI_ITEMS");
     public static final String UI_DESTROY = messageProps.getProperty("UI_DESTROY");
-    
+
     private static Messages instance = null;
 
     private Messages() {
