@@ -23,6 +23,7 @@ import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.CuboidRegionBuffer;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -72,15 +73,15 @@ public class ShopSelectExecutor extends AbstractCmdExecutor {
                     break;
                 case "clear":
                     plugin.getRegionSelectBuffer().removeBuffer(player.getUniqueId());
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Selection Cleared!"));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.SELECT_CLEAR));
                     break;
                 default:
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "Unknown Selection Type!"));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.SELECT_UNKNOWN_TYPE));
             }
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of("You cannot select shop regions from the console!"));
+        src.sendMessage(Text.of(Messages.SELECT_CONSOLE_REJECT));
         return CommandResult.success();
     }
 }

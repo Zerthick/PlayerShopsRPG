@@ -23,6 +23,7 @@ import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -50,6 +51,6 @@ public class ShopSetTypeExecutor extends AbstractShopTransactionCmdExecutor {
                 return ShopTransactionResult.SUCCESS;
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot set shop types from the console!");
+        }, Messages.SET_TYPE_CONSOLE_REJECT);
     }
 }

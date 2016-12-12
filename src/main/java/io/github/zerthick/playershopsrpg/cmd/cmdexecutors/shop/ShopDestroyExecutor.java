@@ -20,9 +20,11 @@
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -51,17 +53,18 @@ public class ShopDestroyExecutor extends AbstractCmdExecutor {
                 ShopContainer shopContainer = shopContainerOptional.get();
                 if (shopContainer.getShop().hasOwnerPermissions(player)) {
                     shopManager.removeShop(player);
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully destroyed ", TextColors.AQUA, shopContainer.getShop().getName(), TextColors.BLUE, "!"));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_SUCCESS,
+                            ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shopContainer.getShop().getName()))));
                 } else {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You do not have permission to destroy this shop!"));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.DESTROY_NO_PERMISSION));
                 }
             } else {
-                player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, "You are not in a shop!"));
+                player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.RED, Messages.YOU_ARE_NOT_IN_A_SHOP));
             }
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of("You cannot destroy shop regions from the console!"));
+        src.sendMessage(Text.of(Messages.DESTROY_CONSOLE_REJECT));
         return CommandResult.success();
     }
 }

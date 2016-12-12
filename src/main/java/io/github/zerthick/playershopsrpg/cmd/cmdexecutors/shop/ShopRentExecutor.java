@@ -23,6 +23,7 @@ import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -46,6 +47,6 @@ public class ShopRentExecutor extends AbstractShopTransactionCmdExecutor {
                 return shop.rentShop(player, BigDecimal.valueOf(doubleArgOptional.get()));
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot rent shops from the console!");
+        }, Messages.RENT_CONSOLE_REJECT);
     }
 }
