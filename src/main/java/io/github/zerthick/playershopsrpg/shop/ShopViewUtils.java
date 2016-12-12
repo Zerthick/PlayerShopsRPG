@@ -19,10 +19,12 @@
 
 package io.github.zerthick.playershopsrpg.shop;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.cmd.callback.CallBackBuffer;
 import io.github.zerthick.playershopsrpg.permissions.Permissions;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -41,7 +43,6 @@ import java.util.UUID;
 
 public class ShopViewUtils {
 
-    private static final String INFINITY = "\u221E";
     private static PaginationService pagServ = Sponge.getServiceManager().provide(PaginationService.class).get();
 
     public static void sendShopBuyView(Player player, Shop shop) {
@@ -54,7 +55,7 @@ public class ShopViewUtils {
         List<ShopItem> items = shop.getItems();
 
         if (items.isEmpty()) {
-            contents.add(Text.of(TextColors.BLUE, "No items to display."));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_NO_ITEMS_TO_DISPLAY));
         }
 
         for (int i = 0; i < items.size(); i++) {
@@ -62,28 +63,30 @@ public class ShopViewUtils {
 
             Text itemAmount;
             if (shop.isUnlimitedStock()) {
-                itemAmount = Text.of(INFINITY);
+                itemAmount = Text.of(Messages.UI_INFINITY);
             } else {
-                itemAmount = Text.of(item.getItemAmount() == -1 ? "--" : String.valueOf(item.getItemAmount()));
+                itemAmount = Text.of(item.getItemAmount() == -1 ? Messages.UI_EMPTY : String.valueOf(item.getItemAmount()));
             }
 
             //Grab the necessary info we need from the item
             Text itemName = InventoryUtils.getItemName(item.getItemStack());
-            Text itemMax = Text.of(item.getItemMaxAmount() == -1 ? INFINITY : String.valueOf(item.getItemMaxAmount()));
-            Text itemSell = Text.of(item.getItemBuyPrice() == -1 ? "--" : formatCurrency(item.getItemBuyPrice()));
-            Text itemBuy = Text.of(item.getItemSellPrice() == -1 ? "--" : formatCurrency(item.getItemSellPrice()));
+            Text itemMax = Text.of(item.getItemMaxAmount() == -1 ? Messages.UI_INFINITY : String.valueOf(item.getItemMaxAmount()));
+            Text itemSell = Text.of(item.getItemBuyPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemBuyPrice()));
+            Text itemBuy = Text.of(item.getItemSellPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemSellPrice()));
 
             //Add the appropriate actions to the text
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
             Text buy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY) && item.getItemSellPrice() != -1) {
                 if (item.getItemAmount() != 0) {
-                    buy = Text.builder("Buy")
-                            .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to buy?", "shop item buy " + i + " %c " + shop.getUUID())))
+                    buy = Text.builder(Messages.UI_BUY)
+                            .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_BUY_PROMPT,
+                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item buy " + i + " %c " + shop.getUUID())))
                             .style(TextStyles.UNDERLINE).build();
                 } else {
-                    buy = Text.builder("Buy")
-                            .onHover(TextActions.showText(Text.of(shop.getName(), " is sold out of ", itemName.toPlain(), "!")))
+                    buy = Text.builder(Messages.UI_BUY)
+                            .onHover(TextActions.showText(Text.of(Messages.processDropins(Messages.UI_BUY_SOLD_OUT,
+                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain(), Messages.DROPIN_SHOP_NAME, shop.getName())))))
                             .color(TextColors.DARK_GRAY)
                             .style(TextStyles.UNDERLINE).build();
                 }
@@ -91,12 +94,14 @@ public class ShopViewUtils {
             Text sell = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SELL) && item.getItemBuyPrice() != -1) {
                 if (item.getItemAmount() != item.getItemMaxAmount()) {
-                    sell = Text.builder("Sell")
-                            .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to sell?", "shop item sell " + i + " %c " + shop.getUUID())))
+                    sell = Text.builder(Messages.UI_SELL)
+                            .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SELL_PROMPT,
+                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain(), Messages.DROPIN_SHOP_NAME, shop.getName())), "shop item sell " + i + " %c " + shop.getUUID())))
                             .style(TextStyles.UNDERLINE).build();
                 } else {
-                    sell = Text.builder("Sell")
-                            .onHover(TextActions.showText(Text.of(shop.getName(), " is fully stocked with ", itemName.toPlain(), "!")))
+                    sell = Text.builder(Messages.UI_SELL)
+                            .onHover(TextActions.showText(Text.of(Messages.processDropins(Messages.UI_SELL_FULL_STOCK,
+                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain(), Messages.DROPIN_SHOP_NAME, shop.getName())))))
                             .color(TextColors.DARK_GRAY)
                             .style(TextStyles.UNDERLINE).build();
                 }
@@ -113,27 +118,27 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
+            header = header.concat(Text.of(TextColors.AQUA, Messages.UI_FOR_SALE, formatCurrency(shop.getPrice()), "\n"));
         }
 
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT) && shop.isForRent()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR RENT: ", formatCurrency(shop.getRent()), "/hr\n"));
+            header = header.concat(Text.of(TextColors.AQUA, Messages.UI_FOR_RENT, formatCurrency(shop.getRent()), "/hr\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
+            header = header.concat(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, Text.of(Messages.UI_INFINITY)));
         } else {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance())));
+            header = header.concat(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, formatCurrency(shop.getBalance())));
         }
 
         if (shop.hasManagerPermissions(player)) {
-            Text manager = Text.builder("Manager")
+            Text manager = Text.builder(Messages.UI_MANAGER)
                     .onClick(TextActions.runCommand("/shop browse manager " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();
             header = header.concat(Text.of("  |  ", manager));
         }
         if (shop.hasRenterPermissions(player)) {
-            Text owner = Text.builder("Owner")
+            Text owner = Text.builder(Messages.UI_OWNER)
                     .onClick(TextActions.runCommand("/shop browse owner " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();
             header = header.concat(Text.of("  |  ", owner));
@@ -143,7 +148,7 @@ public class ShopViewUtils {
         pagServ.builder()
                 .title(Text.of(shop.getName()))
                 .header(header)
-                .padding(Text.of(TextColors.BLUE, "-"))
+                .padding(Text.of(TextColors.BLUE, Messages.UI_PADDING_STRING))
                 .contents(contents)
                 .sendTo(player);
 
@@ -158,7 +163,7 @@ public class ShopViewUtils {
         List<Text> contents = new ArrayList<>();
         List<ShopItem> items = shop.getItems();
         if (items.isEmpty()) {
-            contents.add(Text.of(TextColors.BLUE, "No items to display."));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_NO_ITEMS_TO_DISPLAY));
         }
 
         for (int i = 0; i < items.size(); i++) {
@@ -166,31 +171,35 @@ public class ShopViewUtils {
 
             Text itemAmount;
             if (shop.isUnlimitedStock()) {
-                itemAmount = Text.of(INFINITY);
+                itemAmount = Text.of(Messages.UI_INFINITY);
             } else {
-                itemAmount = Text.of(item.getItemAmount() == -1 ? "--" : String.valueOf(item.getItemAmount()));
+                itemAmount = Text.of(item.getItemAmount() == -1 ? Messages.UI_EMPTY : String.valueOf(item.getItemAmount()));
             }
 
             //Grab the necessary info we need from the item and add appropriate actions
             Text itemName = InventoryUtils.getItemName(item.getItemStack());
             Text itemMax = Text.EMPTY, itemSell = Text.EMPTY, itemBuy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SET)) {
-                itemMax = Text.builder(item.getItemMaxAmount() == -1 ? INFINITY : String.valueOf(item.getItemMaxAmount()))
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " max amount (-1 for infinite):", "shop item set max " + i + " %c " + shop.getUUID())))
+                itemMax = Text.builder(item.getItemMaxAmount() == -1 ? Messages.UI_INFINITY : String.valueOf(item.getItemMaxAmount()))
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_MAX_PROMPT,
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set max " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
-                itemSell = Text.builder(item.getItemBuyPrice() == -1 ? "--" : formatCurrency(item.getItemBuyPrice()).toPlain())
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " buy price (-1 for none):", "shop item set buy " + i + " %c " + shop.getUUID())))
+                itemSell = Text.builder(item.getItemBuyPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemBuyPrice()).toPlain())
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_BUY_PROPMT,
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set buy " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
-                itemBuy = Text.builder(item.getItemSellPrice() == -1 ? "--" : formatCurrency(item.getItemSellPrice()).toPlain())
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter " + itemName.toPlain() + " sell price (-1 for none):", "shop item set sell " + i + " %c " + shop.getUUID())))
+                itemBuy = Text.builder(item.getItemSellPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemSellPrice()).toPlain())
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_SELL_PROMPT,
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set sell " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
 
             Text remove = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)) {
-                remove = Text.builder("Remove")
-                        .onClick(TextActions.executeCallback(cb.getCallBack("How many " + itemName.toPlain() + " would you like to remove?", "shop item remove " + i + " %c " + shop.getUUID())))
+                remove = Text.builder(Messages.UI_REMOVE)
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_REMOVE_PROMPT,
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item remove " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             //Build the full line of text
@@ -204,26 +213,26 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
+            header = header.concat(Text.of(TextColors.AQUA, Messages.UI_FOR_SALE, formatCurrency(shop.getPrice()), "\n"));
         }
 
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT) && shop.isForRent()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR RENT: ", formatCurrency(shop.getRent()), "/hr\n"));
+            header = header.concat(Text.of(TextColors.AQUA, Messages.UI_FOR_RENT, formatCurrency(shop.getRent()), "/hr\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
+            header = header.concat(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, Text.of(Messages.UI_INFINITY)));
         } else {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance())));
+            header = header.concat(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, formatCurrency(shop.getBalance())));
         }
 
-        Text browse = Text.builder("Browse")
+        Text browse = Text.builder(Messages.UI_BROWSE)
                 .onClick(TextActions.runCommand("/shop browse " + shop.getUUID()))
                 .style(TextStyles.UNDERLINE).build();
         header = header.concat(Text.of("  |  ", browse));
 
         if (shop.hasRenterPermissions(player)) {
-            Text owner = Text.builder("Owner")
+            Text owner = Text.builder(Messages.UI_OWNER)
                     .onClick(TextActions.runCommand("/shop browse owner " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();
             header = header.concat(Text.of("  |  ", owner));
@@ -233,7 +242,7 @@ public class ShopViewUtils {
         pagServ.builder()
                 .title(Text.of(shop.getName()))
                 .header(header)
-                .padding(Text.of(TextColors.BLUE, "-"))
+                .padding(Text.of(TextColors.BLUE, Messages.UI_PADDING_STRING))
                 .contents(contents)
                 .sendTo(player);
     }
@@ -251,14 +260,14 @@ public class ShopViewUtils {
             Text putUpForSale;
             if (shop.isForSale()) {
                 putUpForSale = formatCurrency(shop.getPrice()).toBuilder()
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_PUT_UP_FOR_SALE_PROMPT, "shop set price %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             } else {
-                putUpForSale = Text.builder("Put Up For Sale")
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop sale price (-1 to cancel sale):", "shop set price %c " + shop.getUUID())))
+                putUpForSale = Text.builder(Messages.UI_PUT_UP_FOR_SALE)
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_PUT_UP_FOR_SALE_PROMPT, "shop set price %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
-            contents.add(Text.of(TextColors.BLUE, "Sale: ", TextColors.WHITE, putUpForSale, "\n"));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_SALE, TextColors.WHITE, putUpForSale, "\n"));
         }
 
         //Add option to put shop up for rent
@@ -267,78 +276,78 @@ public class ShopViewUtils {
             if (shop.isForRent()) {
                 putUpForRent = formatCurrency(shop.getRent()).toBuilder()
                         .append(Text.of("/hr"))
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop rent hourly rate (-1 to cancel renting):", "shop set rent %c " + shop.getUUID())))
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_PUT_UP_FOR_RENT_PROMPT, "shop set rent %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             } else {
-                putUpForRent = Text.builder("Put Up For Rent")
-                        .onClick(TextActions.executeCallback(cb.getCallBack("Enter shop rent hourly rate (-1 to cancel sale):", "shop set rent %c " + shop.getUUID())))
+                putUpForRent = Text.builder(Messages.UI_PUT_UP_FOR_RENT)
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_PUT_UP_FOR_RENT_PROMPT, "shop set rent %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
-            contents.add(Text.of(TextColors.BLUE, "Rent: ", TextColors.WHITE, putUpForRent, "\n"));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_RENT, TextColors.WHITE, putUpForRent, "\n"));
         }
 
         //Display shop type if present
         if (!shop.getType().isEmpty()) {
-            contents.add(Text.of(TextColors.BLUE, "Shop Type: ", TextColors.WHITE, shop.getType()));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_TYPE, TextColors.WHITE, shop.getType()));
         }
 
         //Add option to change shop name
         Text changeShopName = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_NAME)) {
-            changeShopName = Text.builder("Change")
-                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter new shop name:", "shop set name \"%c\" " + shop.getUUID())))
+            changeShopName = Text.builder(Messages.UI_CHANGE)
+                    .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_NEW_SHOP_NAME_PROMPT, "shop set name \"%c\" " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
-        contents.add(Text.of(TextColors.BLUE, "Shop Name: ", TextColors.WHITE, shop.getName(), " ", changeShopName));
+        contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_NAME, TextColors.WHITE, shop.getName(), " ", changeShopName));
 
         //Add option to change shop owner
         Text changeShopOwner = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_OWNER)) {
-            changeShopOwner = Text.builder("Change")
-                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter new shop owner:", "shop set owner %c " + shop.getUUID())))
+            changeShopOwner = Text.builder(Messages.UI_CHANGE)
+                    .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_NEW_SHOP_OWNER_PROMPT, "shop set owner %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
         String ownerName;
         Optional<Player> ownerOptional = Sponge.getServer().getPlayer(shop.getOwnerUUID());
-        ownerName = ownerOptional.map(User::getName).orElse("Unknown");
-        contents.add(Text.of(TextColors.BLUE, "Shop Owner: ", TextColors.WHITE, ownerName, " ", changeShopOwner));
+        ownerName = ownerOptional.map(User::getName).orElse(Messages.UI_UNKNOWN);
+        contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_OWNER, TextColors.WHITE, ownerName, " ", changeShopOwner));
 
         //Display shop renter if present
         if (shop.getRenterUUID() != null) {
             String renterName;
             Optional<Player> renterOptional = Sponge.getServer().getPlayer(shop.getRenterUUID());
-            renterName = renterOptional.map(User::getName).orElse("Unknown");
+            renterName = renterOptional.map(User::getName).orElse(Messages.UI_UNKNOWN);
             String expireTime = ShopRentManager.getInstance().getShopExpireTime(shop).format(DateTimeFormatter.ofPattern("MMM d yyyy  hh:mm a", player.getLocale()));
-            contents.add(Text.of(TextColors.BLUE, "Shop Renter: ", TextColors.WHITE, renterName, TextColors.BLUE, " until ", TextColors.AQUA, expireTime));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_RENTER, TextColors.WHITE, renterName, TextColors.BLUE, " ", Messages.UI_UNTIL, " ", TextColors.AQUA, expireTime));
         }
 
         //Add option to deposit and withdraw shop funds
         Text deposit = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BALANCE_DEPOSIT)) {
-            deposit = Text.builder("Deposit")
-                    .onClick(TextActions.executeCallback(cb.getCallBack("How much would you like to deposit?", "shop balance deposit %c " + shop.getUUID())))
+            deposit = Text.builder(Messages.UI_DEPOSIT)
+                    .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_DEPOSIT_PROMPT, "shop balance deposit %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
 
         Text withdraw = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BALANCE_WITHDRAW)) {
-            withdraw = Text.builder("Withdraw")
-                    .onClick(TextActions.executeCallback(cb.getCallBack("How much would you like to withdraw?", "shop balance withdraw %c " + shop.getUUID())))
+            withdraw = Text.builder(Messages.UI_WITHDRAW)
+                    .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_WITHDRAW_PROMPT, "shop balance withdraw %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
 
-        contents.add(Text.of(TextColors.BLUE, "Shop Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance()), " ", deposit, " ", withdraw));
+        contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, formatCurrency(shop.getBalance()), " ", deposit, " ", withdraw));
 
         //Add option to add and remove managers
         contents.add(Text.of(""));
 
         Text addManager = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_MANAGER_ADD)) {
-            addManager = Text.builder("Add Manager")
-                    .onClick(TextActions.executeCallback(cb.getCallBack("Enter manager:", "shop manager add %c " + shop.getUUID())))
+            addManager = Text.builder(Messages.UI_ADD_MANAGER)
+                    .onClick(TextActions.executeCallback(cb.getCallBack(Messages.UI_ADD_MANAGER_PROMPT, "shop manager add %c " + shop.getUUID())))
                     .style(TextStyles.UNDERLINE).build();
         }
-        contents.add(Text.of(TextColors.BLUE, "Managers: ", TextColors.WHITE, addManager));
+        contents.add(Text.of(TextColors.BLUE, Messages.UI_MANAGERS, TextColors.WHITE, addManager));
 
         for (UUID manager : shop.getManagerUUIDSet()) {
             Optional<Player> managerOptional = Sponge.getServer().getPlayer(manager);
@@ -347,7 +356,7 @@ public class ShopViewUtils {
 
                 Text removeManger = Text.EMPTY;
                 if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_MANAGER_REMOVE)) {
-                    removeManger = Text.builder("Remove")
+                    removeManger = Text.builder(Messages.UI_REMOVE)
                             .onClick(TextActions.runCommand("/shop manager remove " + managerName + " " + shop.getUUID()))
                             .style(TextStyles.UNDERLINE).build();
                 }
@@ -361,12 +370,12 @@ public class ShopViewUtils {
         if (!items.isEmpty()) {
             contents.add(Text.of(""));
 
-            contents.add(Text.of(TextColors.BLUE, "Items:"));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_ITEMS));
 
             for (int i = 0; i < items.size(); i++) {
                 Text destroyItem = Text.EMPTY;
                 if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_DESTROY)) {
-                    destroyItem = Text.builder("Destroy")
+                    destroyItem = Text.builder(Messages.UI_DESTROY)
                             .onClick(TextActions.runCommand("/shop item destroy " + i))
                             .color(TextColors.RED)
                             .style(TextStyles.UNDERLINE).build();
@@ -383,26 +392,26 @@ public class ShopViewUtils {
         //Build header
         Text header = Text.EMPTY;
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_BUY) && shop.isForSale()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR SALE: ", formatCurrency(shop.getPrice()), "\n"));
+            header = header.concat(Text.of(TextColors.AQUA, Messages.UI_FOR_SALE, formatCurrency(shop.getPrice()), "\n"));
         }
 
         if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_RENT) && shop.isForRent()) {
-            header = header.concat(Text.of(TextColors.AQUA, "FOR RENT: ", formatCurrency(shop.getRent()), "/hr\n"));
+            header = header.concat(Text.of(TextColors.AQUA, Messages.UI_FOR_RENT, formatCurrency(shop.getRent()), "/hr\n"));
         }
 
         if (shop.isUnlimitedMoney()) {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, Text.of(INFINITY)));
+            header = header.concat(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, Text.of(Messages.UI_INFINITY)));
         } else {
-            header = header.concat(Text.of(TextColors.BLUE, "Shop's Balance: ", TextColors.WHITE, formatCurrency(shop.getBalance())));
+            header = header.concat(Text.of(TextColors.BLUE, Messages.UI_SHOP_BALANCE, TextColors.WHITE, formatCurrency(shop.getBalance())));
         }
 
-        Text browse = Text.builder("Browse")
+        Text browse = Text.builder(Messages.UI_BROWSE)
                 .onClick(TextActions.runCommand("/shop browse " + shop.getUUID()))
                 .style(TextStyles.UNDERLINE).build();
         header = header.concat(Text.of("  |  ", browse));
 
         if (shop.hasRenterPermissions(player)) {
-            Text manager = Text.builder("Manager")
+            Text manager = Text.builder(Messages.UI_MANAGER)
                     .onClick(TextActions.runCommand("/shop browse manager " + shop.getUUID()))
                     .style(TextStyles.UNDERLINE).build();
             header = header.concat(Text.of("  |  ", manager));
@@ -412,7 +421,7 @@ public class ShopViewUtils {
         pagServ.builder()
                 .title(Text.of(shop.getName()))
                 .header(header)
-                .padding(Text.of(TextColors.BLUE, "-"))
+                .padding(Text.of(TextColors.BLUE, Messages.UI_PADDING_STRING))
                 .contents(contents)
                 .sendTo(player);
     }

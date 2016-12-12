@@ -99,6 +99,53 @@ public class Messages {
     public static final String SET_UNLIMITED_UNKNOWN_SHOP_ATTRIBUTE = messageProps.getProperty("SET_UNLIMITED_UNKNOWN_SHOP_ATTRIBUTE");
     public static final String SET_UNLIMITED_CONSOLE_REJECT = messageProps.getProperty("SET_UNLIMITED_CONSOLE_REJECT");
 
+    //UI
+    public static final String UI_PADDING_STRING = messageProps.getProperty("UI_PADDING_STRING");
+    public static final String UI_NO_ITEMS_TO_DISPLAY = messageProps.getProperty("UI_NO_ITEMS_TO_DISPLAY");
+    public static final String UI_EMPTY = messageProps.getProperty("UI_EMPTY");
+    public static final String UI_INFINITY = messageProps.getProperty("UI_INFINITY");
+    public static final String UI_BUY = messageProps.getProperty("UI_BUY");
+    public static final String UI_BUY_PROMPT = messageProps.getProperty("UI_BUY_PROMPT");
+    public static final String UI_BUY_SOLD_OUT = messageProps.getProperty("UI_BUY_SOLD_OUT");
+    public static final String UI_SELL = messageProps.getProperty("UI_SELL");
+    public static final String UI_SELL_PROMPT = messageProps.getProperty("UI_SELL_PROMPT");
+    public static final String UI_SELL_FULL_STOCK = messageProps.getProperty("UI_SELL_FULL_STOCK");
+    public static final String UI_FOR_SALE = messageProps.getProperty("UI_FOR_SALE");
+    public static final String UI_FOR_RENT = messageProps.getProperty("UI_FOR_RENT");
+    public static final String UI_SHOP_BALANCE = messageProps.getProperty("UI_SHOP_BALANCE");
+    public static final String UI_MANAGER = messageProps.getProperty("UI_MANAGER");
+    public static final String UI_OWNER = messageProps.getProperty("UI_OWNER");
+    public static final String UI_SET_ITEM_MAX_PROMPT = messageProps.getProperty("UI_SET_ITEM_MAX_PROMPT");
+    public static final String UI_SET_ITEM_BUY_PROPMT = messageProps.getProperty("UI_SET_ITEM_BUY_PROPMT");
+    public static final String UI_SET_ITEM_SELL_PROMPT = messageProps.getProperty("UI_SET_ITEM_SELL_PROMPT");
+    public static final String UI_REMOVE = messageProps.getProperty("UI_REMOVE");
+    public static final String UI_REMOVE_PROMPT = messageProps.getProperty("UI_REMOVE_PROMPT");
+    public static final String UI_BROWSE = messageProps.getProperty("UI_BROWSE");
+    public static final String UI_PUT_UP_FOR_SALE = messageProps.getProperty("UI_PUT_UP_FOR_SALE");
+    public static final String UI_PUT_UP_FOR_SALE_PROMPT = messageProps.getProperty("UI_PUT_UP_FOR_SALE_PROMPT");
+    public static final String UI_SALE = messageProps.getProperty("UI_SALE");
+    public static final String UI_RENT = messageProps.getProperty("UI_RENT");
+    public static final String UI_PUT_UP_FOR_RENT = messageProps.getProperty("UI_PUT_UP_FOR_RENT");
+    public static final String UI_PUT_UP_FOR_RENT_PROMPT = messageProps.getProperty("UI_PUT_UP_FOR_RENT_PROMPT");
+    public static final String UI_SHOP_TYPE = messageProps.getProperty("UI_SHOP_TYPE");
+    public static final String UI_CHANGE = messageProps.getProperty("UI_CHANGE");
+    public static final String UI_SHOP_NAME = messageProps.getProperty("UI_SHOP_NAME");
+    public static final String UI_NEW_SHOP_NAME_PROMPT = messageProps.getProperty("UI_NEW_SHOP_NAME_PROMPT");
+    public static final String UI_SHOP_OWNER = messageProps.getProperty("UI_SHOP_OWNER");
+    public static final String UI_NEW_SHOP_OWNER_PROMPT = messageProps.getProperty("UI_NEW_SHOP_OWNER_PROMPT");
+    public static final String UI_UNKNOWN = messageProps.getProperty("UI_UNKNOWN");
+    public static final String UI_SHOP_RENTER = messageProps.getProperty("UI_SHOP_RENTER");
+    public static final String UI_UNTIL = messageProps.getProperty("UI_UNTIL");
+    public static final String UI_DEPOSIT = messageProps.getProperty("UI_DEPOSIT");
+    public static final String UI_DEPOSIT_PROMPT = messageProps.getProperty("UI_DEPOSIT_PROMPT");
+    public static final String UI_WITHDRAW = messageProps.getProperty("UI_WITHDRAW");
+    public static final String UI_WITHDRAW_PROMPT = messageProps.getProperty("UI_WITHDRAW_PROMPT");
+    public static final String UI_MANAGERS = messageProps.getProperty("UI_MANAGERS");
+    public static final String UI_ADD_MANAGER = messageProps.getProperty("UI_ADD_MANAGER");
+    public static final String UI_ADD_MANAGER_PROMPT = messageProps.getProperty("UI_ADD_MANAGER_PROMPT");
+    public static final String UI_ITEMS = messageProps.getProperty("UI_ITEMS");
+    public static final String UI_DESTROY = messageProps.getProperty("UI_DESTROY");
+    
     private static Messages instance = null;
 
     private Messages() {
