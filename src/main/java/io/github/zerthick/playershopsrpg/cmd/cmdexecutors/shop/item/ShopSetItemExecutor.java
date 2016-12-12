@@ -23,6 +23,7 @@ import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -73,12 +74,12 @@ public class ShopSetItemExecutor extends AbstractShopTransactionCmdExecutor {
                         transactionResult = shop.setItemSellPrice(player, itemIndex, doubleArg);
                         break;
                     default:
-                        transactionResult = new ShopTransactionResult("Unknown item attribute!");
+                        transactionResult = new ShopTransactionResult(Messages.SET_ITEM_UNKNOWN_ATTRIBUTE);
                 }
 
                 return transactionResult;
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot set item attributes from the console!");
+        }, Messages.SET_ITEM_CONSOLE_REJECT);
     }
 }

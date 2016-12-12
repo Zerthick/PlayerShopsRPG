@@ -23,6 +23,7 @@ import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -49,6 +50,6 @@ public class ShopRemoveItemExecutor extends AbstractShopTransactionCmdExecutor {
                 return shop.removeItem(player, itemIndexArgumentOptional.get(), itemAmountArgumentOptional.get());
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot remove items from shops from the console!");
+        }, Messages.REMOVE_ITEM_CONSOLE_REJECT);
     }
 }

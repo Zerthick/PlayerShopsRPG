@@ -19,10 +19,12 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -51,13 +53,14 @@ public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor 
                 ShopTransactionResult transactionResult = shop.destroyItem(player, itemIndexArgumentOptional.get());
 
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully destroyed item at index ",
-                            TextColors.AQUA, itemIndexArgumentOptional.get(), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_ITEM_SUCCESS,
+                            ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shop.getName(), Messages.DROPIN_ITEM_INDEX,
+                                    String.valueOf(itemIndexArgumentOptional.get())))));
                 }
 
                 return transactionResult;
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot destroy items from shops from the console!");
+        }, Messages.DESTROY_ITEM_CONSOLE_REJECT);
     }
 }

@@ -650,4 +650,13 @@ public class Shop {
     public boolean isForRent() {
         return getRenterUUID() == null && getRent() != -1;
     }
+
+    public boolean isEmpty() {
+        for (ShopItem item : getItems()) {
+            if (item.getItemAmount() != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -21,6 +21,7 @@ package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -45,6 +46,6 @@ public class ShopBrowseExecutor extends AbstractShopTransactionCmdExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-        return super.executeTransaction(src, args, (player, arg, shop) -> shop.showBuyView(player), "You cannot browse shops from the console!");
+        return super.executeTransaction(src, args, (player, arg, shop) -> shop.showBuyView(player), Messages.BROWSE_CONSOLE_REJECT);
     }
 }

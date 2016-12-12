@@ -21,6 +21,7 @@ package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.CuboidRegionBuffer;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -57,7 +58,7 @@ public class ShopSelectExecutor extends AbstractCmdExecutor {
 
             String selectType = "cuboid";
 
-            Optional<String> selectTypeOptional = args.getOne(Text.of("SelectionType"));
+            Optional<String> selectTypeOptional = args.getOne(Text.of(CommandArgs.SELECTION_TYPE));
 
             if (selectTypeOptional.isPresent()) {
                 selectType = selectTypeOptional.get();

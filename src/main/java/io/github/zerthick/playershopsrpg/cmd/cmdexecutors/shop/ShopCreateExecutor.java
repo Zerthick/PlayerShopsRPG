@@ -19,12 +19,15 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.region.Region;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.shop.Shop;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -48,7 +51,7 @@ public class ShopCreateExecutor extends AbstractCmdExecutor {
         if (src instanceof Player) {
             Player player = (Player) src;
 
-            Optional<String> shopNameOptional = args.getOne(Text.of("ShopName"));
+            Optional<String> shopNameOptional = args.getOne(CommandArgs.SHOP_NAME);
 
             if (shopNameOptional.isPresent()) {
                 String shopName = shopNameOptional.get();
@@ -63,23 +66,24 @@ public class ShopCreateExecutor extends AbstractCmdExecutor {
                                 new ShopContainer(new Shop(shopName, player.getUniqueId()), regionOptional.get());
                         shopManager.addShop(player.getWorld().getUniqueId(), shopContainer);
                         plugin.getRegionSelectBuffer().removeBuffer(player.getUniqueId());
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ", TextColors.AQUA, shopName, TextColors.BLUE, " encompassing points: ", regionOptional.get()));
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.CREATE_SUCCESS,
+                                ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shopName, Messages.DROPIN_SHOP_CORDS, regionOptional.get().toString()))));
                     } else {
                         player.sendMessage(ChatTypes.CHAT,
-                                Text.of(TextColors.RED, "Not enough points selected! Use /shop select to select a region."));
+                                Text.of(TextColors.RED, Messages.CREATE_NOT_ENOUGH_POINTS));
                     }
                 } else {
                     player.sendMessage(ChatTypes.CHAT,
-                            Text.of(TextColors.RED, "No region selected! Use /shop select to select a region."));
+                            Text.of(TextColors.RED, Messages.CREATE_NO_REGION));
                 }
             } else {
                 player.sendMessage(ChatTypes.CHAT,
-                        Text.of(TextColors.RED, "You must specify a shop name!"));
+                        Text.of(TextColors.RED, Messages.CREATE_NO_NAME));
             }
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of("You cannot create shop regions from the console!"));
+        src.sendMessage(Text.of(Messages.CREATE_CONSOLE_REJECT));
         return CommandResult.success();
     }
 }

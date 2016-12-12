@@ -20,10 +20,12 @@
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager;
 
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -50,13 +52,13 @@ public class ShopRemoveManagerExecutor extends AbstractShopTransactionCmdExecuto
                 User userArg = userArgumentOptional.get();
                 ShopTransactionResult transactionResult = shop.removeManager(player, userArg.getUniqueId());
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully removed ",
-                            TextColors.AQUA, userArg.getName(), TextColors.BLUE, " as a manager of ", TextColors.AQUA,
-                            shop.getName(), TextColors.BLUE, "!"));
+                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.REMOVE_MANAGER_SUCCESS,
+                            ImmutableMap.of(Messages.DROPIN_PLAYER_NAME, userArg.getName(), Messages.DROPIN_SHOP_NAME,
+                                    shop.getName()))));
                 }
                 return transactionResult;
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot remove managers from shops from the console!");
+        }, Messages.REMOVE_MANAGER_CONSOLE_REJECT);
     }
 }

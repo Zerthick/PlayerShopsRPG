@@ -19,10 +19,12 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import io.github.zerthick.playershopsrpg.utils.inventory.InventoryUtils;
+import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -47,24 +49,25 @@ public class ShopCreateItemExecutor extends AbstractShopTransactionCmdExecutor {
             if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
 
                 ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
-                ShopTransactionResult transactionResult = ShopTransactionResult.EMPTY;
+                ShopTransactionResult transactionResult;
 
                 //Check if this shop is allowed to hold this item
                 if (plugin.getShopTypeManager().isItemStackAllowed(item, shop.getType())) {
                     transactionResult = shop.createItem(player, item);
 
                     if (transactionResult == ShopTransactionResult.SUCCESS) {
-                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, "Successfully created ",
-                                TextColors.AQUA, InventoryUtils.getItemName(item), TextColors.BLUE, " in ", TextColors.AQUA, shop.getName()));
+                        player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.CREATE_ITEM_SUCCESS,
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, InventoryUtils.getItemNamePlain(item),
+                                        Messages.DROPIN_SHOP_NAME, shop.getName()))));
                     }
                 } else {
-                    transactionResult = new ShopTransactionResult(shop.getType() +
-                            "s are not allowed to buy and sell " + InventoryUtils.getItemName(item) + "!");
+                    transactionResult = new ShopTransactionResult(Messages.processDropins(Messages.CREATE_ITEM_TYPE_REJECT,
+                            ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shop.getName(), Messages.DROPIN_SHOP_TYPE, shop.getType())));
                 }
 
                 return transactionResult;
             }
             return ShopTransactionResult.EMPTY;
-        }, "You cannot create items in shops from the console!");
+        }, Messages.CREATE_ITEM_CONSOLE_REJECT);
     }
 }

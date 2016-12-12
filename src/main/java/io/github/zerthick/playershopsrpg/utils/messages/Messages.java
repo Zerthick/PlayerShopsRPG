@@ -30,12 +30,38 @@ public class Messages {
     // Drop-Ins
     public static final String DROPIN_PLAYER_NAME = "{PLAYER_NAME}";
     public static final String DROPIN_SHOP_NAME = "{SHOP_NAME}";
+    public static final String DROPIN_SHOP_TYPE = "{SHOP_TYPE}";
+    public static final String DROPIN_SHOP_CORDS = "{SHOP_CORDS}";
     public static final String DROPIN_ITEM_NAME = "{ITEM_NAME}";
     public static final String DROPIN_ITEM_AMOUNT = "{ITEM_AMOUNT}";
-
-
+    public static final String DROPIN_ITEM_INDEX = "{ITEM_INDEX}";
+    //Commands
+    public static final String YOU_ARE_NOT_IN_A_SHOP = "You are not in a shop!";
+    public static final String ADD_ITEM_CONSOLE_REJECT = "You cannot add items to shops from the console!";
+    public static final String BUY_ITEM_CONSOLE_REJECT = "You cannot buy items from shops from the console!";
+    public static final String CREATE_ITEM_SUCCESS = "Successfully created {ITEM_NAME} in {SHOP_NAME}.";
+    public static final String CREATE_ITEM_TYPE_REJECT = "{SHOP_TYPE}s are not allowed to buy and sell {ITEM_NAME}!";
+    public static final String CREATE_ITEM_CONSOLE_REJECT = "You cannot create items in shops from the console!";
+    public static final String DESTROY_ITEM_SUCCESS = "Successfully destroyed item at index {ITEM_INDEX} in {SHOP_NAME}";
+    public static final String DESTROY_ITEM_CONSOLE_REJECT = "You cannot destroy items from shops from the console!";
+    public static final String REMOVE_ITEM_CONSOLE_REJECT = "You cannot remove items from shops from the console!";
+    public static final String SELL_ITEM_CONSOLE_REJECT = "You cannot sell items to shops from the console!";
+    public static final String SET_ITEM_UNKNOWN_ATTRIBUTE = "Unknown item attribute!";
+    public static final String SET_ITEM_CONSOLE_REJECT = "You cannot set item attributes from the console!";
+    public static final String ADD_MANAGER_SUCCESS = "Successfully added {PLAYER_NAME} as manager of {SHOP_NAME}.";
+    public static final String ADD_MANAGER_CONSOLE_REJECT = "You cannot add managers to shops from the console!";
+    public static final String REMOVE_MANAGER_SUCCESS = "Successfully removed {PLAYER_NAME} as manager of {SHOP_NAME}.";
+    public static final String REMOVE_MANAGER_CONSOLE_REJECT = "You cannot remove managers from shops from the console!";
+    public static final String BALANCE_DEPOSIT_CONSOLE_REJECT = "You cannot deposit funds to shops from the console!";
+    public static final String BALANCE_WITHDRAW_CONSOLE_REJECT = "You cannot withdraw funds from shops from the console!";
+    public static final String BROWSE_CONSOLE_REJECT = "You cannot browse shops from the console!";
+    public static final String BUY_CONSOLE_REJECT = "You cannot buy shops from the console!";
+    public static final String CREATE_SUCCESS = "Successfully created {SHOP_NAME} encompassing points: {SHOP_CORDS}";
+    public static final String CREATE_NOT_ENOUGH_POINTS = "Not enough points selected! Use /shop select to select a region.";
+    public static final String CREATE_NO_REGION = "No region selected! Use /shop select to select a region.";
+    public static final String CREATE_NO_NAME = "You must specify a shop name!";
+    public static final String CREATE_CONSOLE_REJECT = "You cannot create shop regions from the console!";
     private final static Properties messageProps = ConfigManager.getInstance().loadMessages();
-
     //Shop Transactions
     public static final String YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP = messageProps.getProperty("YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP");
     public static final String THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP = messageProps.getProperty("THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP");
@@ -55,10 +81,6 @@ public class Messages {
     public static final String SHOP_DOES_NOT_SELL_ITEM = messageProps.getProperty("SHOP_DOES_NOT_SELL_ITEM");
     public static final String SHOP_DOES_NOT_HAVE_ENOUGH_ITEM = messageProps.getProperty("SHOP_DOES_NOT_HAVE_ENOUGH_ITEM");
     public static final String PLAYER_IS_NOT_A_MANAGER = messageProps.getProperty("PLAYER_IS_NOT_A_MANAGER");
-
-    //Commands
-
-
     private static Messages instance = null;
 
     private Messages() {
