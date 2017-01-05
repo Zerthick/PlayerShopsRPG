@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -37,7 +37,7 @@ spongestart {
     eula true
 
     //optional configs
-    spongeVanillaBuild '1.10.2-5.1.0-BETA-359'
+    spongeVanillaBuild '1.10.2-5.1.0-BETA-366'
     vanillaServerFolder 'run/vanilla'
 }
 
