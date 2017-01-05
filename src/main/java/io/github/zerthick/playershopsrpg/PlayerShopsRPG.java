@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -20,7 +20,7 @@
 package io.github.zerthick.playershopsrpg;
 
 import com.google.inject.Inject;
-import io.github.zerthick.playershopsrpg.cmd.PlayerShopsRPGCommandRegister;
+import io.github.zerthick.playershopsrpg.cmd.CommandRegister;
 import io.github.zerthick.playershopsrpg.cmd.callback.CallBackBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionBuffer;
 import io.github.zerthick.playershopsrpg.region.selectbuffer.RegionSelectBuffer;
@@ -52,7 +52,7 @@ import java.util.Optional;
 
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
-        version = "1.0.1",
+        version = "1.1.0",
         description = "A region-based player shop plugin.")
 public class PlayerShopsRPG {
 
@@ -129,8 +129,7 @@ public class PlayerShopsRPG {
         regionSelectBuffer = new RegionSelectBuffer();
 
         // Register Commands
-        PlayerShopsRPGCommandRegister commandRegister = new PlayerShopsRPGCommandRegister(this);
-        commandRegister.registerCmds();
+        CommandRegister.registerCommands(this);
 
         // Log Start Up to Console
         getLogger().info(
