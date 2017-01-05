@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -185,7 +185,7 @@ public class ShopViewUtils {
                                 ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set max " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
                 itemSell = Text.builder(item.getItemBuyPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemBuyPrice()).toPlain())
-                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_BUY_PROPMT,
+                        .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_BUY_PROMPT,
                                 ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set buy " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
                 itemBuy = Text.builder(item.getItemSellPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemSellPrice()).toPlain())
