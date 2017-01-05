@@ -53,7 +53,11 @@ import java.util.Optional;
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
         version = "1.1.0",
-        description = "A region-based player shop plugin.")
+        description = "A region-based player shop plugin.",
+        authors = {
+                "Zerthick"
+        }
+)
 public class PlayerShopsRPG {
 
     private ShopManager shopManager;
