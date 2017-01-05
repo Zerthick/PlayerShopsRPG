@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -21,10 +21,7 @@ package io.github.zerthick.playershopsrpg.utils.config;
 
 import com.google.common.reflect.TypeToken;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
-import io.github.zerthick.playershopsrpg.region.CuboidRegion;
-import io.github.zerthick.playershopsrpg.shop.Shop;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
-import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import io.github.zerthick.playershopsrpg.shop.ShopManager;
 import io.github.zerthick.playershopsrpg.shop.type.ShopType;
 import io.github.zerthick.playershopsrpg.shop.type.ShopTypeManager;
@@ -37,7 +34,6 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.slf4j.Logger;
 import org.spongepowered.api.asset.Asset;
 
@@ -56,13 +52,12 @@ public class ConfigManager {
 
     private ConfigManager() {
 
-        TypeSerializers.getDefaultSerializers()
-                .registerType(TypeToken.of(ShopItem.class), new ShopItemSerializer())
-                .registerType(TypeToken.of(Shop.class), new ShopSerializer())
-                .registerType(TypeToken.of(ShopContainer.class), new ShopContainerSerializer())
-                .registerType(TypeToken.of(CuboidRegion.class), new CuboidRegionSerializer())
-                .registerType(TypeToken.of(ShopType.class), new ShopTypeSerializer())
-        ;
+        CuboidRegionSerializer.register();
+        ShopTypeSerializer.register();
+        ShopContainerSerializer.register();
+        ShopItemSerializer.register();
+        ShopSerializer.register();
+
     }
 
     public static ConfigManager getInstance() {
