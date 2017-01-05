@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -29,23 +29,14 @@ import io.github.zerthick.playershopsrpg.permissions.Permissions;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PlayerShopsRPGCommandRegister {
+public class CommandRegister {
 
-    private PluginContainer container;
-    private PlayerShopsRPG plugin;
-
-    public PlayerShopsRPGCommandRegister(PlayerShopsRPG plugin) {
-        this.plugin = plugin;
-        this.container = plugin.getInstance();
-    }
-
-    public void registerCmds() {
+    public static void registerCommands(PlayerShopsRPG plugin) {
 
         // shop rent
         CommandSpec shopRentCommand = CommandSpec.builder()
