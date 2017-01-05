@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -20,25 +20,30 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 public class ShopItem {
 
-    private final ItemStack itemStack;
+    private final ItemStackSnapshot itemStackSnapshot;
     private int itemAmount;
     private int itemMaxAmount;
     private double itemBuyPrice;
     private double itemSellPrice;
 
-    public ShopItem(ItemStack itemStack, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
-        this.itemStack = itemStack;
+    public ShopItem(ItemStackSnapshot itemStackSnapshot, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
+        this.itemStackSnapshot = itemStackSnapshot;
         this.itemAmount = itemAmount;
         this.itemMaxAmount = itemMaxAmount;
         this.itemBuyPrice = itemBuyPrice;
         this.itemSellPrice = itemSellPrice;
     }
 
+    public ItemStackSnapshot getItemStackSnapShot() {
+        return itemStackSnapshot;
+    }
+
     public ItemStack getItemStack() {
-        return itemStack;
+        return itemStackSnapshot.createStack();
     }
 
     public int getItemAmount() {
