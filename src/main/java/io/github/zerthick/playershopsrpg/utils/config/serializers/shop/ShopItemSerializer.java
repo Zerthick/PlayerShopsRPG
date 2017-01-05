@@ -25,7 +25,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 public class ShopItemSerializer implements TypeSerializer<ShopItem> {
@@ -48,7 +47,7 @@ public class ShopItemSerializer implements TypeSerializer<ShopItem> {
 
     @Override
     public void serialize(TypeToken<?> type, ShopItem obj, ConfigurationNode value) throws ObjectMappingException {
-        value.getNode("itemStack").setValue(TypeToken.of(ItemStack.class), obj.getItemStackSnapShot());
+        value.getNode("itemStack").setValue(TypeToken.of(ItemStackSnapshot.class), obj.getItemStackSnapShot());
         value.getNode("itemAmount").setValue(obj.getItemAmount());
         value.getNode("itemMaxAmount").setValue(obj.getItemMaxAmount());
         value.getNode("itemBuyPrice").setValue(obj.getItemBuyPrice());
