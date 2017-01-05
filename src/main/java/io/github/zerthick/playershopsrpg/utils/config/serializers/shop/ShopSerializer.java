@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -25,6 +25,7 @@ import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
 import java.util.List;
 import java.util.Set;
@@ -32,6 +33,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ShopSerializer implements TypeSerializer<Shop> {
+
+    public static void register() {
+        TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(Shop.class), new ShopSerializer());
+    }
 
     @Override
     public Shop deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {

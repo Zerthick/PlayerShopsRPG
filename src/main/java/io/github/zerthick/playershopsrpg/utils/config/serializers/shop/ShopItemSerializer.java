@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -24,25 +24,31 @@ import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 public class ShopItemSerializer implements TypeSerializer<ShopItem> {
+
+    public static void register() {
+        TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(ShopItem.class), new ShopItemSerializer());
+    }
 
     @Override
     public ShopItem deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
 
-        ItemStack itemStack = value.getNode("itemStack").getValue(TypeToken.of(ItemStack.class));
+        ItemStackSnapshot itemStackSnapshot = value.getNode("itemStack").getValue(TypeToken.of(ItemStackSnapshot.class));
         int itemAmount = value.getNode("itemAmount").getInt();
         int itemMaxAmount = value.getNode("itemMaxAmount").getInt();
         double itemBuyPrice = value.getNode("itemBuyPrice").getDouble();
         double itemSellPrice = value.getNode("itemSellPrice").getDouble();
 
-        return new ShopItem(itemStack, itemAmount, itemMaxAmount, itemBuyPrice, itemSellPrice);
+        return new ShopItem(itemStackSnapshot, itemAmount, itemMaxAmount, itemBuyPrice, itemSellPrice);
     }
 
     @Override
     public void serialize(TypeToken<?> type, ShopItem obj, ConfigurationNode value) throws ObjectMappingException {
-        value.getNode("itemStack").setValue(TypeToken.of(ItemStack.class), obj.getItemStack());
+        value.getNode("itemStack").setValue(TypeToken.of(ItemStack.class), obj.getItemStackSnapShot());
         value.getNode("itemAmount").setValue(obj.getItemAmount());
         value.getNode("itemMaxAmount").setValue(obj.getItemMaxAmount());
         value.getNode("itemBuyPrice").setValue(obj.getItemBuyPrice());
