@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -102,7 +102,7 @@ public class Shop {
         //The item is not already in the shop, we need to add it
         ItemStack itemToAdd = itemStack.copy();
         itemToAdd.setQuantity(1);
-        ShopItem newShopItem = new ShopItem(itemToAdd, 0, -1, -1, -1);
+        ShopItem newShopItem = new ShopItem(itemToAdd.createSnapshot(), 0, -1, -1, -1);
         items.add(newShopItem);
         return ShopTransactionResult.SUCCESS;
     }
@@ -123,6 +123,11 @@ public class Shop {
     }
 
     public ShopTransactionResult buyItem(Player player, int index, int amount) {
+
+        //Amount Bounds Check
+        if (amount < 0) {
+            return new ShopTransactionResult(Messages.INVALID_ITEM_BUY_AMOUNT);
+        }
 
         //Bounds Check
         if (index >= 0 && index < items.size()) {
@@ -179,6 +184,11 @@ public class Shop {
     }
 
     public ShopTransactionResult sellItem(Player player, int index, int amount) {
+
+        //Amount Bounds Check
+        if (amount < 0) {
+            return new ShopTransactionResult(Messages.INVALID_ITEM_SELL_AMOUNT);
+        }
 
         //Bounds Check
         if (index >= 0 && index < items.size()) {

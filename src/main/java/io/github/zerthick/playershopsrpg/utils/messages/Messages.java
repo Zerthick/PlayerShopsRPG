@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -49,8 +49,10 @@ public class Messages {
     public static final String INVALID_SHOP_RENT_PRICE = messageProps.getProperty("INVALID_SHOP_RENT_PRICE");
     public static final String INVALID_SHOP_SELL_PRICE = messageProps.getProperty("INVALID_SHOP_SELL_PRICE");
     public static final String INVALID_ITEM_SELL_PRICE = messageProps.getProperty("INVALID_ITEM_SELL_PRICE");
+    public static final String INVALID_ITEM_SELL_AMOUNT = messageProps.getProperty("INVALID_ITEM_SELL_AMOUNT");
     public static final String INVALID_MAX_ITEM_AMOUNT = messageProps.getProperty("INVALID_MAX_ITEM_AMOUNT");
     public static final String INVALID_ITEM_BUY_PRICE = messageProps.getProperty("INVALID_ITEM_BUY_PRICE");
+    public static final String INVALID_ITEM_BUY_AMOUNT = messageProps.getProperty("INVALID_ITEM_BUY_AMOUNT");
     public static final String SHOP_DOES_NOT_BUY_ITEM = messageProps.getProperty("SHOP_DOES_NOT_BUY_ITEM");
     public static final String PLAYER_DOES_NOT_HAVE_ENOUGH_ITEM = messageProps.getProperty("PLAYER_DOES_NOT_HAVE_ENOUGH_ITEM");
     public static final String SHOP_DOES_NOT_HAVE_ENOUGH_FUNDS = messageProps.getProperty("SHOP_DOES_NOT_HAVE_ENOUGH_FUNDS");
@@ -117,7 +119,7 @@ public class Messages {
     public static final String UI_MANAGER = messageProps.getProperty("UI_MANAGER");
     public static final String UI_OWNER = messageProps.getProperty("UI_OWNER");
     public static final String UI_SET_ITEM_MAX_PROMPT = messageProps.getProperty("UI_SET_ITEM_MAX_PROMPT");
-    public static final String UI_SET_ITEM_BUY_PROPMT = messageProps.getProperty("UI_SET_ITEM_BUY_PROPMT");
+    public static final String UI_SET_ITEM_BUY_PROMPT = messageProps.getProperty("UI_SET_ITEM_BUY_PROMPT");
     public static final String UI_SET_ITEM_SELL_PROMPT = messageProps.getProperty("UI_SET_ITEM_SELL_PROMPT");
     public static final String UI_REMOVE = messageProps.getProperty("UI_REMOVE");
     public static final String UI_REMOVE_PROMPT = messageProps.getProperty("UI_REMOVE_PROMPT");
