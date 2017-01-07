@@ -75,7 +75,7 @@ public class ShopViewUtils {
             Text itemBuy = Text.of(item.getItemSellPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemSellPrice()));
 
             //Add the appropriate actions to the text
-            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
+            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
             Text buy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY) && item.getItemSellPrice() != -1) {
                 if (item.getItemAmount() != 0) {
@@ -193,7 +193,7 @@ public class ShopViewUtils {
                                 ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set sell " + i + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
-            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
+            itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack())).style(TextStyles.UNDERLINE).build();
 
             Text remove = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)) {
@@ -382,7 +382,7 @@ public class ShopViewUtils {
                 }
 
                 Text itemName = InventoryUtils.getItemName(items.get(i).getItemStack());
-                itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
+                itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack())).style(TextStyles.UNDERLINE).build();
 
                 contents.add(Text.of(itemName, " ", destroyItem));
                 contents.add(Text.of(""));

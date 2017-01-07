@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -29,7 +29,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
@@ -46,9 +45,9 @@ public class ShopCreateItemExecutor extends AbstractShopTransactionCmdExecutor {
 
         return super.executeTransaction(src, args, (player, arg, shop) -> {
 
-            if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+            if (player.getItemInHand().isPresent()) {
 
-                ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
+                ItemStack item = player.getItemInHand().get();
                 ShopTransactionResult transactionResult;
 
                 //Check if this shop is allowed to hold this item

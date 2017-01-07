@@ -23,7 +23,8 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackComparators;
-import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.entity.HumanInventory;
+import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.text.Text;
 
 import java.util.Comparator;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 public class InventoryUtils {
 
-    public static int getItemCount(PlayerInventory inventory, ItemStack itemStack) {
+    public static int getItemCount(HumanInventory inventory, ItemStack itemStack) {
 
         ItemStack copy = itemStack.copy();
         copy.setQuantity(-1);
@@ -39,11 +40,11 @@ public class InventoryUtils {
         return inventory.query(copy).totalItems();
     }
 
-    public static int getAvailableSpace(PlayerInventory inventory, ItemStack itemStack) {
+    public static int getAvailableSpace(HumanInventory inventory, ItemStack itemStack) {
 
         int total = 0;
 
-        for (Inventory slot : inventory.getMain().slots()) {
+        for (Inventory slot : inventory.query(GridInventory.class)) {
             Optional<ItemStack> itemStackOptional = slot.peek();
             if (itemStackOptional.isPresent()) {
                 if (itemStackEqualsIgnoreSize(itemStack, itemStackOptional.get())) {
@@ -68,7 +69,7 @@ public class InventoryUtils {
         return total;
     }
 
-    public static int addItem(PlayerInventory inventory, ItemStack itemStack, int amount) {
+    public static int addItem(HumanInventory inventory, ItemStack itemStack, int amount) {
 
         int overflow = 0;
         int total = amount;
@@ -95,7 +96,7 @@ public class InventoryUtils {
         return overflow;
     }
 
-    public static int removeItem(PlayerInventory inventory, ItemStack itemStack, int amount) {
+    public static int removeItem(HumanInventory inventory, ItemStack itemStack, int amount) {
 
         int underflow = 0;
         int total = amount;
