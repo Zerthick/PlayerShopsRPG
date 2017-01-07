@@ -37,10 +37,10 @@ spongestart {
     eula true
 
     //optional configs
-    spongeVanillaBuild '1.10.2-5.1.0-BETA-366'
+    spongeVanillaBuild '1.8.9-4.2.0-BETA-352'
     vanillaServerFolder 'run/vanilla'
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:5.0.0'
+    compile 'org.spongepowered:spongeapi:4.0.0'
 }
