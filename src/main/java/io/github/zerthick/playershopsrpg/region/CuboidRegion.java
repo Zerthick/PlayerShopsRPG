@@ -21,18 +21,32 @@ package io.github.zerthick.playershopsrpg.region;
 
 import com.flowpowered.math.vector.Vector3i;
 
+import java.util.UUID;
+
 public class CuboidRegion implements Region {
 
+    private final UUID regionUUID;
     private Vector3i a;
     private Vector3i b;
 
     public CuboidRegion(Vector3i parA, Vector3i parB) {
+        this.regionUUID = UUID.randomUUID();
+        normalize(parA, parB);
+    }
+
+    public CuboidRegion(UUID regionUUID, Vector3i parA, Vector3i parB) {
+        this.regionUUID = regionUUID;
         normalize(parA, parB);
     }
 
     @Override
     public String getType() {
         return "cuboid";
+    }
+
+    @Override
+    public UUID getUUID() {
+        return this.regionUUID;
     }
 
     @Override
