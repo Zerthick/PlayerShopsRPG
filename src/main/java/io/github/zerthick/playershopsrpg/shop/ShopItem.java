@@ -22,8 +22,11 @@ package io.github.zerthick.playershopsrpg.shop;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
+import java.util.UUID;
+
 public class ShopItem {
 
+    private final UUID shopItemUUID;
     private final ItemStackSnapshot itemStackSnapshot;
     private int itemAmount;
     private int itemMaxAmount;
@@ -31,12 +34,24 @@ public class ShopItem {
     private double itemSellPrice;
 
     public ShopItem(ItemStackSnapshot itemStackSnapshot, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
+        this.shopItemUUID = UUID.randomUUID();
         this.itemStackSnapshot = itemStackSnapshot;
         this.itemAmount = itemAmount;
         this.itemMaxAmount = itemMaxAmount;
         this.itemBuyPrice = itemBuyPrice;
         this.itemSellPrice = itemSellPrice;
     }
+
+    public ShopItem(UUID shopItemUUID, ItemStackSnapshot itemStackSnapshot, int itemAmount, int itemMaxAmount, double itemBuyPrice, double itemSellPrice) {
+        this.shopItemUUID = shopItemUUID;
+        this.itemStackSnapshot = itemStackSnapshot;
+        this.itemAmount = itemAmount;
+        this.itemMaxAmount = itemMaxAmount;
+        this.itemBuyPrice = itemBuyPrice;
+        this.itemSellPrice = itemSellPrice;
+    }
+
+    public UUID getShopItemUUID() { return shopItemUUID; }
 
     public ItemStackSnapshot getItemStackSnapShot() {
         return itemStackSnapshot;
