@@ -30,6 +30,7 @@ import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.ShopConta
 import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.ShopItemSerializer;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.ShopSerializer;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.shop.type.ShopTypeSerializer;
+import io.github.zerthick.playershopsrpg.utils.config.sql.SQLDataUtil;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -39,6 +40,7 @@ import org.spongepowered.api.asset.Asset;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -94,6 +96,12 @@ public class ConfigManager {
             } catch (ObjectMappingException e) {
                 logger.warn("Error mapping shops config! Error:" + e.getMessage());
             }
+        }
+
+        try {
+            SQLDataUtil.createTables();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
 
         return new ShopManager(new HashMap<>(), plugin);

@@ -148,4 +148,23 @@ public class SQLUtil {
 
         connection.close();
     }
+
+    public static void executeStatement(String sql) throws SQLException {
+        executeStatement(sql, resultSet -> {
+        });
+    }
+
+    public static void executeStatement(String sql, Consumer<ResultSet> consumer) throws SQLException {
+        ResultSet resultSet;
+
+        Connection connection = getDataSource().getConnection();
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        resultSet = statement.executeQuery();
+
+        consumer.accept(resultSet);
+
+        connection.close();
+    }
 }
