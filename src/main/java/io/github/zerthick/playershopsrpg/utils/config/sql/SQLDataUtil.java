@@ -60,5 +60,6 @@ public class SQLDataUtil {
         List<String> columns =
                 ImmutableList.of("SHOP_ID UUID", "MANAGER_ID UUID", "PRIMARY KEY(SHOP_ID, MANAGER_ID)",
                         "FOREIGN KEY(SHOP_ID) REFERENCES SHOP(ID) ON DELETE CASCADE");
+        SQLUtil.createTable("SHOP_MANAGERS", columns);
     }
 }
