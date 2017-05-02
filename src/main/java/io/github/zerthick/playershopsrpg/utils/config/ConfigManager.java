@@ -40,7 +40,6 @@ import org.spongepowered.api.asset.Asset;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -78,6 +77,8 @@ public class ConfigManager {
         File shopsFile = new File(plugin.getDefaultConfigDir().toFile(), "shops.conf");
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
+        SQLDataUtil.createTables(logger);
+
         if (shopsFile.exists()) {
             try {
                 CommentedConfigurationNode shopsConfig = loader.load();
@@ -96,12 +97,6 @@ public class ConfigManager {
             } catch (ObjectMappingException e) {
                 logger.warn("Error mapping shops config! Error:" + e.getMessage());
             }
-        }
-
-        try {
-            SQLDataUtil.createTables();
-        } catch (SQLException e) {
-            logger.error(e.getMessage());
         }
 
         return new ShopManager(new HashMap<>(), plugin);
@@ -123,6 +118,8 @@ public class ConfigManager {
         } catch (IOException | ObjectMappingException e) {
             logger.warn("Error saving shops config! Error:" + e.getMessage());
         }
+
+        plugin.getShopManager().getShopMap().forEach((uuid, shopContainers) -> shopContainers.forEach(shopContainer -> SQLDataUtil.saveShop(shopContainer.getShop(), logger)));
     }
 
     public ShopTypeManager loadShopTypes() {

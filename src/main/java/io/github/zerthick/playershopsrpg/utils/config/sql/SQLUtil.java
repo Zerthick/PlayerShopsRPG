@@ -28,7 +28,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -104,38 +103,6 @@ public class SQLUtil {
         connection.close();
     }
 
-    public static void merge(String tableName, String primaryKey, String primaryKeyValue, List<String> values) throws SQLException {
-
-        Connection connection = getDataSource().getConnection();
-
-        PreparedStatement statement = connection.prepareStatement("MERGE INTO " + tableName.toUpperCase() +
-                " KEY(" + primaryKey + ")" +
-                "VALUES(" + prefix(primaryKeyValue) + ", " +
-                values.stream().map(SQLUtil::prefix).collect(Collectors.joining(", ")) +
-                ")"
-        );
-
-        statement.executeUpdate();
-
-        connection.close();
-    }
-
-    public static void mergeMap(String tableName, String primaryKey, Map<String, List<String>> primaryKeyValueMap) throws SQLException {
-
-        Connection connection = getDataSource().getConnection();
-
-        PreparedStatement statement = connection.prepareStatement("MERGE INTO " + tableName.toUpperCase() +
-                " KEY(" + primaryKey + ")" +
-                " VALUES(" + primaryKeyValueMap.entrySet().stream()
-                .map(stringListEntry -> prefix(stringListEntry.getKey().toUpperCase()) + ", " + stringListEntry.getValue().stream().map(SQLUtil::prefix).collect(Collectors.joining(", ")))
-                .collect(Collectors.joining("), (")) +
-                ")"
-        );
-        statement.executeUpdate();
-
-        connection.close();
-    }
-
     public static void delete(String tableName, String primaryKey, String primaryKeyValue) throws SQLException {
 
         Connection connection = getDataSource().getConnection();
@@ -149,12 +116,12 @@ public class SQLUtil {
         connection.close();
     }
 
-    public static void executeStatement(String sql) throws SQLException {
-        executeStatement(sql, resultSet -> {
+    public static void executeQuery(String sql) throws SQLException {
+        executeQuery(sql, resultSet -> {
         });
     }
 
-    public static void executeStatement(String sql, Consumer<ResultSet> consumer) throws SQLException {
+    public static void executeQuery(String sql, Consumer<ResultSet> consumer) throws SQLException {
         ResultSet resultSet;
 
         Connection connection = getDataSource().getConnection();
@@ -165,6 +132,15 @@ public class SQLUtil {
 
         consumer.accept(resultSet);
 
+        connection.close();
+    }
+
+    public static void executeUpdate(String sql) throws SQLException {
+        Connection connection = getDataSource().getConnection();
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        statement.executeUpdate();
         connection.close();
     }
 }
