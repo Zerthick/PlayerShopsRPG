@@ -271,7 +271,7 @@ public class SQLDataUtil {
                         String regionType = resultSet.getString("TYPE");
                         Region region = ShopRegionHOCONSerializer.deserializeShopRegion(resultSet.getString("DATA"), regionType);
                         switch (region.getType()) {
-                            case "cubiod":
+                            case "cuboid":
                                 CuboidRegion cuboidRegion = (CuboidRegion) region;
                                 region = new CuboidRegion(regionID, cuboidRegion.getA(), cuboidRegion.getB());
                                 break;
