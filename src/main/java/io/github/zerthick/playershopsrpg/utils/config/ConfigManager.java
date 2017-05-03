@@ -91,7 +91,7 @@ public class ConfigManager {
                 if(shopContainerMap == null) {
                     shopContainerMap = new HashMap<>();
                 }
-                shopsFile.delete();
+                shopsFile.renameTo(new File(plugin.getDefaultConfigDir().toFile(), "shops_old.conf"));
                 return new ShopManager(shopContainerMap, plugin);
             } catch (IOException e) {
                 logger.warn("Error loading shops config! Error:" + e.getMessage());
