@@ -116,6 +116,7 @@ public class Shop {
 
         //Bounds Check
         if (index >= 0 && index < items.size()) {
+            items.remove(index);
             return ShopTransactionResult.SUCCESS;
         }
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
@@ -618,6 +619,14 @@ public class Shop {
 
     public List<ShopItem> getItems() {
         return items;
+    }
+
+    public Optional<ShopItem> getShopItem(int index) {
+        //Bounds Check
+        if (index >= 0 && index < items.size()) {
+            return Optional.of(items.get(index));
+        }
+        return Optional.empty();
     }
 
     public UUID getOwnerUUID() {

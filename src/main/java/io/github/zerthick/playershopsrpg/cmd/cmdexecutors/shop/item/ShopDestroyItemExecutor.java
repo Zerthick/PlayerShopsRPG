@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
+import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
 import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
@@ -49,7 +50,7 @@ public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor 
             Optional<Integer> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
 
             if (itemIndexArgumentOptional.isPresent()) {
-
+                ShopItem
                 ShopTransactionResult transactionResult = shop.destroyItem(player, itemIndexArgumentOptional.get());
 
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
