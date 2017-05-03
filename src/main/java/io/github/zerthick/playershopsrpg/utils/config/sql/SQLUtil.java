@@ -39,10 +39,6 @@ public class SQLUtil {
         return sql.getDataSource("jdbc:h2:./config/playershopsrpg/data");
     }
 
-    private static String prefix(String string) {
-        return '\'' + string + '\'';
-    }
-
     public static void createTable(String name, List<String> columns) throws SQLException {
 
         Connection connection = getDataSource().getConnection();
