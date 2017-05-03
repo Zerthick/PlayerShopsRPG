@@ -78,7 +78,9 @@ public class ConfigManager {
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
         SQLDataUtil.createTables(logger);
-        SQLDataUtil.loadShop(UUID.fromString("62466f22-b58b-48fc-b8b5-abfd7081155a"), logger);
+
+        Map<UUID, Set<ShopContainer>> otherMap = SQLDataUtil.loadShopContainers(logger);
+
         if (shopsFile.exists()) {
             try {
                 CommentedConfigurationNode shopsConfig = loader.load();
@@ -119,7 +121,7 @@ public class ConfigManager {
             logger.warn("Error saving shops config! Error:" + e.getMessage());
         }
 
-        plugin.getShopManager().getShopMap().forEach((uuid, shopContainers) -> shopContainers.forEach(shopContainer -> SQLDataUtil.saveShop(shopContainer.getShop(), logger)));
+        plugin.getShopManager().getShopMap().forEach((uuid, shopContainers) -> SQLDataUtil.saveShopContainers(uuid, shopContainers, logger));
     }
 
     public ShopTypeManager loadShopTypes() {

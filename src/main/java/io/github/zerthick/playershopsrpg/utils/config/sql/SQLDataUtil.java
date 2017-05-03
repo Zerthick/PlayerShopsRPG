@@ -20,9 +20,13 @@
 package io.github.zerthick.playershopsrpg.utils.config.sql;
 
 import com.google.common.collect.ImmutableList;
+import io.github.zerthick.playershopsrpg.region.CuboidRegion;
+import io.github.zerthick.playershopsrpg.region.Region;
 import io.github.zerthick.playershopsrpg.shop.Shop;
+import io.github.zerthick.playershopsrpg.shop.ShopContainer;
 import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import io.github.zerthick.playershopsrpg.utils.config.serializers.ItemStackHOCONSerializer;
+import io.github.zerthick.playershopsrpg.utils.config.serializers.ShopRegionHOCONSerializer;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -156,7 +160,7 @@ public class SQLDataUtil {
         }
     }
 
-    public static void saveShop(Shop shop, Logger logger) {
+    private static void saveShop(Shop shop, Logger logger) {
         String id = shop.getUUID().toString();
         String name = shop.getName();
         String ownerId = shop.getOwnerUUID().toString();
@@ -181,7 +185,7 @@ public class SQLDataUtil {
         }
     }
 
-    public static Shop loadShop(UUID shopUUID, Logger logger) {
+    private static Shop loadShop(UUID shopUUID, Logger logger) {
 
         final Shop[] shop = {null};
 
@@ -209,7 +213,80 @@ public class SQLDataUtil {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return shop[0];
+    }
+
+    public static void saveShopContainter(UUID worldUUID, ShopContainer shopContainer, Logger logger) {
+
+        try {
+            saveShop(shopContainer.getShop(), logger);
+            Region shopRegion = shopContainer.getShopRegion();
+            UUID regionID = shopRegion.getUUID();
+            String type = shopRegion.getType();
+            String data = ShopRegionHOCONSerializer.serializeShopRegion(shopRegion);
+            UUID shopID = shopContainer.getShop().getUUID();
+            SQLUtil.executeUpdate("MERGE INTO SHOP_REGION VALUES ('" + regionID + "', '" + type
+                    + "', '" + data + "', '" + shopID + "', '" + worldUUID + "')");
+        } catch (ObjectMappingException | IOException | SQLException e) {
+            logger.info(e.getMessage());
+        }
+    }
+
+    public static void saveShopContainers(UUID worldUUID, Set<ShopContainer> shopContainers, Logger logger) {
+        List<String> values = new ArrayList<>();
+        shopContainers.forEach(shopContainer -> {
+            saveShop(shopContainer.getShop(), logger);
+            Region shopRegion = shopContainer.getShopRegion();
+            UUID regionID = shopRegion.getUUID();
+            String type = shopRegion.getType();
+            String data = "";
+            try {
+                data = ShopRegionHOCONSerializer.serializeShopRegion(shopRegion);
+            } catch (ObjectMappingException | IOException e) {
+                logger.info(e.getMessage());
+            }
+            UUID shopID = shopContainer.getShop().getUUID();
+            values.add("('" + regionID + "', '" + type
+                    + "', '" + data + "', '" + shopID + "', '" + worldUUID + "')");
+        });
+        try {
+            SQLUtil.executeUpdate("MERGE INTO SHOP_REGION VALUES" + values.stream().collect(Collectors.joining(", ")));
+        } catch (SQLException e) {
+            logger.info(e.getMessage());
+        }
+    }
+
+    public static Map<UUID, Set<ShopContainer>> loadShopContainers(Logger logger) {
+
+        Map<UUID, Set<ShopContainer>> shopContainerMap = new HashMap<>();
+
+        try {
+            SQLUtil.select("SHOP_REGION", resultSet -> {
+                try {
+                    while (resultSet.next()) {
+                        UUID worldUUID = (UUID) resultSet.getObject("WORLD_ID");
+                        Set<ShopContainer> worldContainerSet = shopContainerMap.getOrDefault(worldUUID, new HashSet<>());
+                        UUID regionID = (UUID) resultSet.getObject("ID");
+                        String regionType = resultSet.getString("TYPE");
+                        Region region = ShopRegionHOCONSerializer.deserializeShopRegion(resultSet.getString("DATA"), regionType);
+                        switch (region.getType()) {
+                            case "cubiod":
+                                CuboidRegion cuboidRegion = (CuboidRegion) region;
+                                region = new CuboidRegion(regionID, cuboidRegion.getA(), cuboidRegion.getB());
+                                break;
+                        }
+                        Shop shop = loadShop((UUID) resultSet.getObject("SHOP_ID"), logger);
+                        worldContainerSet.add(new ShopContainer(shop, region));
+                        shopContainerMap.put(worldUUID, worldContainerSet);
+                    }
+                } catch (SQLException | IOException | ObjectMappingException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return shopContainerMap;
     }
 }
