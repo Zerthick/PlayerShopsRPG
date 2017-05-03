@@ -78,7 +78,7 @@ public class ConfigManager {
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
         SQLDataUtil.createTables(logger);
-
+        SQLDataUtil.loadShop(UUID.fromString("62466f22-b58b-48fc-b8b5-abfd7081155a"), logger);
         if (shopsFile.exists()) {
             try {
                 CommentedConfigurationNode shopsConfig = loader.load();

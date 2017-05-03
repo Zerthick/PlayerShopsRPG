@@ -180,4 +180,36 @@ public class SQLDataUtil {
             logger.info(e.getMessage());
         }
     }
+
+    public static Shop loadShop(UUID shopUUID, Logger logger) {
+
+        final Shop[] shop = {null};
+
+        try {
+            SQLUtil.select("SHOP", "ID", shopUUID.toString(), resultSet -> {
+                try {
+                    if (resultSet.next()) {
+                        UUID id = (UUID) resultSet.getObject("ID");
+                        String name = resultSet.getString("NAME");
+                        UUID ownerId = (UUID) resultSet.getObject("OWNER_ID");
+                        UUID renterId = (UUID) resultSet.getObject("RENTER_ID");
+                        boolean unlimitedMoney = resultSet.getBoolean("UNLIMITED_MONEY");
+                        boolean unlimitedStock = resultSet.getBoolean("UNLIMITED_STOCK");
+                        String type = resultSet.getString("TYPE");
+                        double price = resultSet.getBigDecimal("PRICE").doubleValue();
+                        double rent = resultSet.getBigDecimal("RENT").doubleValue();
+                        Set<UUID> managers = loadShopManagers(shopUUID, logger);
+                        List<ShopItem> items = loadShopItems(shopUUID, logger);
+                        shop[0] = new Shop(id, name, ownerId, renterId, managers, items, unlimitedMoney, unlimitedStock, type, price, rent);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return shop[0];
+    }
 }
