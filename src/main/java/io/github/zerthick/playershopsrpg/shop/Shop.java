@@ -116,7 +116,6 @@ public class Shop {
 
         //Bounds Check
         if (index >= 0 && index < items.size()) {
-            items.remove(index);
             return ShopTransactionResult.SUCCESS;
         }
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);

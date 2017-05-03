@@ -79,8 +79,6 @@ public class ConfigManager {
 
         SQLDataUtil.createTables(logger);
 
-        Map<UUID, Set<ShopContainer>> otherMap = SQLDataUtil.loadShopContainers(logger);
-
         if (shopsFile.exists()) {
             try {
                 CommentedConfigurationNode shopsConfig = loader.load();
@@ -93,34 +91,21 @@ public class ConfigManager {
                 if(shopContainerMap == null) {
                     shopContainerMap = new HashMap<>();
                 }
+                shopsFile.delete();
                 return new ShopManager(shopContainerMap, plugin);
             } catch (IOException e) {
                 logger.warn("Error loading shops config! Error:" + e.getMessage());
             } catch (ObjectMappingException e) {
                 logger.warn("Error mapping shops config! Error:" + e.getMessage());
             }
+        } else {
+            return new ShopManager(SQLDataUtil.loadShopContainers(logger), plugin);
         }
 
         return new ShopManager(new HashMap<>(), plugin);
     }
 
     public void saveShops() {
-        File shopsFile = new File(plugin.getDefaultConfigDir().toFile(), "shops.conf");
-        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
-
-        try {
-            CommentedConfigurationNode shopsConfig = loader.load();
-
-            Map<UUID, List<ShopContainer>> shopContainerMap = plugin.getShopManager().getShopMap()
-                    .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().collect(Collectors.toList())));
-
-            shopsConfig.setValue(new TypeToken<Map<UUID, List<ShopContainer>>>() {
-            }, shopContainerMap);
-            loader.save(shopsConfig);
-        } catch (IOException | ObjectMappingException e) {
-            logger.warn("Error saving shops config! Error:" + e.getMessage());
-        }
-
         plugin.getShopManager().getShopMap().forEach((uuid, shopContainers) -> SQLDataUtil.saveShopContainers(uuid, shopContainers, logger));
     }
 

@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractCmdExecutor;
 import io.github.zerthick.playershopsrpg.shop.ShopContainer;
+import io.github.zerthick.playershopsrpg.utils.config.sql.SQLDataUtil;
 import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -53,7 +54,7 @@ public class ShopDestroyExecutor extends AbstractCmdExecutor {
                 ShopContainer shopContainer = shopContainerOptional.get();
                 if (shopContainer.getShop().isEmpty()) {
                     if (shopContainer.getShop().hasOwnerPermissions(player)) {
-                        shopManager.removeShop(player);
+                        shopManager.removeShop(player).ifPresent(container -> SQLDataUtil.deleteShop(container.getShop().getUUID(), plugin.getLogger()));
                         player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_SUCCESS,
                                 ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shopContainer.getShop().getName()))));
                     } else {

@@ -69,4 +69,5 @@ public class EconManager {
     public boolean hasAccount(UUID uuid){
         return economyService.hasAccount(uuid);
     }
+
 }

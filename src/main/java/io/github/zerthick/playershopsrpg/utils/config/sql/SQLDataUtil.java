@@ -89,11 +89,11 @@ public class SQLDataUtil {
                         managerSet.add((UUID) resultSet.getObject("MANAGER_ID"));
                     }
                 } catch (SQLException e) {
-                    logger.info(e.getMessage());
+                    logger.error(e.getMessage());
                 }
             });
         } catch (SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
         return managerSet;
     }
@@ -104,7 +104,7 @@ public class SQLDataUtil {
             try {
                 SQLUtil.executeUpdate("MERGE INTO SHOP_MANAGERS VALUES" + values.stream().collect(Collectors.joining(", ")));
             } catch (SQLException e) {
-                logger.info(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
     }
@@ -129,7 +129,7 @@ public class SQLDataUtil {
                 }
             });
         } catch (SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
 
         return items;
@@ -156,7 +156,7 @@ public class SQLDataUtil {
             try {
                 SQLUtil.executeUpdate("MERGE INTO SHOP_ITEM VALUES" + values.stream().collect(Collectors.joining(", ")));
             } catch (SQLException e) {
-                logger.info(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
     }
@@ -185,13 +185,13 @@ public class SQLDataUtil {
                     preparedStatement.setBigDecimal(8, BigDecimal.valueOf(price));
                     preparedStatement.setBigDecimal(9, BigDecimal.valueOf(rent));
                 } catch (SQLException e) {
-                    logger.info(e.getMessage());
+                    logger.error(e.getMessage());
                 }
             });
             saveShopItems(shop.getUUID(), shop.getItems(), logger);
             saveShopManagers(shop.getUUID(), shop.getManagerUUIDSet(), logger);
         } catch (SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -217,11 +217,11 @@ public class SQLDataUtil {
                         shop[0] = new Shop(id, name, ownerId, renterId, managers, items, unlimitedMoney, unlimitedStock, type, price, rent);
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             });
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return shop[0];
     }
@@ -247,7 +247,7 @@ public class SQLDataUtil {
                 }
             });
         } catch (ObjectMappingException | IOException | SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -285,7 +285,7 @@ public class SQLDataUtil {
                 }
             });
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return shopContainerMap;
@@ -295,7 +295,7 @@ public class SQLDataUtil {
         try {
             SQLUtil.delete("SHOP", "ID", shopUUID.toString());
         } catch (SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -303,7 +303,22 @@ public class SQLDataUtil {
         try {
             SQLUtil.delete("SHOP_ITEM", "ID", shopItemUUID.toString());
         } catch (SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static void deleteShopManager(UUID managagerID, UUID shopID, Logger logger) {
+        try {
+            SQLUtil.executeUpdate("DELETE FROM SHOP_MANAGER WHERE SHOP_ID = ? AND MANAGER_ID = ?", preparedStatement -> {
+                try {
+                    preparedStatement.setObject(1, shopID);
+                    preparedStatement.setObject(2, managagerID);
+                } catch (SQLException e) {
+                    logger.error(e.getMessage());
+                }
+            });
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
     }
 }

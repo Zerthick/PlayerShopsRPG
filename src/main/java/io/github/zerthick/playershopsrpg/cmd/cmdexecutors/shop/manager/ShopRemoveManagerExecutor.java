@@ -25,6 +25,7 @@ import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.config.sql.SQLDataUtil;
 import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -52,6 +53,7 @@ public class ShopRemoveManagerExecutor extends AbstractShopTransactionCmdExecuto
                 User userArg = userArgumentOptional.get();
                 ShopTransactionResult transactionResult = shop.removeManager(player, userArg.getUniqueId());
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
+                    SQLDataUtil.deleteShopManager(userArg.getUniqueId(), shop.getUUID(), plugin.getLogger());
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.REMOVE_MANAGER_SUCCESS,
                             ImmutableMap.of(Messages.DROPIN_PLAYER_NAME, userArg.getName(), Messages.DROPIN_SHOP_NAME,
                                     shop.getName()))));
