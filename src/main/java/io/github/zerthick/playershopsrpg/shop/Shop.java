@@ -75,11 +75,7 @@ public class Shop {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
-        if (renterUUID != null && renterUUID.toString().equals("00000000-0000-0000-0000-000000000000")) {
-            this.renterUUID = null;
-        } else {
-            this.renterUUID = renterUUID;
-        }
+        this.renterUUID = renterUUID;
         this.managerUUIDset = new HashSet<>(managerUUIDset);
         this.items = new ArrayList<>(items);
         this.unlimitedMoney = unlimitedMoney;

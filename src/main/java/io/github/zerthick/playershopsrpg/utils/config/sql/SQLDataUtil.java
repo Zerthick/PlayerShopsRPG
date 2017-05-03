@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -161,13 +162,10 @@ public class SQLDataUtil {
     }
 
     private static void saveShop(Shop shop, Logger logger) {
-        String id = shop.getUUID().toString();
+        UUID id = shop.getUUID();
         String name = shop.getName();
-        String ownerId = shop.getOwnerUUID().toString();
-        String renterId = "";
-        if (shop.getRenterUUID() != null) {
-            renterId = shop.getRenterUUID().toString();
-        }
+        UUID ownerId = shop.getOwnerUUID();
+        UUID renterId = shop.getRenterUUID();
         boolean unlimitedMoney = shop.isUnlimitedMoney();
         boolean unlimitedStock = shop.isUnlimitedStock();
         String type = shop.getType();
@@ -175,9 +173,21 @@ public class SQLDataUtil {
         double rent = shop.getRent();
 
         try {
-            SQLUtil.executeUpdate("MERGE INTO SHOP VALUES ('" + id + "', '" + name + "', '" + ownerId + "', '" +
-                    renterId + "', " + unlimitedMoney + ", " + unlimitedStock + ", '" + type + "', " + price + ", " +
-                    rent + ")");
+            SQLUtil.executeUpdate("MERGE INTO SHOP VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", preparedStatement -> {
+                try {
+                    preparedStatement.setObject(1, id);
+                    preparedStatement.setString(2, name);
+                    preparedStatement.setObject(3, ownerId);
+                    preparedStatement.setObject(4, renterId);
+                    preparedStatement.setBoolean(5, unlimitedMoney);
+                    preparedStatement.setBoolean(6, unlimitedStock);
+                    preparedStatement.setString(7, type);
+                    preparedStatement.setBigDecimal(8, BigDecimal.valueOf(price));
+                    preparedStatement.setBigDecimal(9, BigDecimal.valueOf(rent));
+                } catch (SQLException e) {
+                    logger.info(e.getMessage());
+                }
+            });
             saveShopItems(shop.getUUID(), shop.getItems(), logger);
             saveShopManagers(shop.getUUID(), shop.getManagerUUIDSet(), logger);
         } catch (SQLException e) {
@@ -225,34 +235,25 @@ public class SQLDataUtil {
             String type = shopRegion.getType();
             String data = ShopRegionHOCONSerializer.serializeShopRegion(shopRegion);
             UUID shopID = shopContainer.getShop().getUUID();
-            SQLUtil.executeUpdate("MERGE INTO SHOP_REGION VALUES ('" + regionID + "', '" + type
-                    + "', '" + data + "', '" + shopID + "', '" + worldUUID + "')");
+            SQLUtil.executeUpdate("MERGE INTO SHOP_REGION VALUES (?, ?, ?, ?, ?)", preparedStatement -> {
+                try {
+                    preparedStatement.setObject(1, regionID);
+                    preparedStatement.setString(2, type);
+                    preparedStatement.setString(3, data);
+                    preparedStatement.setObject(4, shopID);
+                    preparedStatement.setObject(5, worldUUID);
+                } catch (SQLException e) {
+                    logger.info(e.getMessage());
+                }
+            });
         } catch (ObjectMappingException | IOException | SQLException e) {
             logger.info(e.getMessage());
         }
     }
 
     public static void saveShopContainers(UUID worldUUID, Set<ShopContainer> shopContainers, Logger logger) {
-        List<String> values = new ArrayList<>();
-        shopContainers.forEach(shopContainer -> {
-            saveShop(shopContainer.getShop(), logger);
-            Region shopRegion = shopContainer.getShopRegion();
-            UUID regionID = shopRegion.getUUID();
-            String type = shopRegion.getType();
-            String data = "";
-            try {
-                data = ShopRegionHOCONSerializer.serializeShopRegion(shopRegion);
-            } catch (ObjectMappingException | IOException e) {
-                logger.info(e.getMessage());
-            }
-            UUID shopID = shopContainer.getShop().getUUID();
-            values.add("('" + regionID + "', '" + type
-                    + "', '" + data + "', '" + shopID + "', '" + worldUUID + "')");
-        });
-        try {
-            SQLUtil.executeUpdate("MERGE INTO SHOP_REGION VALUES" + values.stream().collect(Collectors.joining(", ")));
-        } catch (SQLException e) {
-            logger.info(e.getMessage());
+        for (ShopContainer shopContainer : shopContainers) {
+            saveShopContainter(worldUUID, shopContainer, logger);
         }
     }
 
@@ -288,5 +289,21 @@ public class SQLDataUtil {
         }
 
         return shopContainerMap;
+    }
+
+    public static void deleteShop(UUID shopUUID, Logger logger) {
+        try {
+            SQLUtil.delete("SHOP", "ID", shopUUID.toString());
+        } catch (SQLException e) {
+            logger.info(e.getMessage());
+        }
+    }
+
+    public static void deleteShopItem(UUID shopItemUUID, Logger logger) {
+        try {
+            SQLUtil.delete("SHOP_ITEM", "ID", shopItemUUID.toString());
+        } catch (SQLException e) {
+            logger.info(e.getMessage());
+        }
     }
 }

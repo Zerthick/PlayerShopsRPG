@@ -93,9 +93,9 @@ public class SQLUtil {
 
         PreparedStatement statement = connection.prepareStatement("SELECT * " +
                 " FROM " + tableName.toUpperCase() +
-                " WHERE " + primaryKey + "=" + prefix(primaryKeyValue)
+                " WHERE " + primaryKey + " = ?"
         );
-
+        statement.setString(1, primaryKeyValue);
         resultSet = statement.executeQuery();
 
         consumer.accept(resultSet);
@@ -109,37 +109,24 @@ public class SQLUtil {
 
         PreparedStatement statement = connection.prepareStatement("DELETE " +
                 " FROM " + tableName.toUpperCase() +
-                " WHERE " + primaryKey + "=" + prefix(primaryKeyValue)
+                " WHERE " + primaryKey + " = ?"
         );
         statement.executeUpdate();
-
+        statement.setString(1, primaryKeyValue);
         connection.close();
     }
 
-    public static void executeQuery(String sql) throws SQLException {
-        executeQuery(sql, resultSet -> {
+
+    public static void executeUpdate(String sql) throws SQLException {
+        executeUpdate(sql, preparedStatement -> {
         });
     }
 
-    public static void executeQuery(String sql, Consumer<ResultSet> consumer) throws SQLException {
-        ResultSet resultSet;
-
+    public static void executeUpdate(String sql, Consumer<PreparedStatement> consumer) throws SQLException {
         Connection connection = getDataSource().getConnection();
 
         PreparedStatement statement = connection.prepareStatement(sql);
-
-        resultSet = statement.executeQuery();
-
-        consumer.accept(resultSet);
-
-        connection.close();
-    }
-
-    public static void executeUpdate(String sql) throws SQLException {
-        Connection connection = getDataSource().getConnection();
-
-        PreparedStatement statement = connection.prepareStatement(sql);
-
+        consumer.accept(statement);
         statement.executeUpdate();
         connection.close();
     }
