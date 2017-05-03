@@ -25,6 +25,7 @@ import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactio
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
 import io.github.zerthick.playershopsrpg.shop.ShopItem;
 import io.github.zerthick.playershopsrpg.shop.ShopTransactionResult;
+import io.github.zerthick.playershopsrpg.utils.config.sql.SQLDataUtil;
 import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -50,10 +51,11 @@ public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor 
             Optional<Integer> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
 
             if (itemIndexArgumentOptional.isPresent()) {
-                ShopItem
+                Optional<ShopItem> shopItem = shop.getShopItem(itemIndexArgumentOptional.get());
                 ShopTransactionResult transactionResult = shop.destroyItem(player, itemIndexArgumentOptional.get());
 
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
+                    shopItem.ifPresent(item -> SQLDataUtil.deleteShopItem(item.getShopItemUUID(), plugin.getLogger()));
                     player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_ITEM_SUCCESS,
                             ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shop.getName(), Messages.DROPIN_ITEM_INDEX,
                                     String.valueOf(itemIndexArgumentOptional.get())))));

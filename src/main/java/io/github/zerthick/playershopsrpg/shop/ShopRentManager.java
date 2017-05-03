@@ -57,9 +57,7 @@ public class ShopRentManager {
                 Map.Entry<UUID, LocalDateTime> entry = it.next();
                 if (LocalDateTime.now().isAfter(entry.getValue())) {
                     Optional<ShopContainer> shopContainerOptional = shopManager.getShopByUUID(entry.getKey());
-                    if (shopContainerOptional.isPresent()) {
-                        shopContainerOptional.get().getShop().rentExpire();
-                    }
+                    shopContainerOptional.ifPresent(shopContainer -> shopContainer.getShop().rentExpire());
                     it.remove();
                 }
             }
