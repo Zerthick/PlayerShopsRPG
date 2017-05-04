@@ -20,6 +20,7 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
+import io.github.zerthick.playershopsrpg.utils.config.sql.SQLDataUtil;
 import org.spongepowered.api.Sponge;
 
 import java.time.LocalDateTime;
@@ -57,7 +58,10 @@ public class ShopRentManager {
                 Map.Entry<UUID, LocalDateTime> entry = it.next();
                 if (LocalDateTime.now().isAfter(entry.getValue())) {
                     Optional<ShopContainer> shopContainerOptional = shopManager.getShopByUUID(entry.getKey());
-                    shopContainerOptional.ifPresent(shopContainer -> shopContainer.getShop().rentExpire());
+                    shopContainerOptional.ifPresent(shopContainer -> {
+                        SQLDataUtil.deleteShopRent(shopContainer.getShop().getUUID(),plugin.getLogger());
+                        shopContainer.getShop().rentExpire();
+                    });
                     it.remove();
                 }
             }
