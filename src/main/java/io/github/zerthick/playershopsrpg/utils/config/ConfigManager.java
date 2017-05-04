@@ -78,6 +78,7 @@ public class ConfigManager {
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopsFile).build();
 
         SQLDataUtil.createTables(logger);
+        SQLDataUtil.createViews(logger);
 
         if (shopsFile.exists()) {
             try {

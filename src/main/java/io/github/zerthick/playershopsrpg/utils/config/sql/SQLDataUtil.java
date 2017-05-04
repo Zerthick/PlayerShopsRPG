@@ -33,12 +33,10 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class SQLDataUtil {
@@ -51,7 +49,7 @@ public class SQLDataUtil {
             createShopItemTable();
             createShopManagerTable();
         } catch (SQLException e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -90,6 +88,30 @@ public class SQLDataUtil {
                 ImmutableList.of("SHOP_ID UUID", "MANAGER_ID UUID", "PRIMARY KEY(SHOP_ID, MANAGER_ID)",
                         "FOREIGN KEY(SHOP_ID) REFERENCES SHOP(ID) ON DELETE CASCADE");
         SQLUtil.createTable("SHOP_MANAGERS", columns);
+    }
+
+    public static void createViews(Logger logger) {
+        try {
+            createShopRentView();
+            createShopRegionView();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private static void createShopRentView() throws SQLException {
+        SQLUtil.executeUpdate("CREATE VIEW SHOP_RENT_VIEW AS " +
+                "SELECT S.ID, S.NAME, S.OWNER_ID, S.RENTER_ID, " +
+                "S.UNLIMITED_MONEY, S.UNLIMITED_STOCK, S.TYPE, S.PRICE, S.RENT, " +
+                "R.EXPIRE_TIME FROM SHOP S LEFT JOIN SHOP_RENT R ON S.ID = R.SHOP_ID");
+    }
+
+    private static void createShopRegionView() throws SQLException {
+        SQLUtil.executeUpdate("CREATE VIEW SHOP_REGION_VIEW AS " +
+                "SELECT S.ID, S.NAME, S.OWNER_ID, S.RENTER_ID, " +
+                "S.UNLIMITED_MONEY, S.UNLIMITED_STOCK, S.TYPE SHOP_TYPE, S.PRICE, S.RENT, " +
+                "R.ID REGION_ID, R.TYPE REGION_TYPE, R.DATA, R.WORLD_ID " +
+                "FROM SHOP S JOIN SHOP_REGION R ON S.ID = R.SHOP_ID");
     }
 
     private static Set<UUID> loadShopManagers(UUID shopUUID, Logger logger) {
