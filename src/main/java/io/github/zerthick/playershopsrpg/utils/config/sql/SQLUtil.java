@@ -107,8 +107,8 @@ public class SQLUtil {
                 " FROM " + tableName.toUpperCase() +
                 " WHERE " + primaryKey + " = ?"
         );
-        statement.executeUpdate();
         statement.setString(1, primaryKeyValue);
+        statement.executeUpdate();
         connection.close();
     }
 

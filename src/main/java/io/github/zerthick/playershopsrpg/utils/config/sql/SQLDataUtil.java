@@ -33,8 +33,12 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class SQLDataUtil {
@@ -43,12 +47,14 @@ public class SQLDataUtil {
         try {
             createShopTable();
             createShopRegionTable();
+            createShopRentTable();
             createShopItemTable();
             createShopManagerTable();
         } catch (SQLException e) {
             logger.info(e.getMessage());
         }
     }
+
 
     private static void createShopTable() throws SQLException {
         List<String> columns =
@@ -63,6 +69,12 @@ public class SQLDataUtil {
                 ImmutableList.of("ID UUID PRIMARY KEY", "TYPE VARCHAR(32)", "DATA VARCHAR", "SHOP_ID UUID",
                         "WORLD_ID UUID", "FOREIGN KEY(SHOP_ID) REFERENCES SHOP(ID) ON DELETE CASCADE");
         SQLUtil.createTable("SHOP_REGION", columns);
+    }
+
+    private static void createShopRentTable() throws SQLException {
+        List<String> columns =
+                ImmutableList.of("SHOP_ID UUID PRIMARY KEY", "EXPIRE_TIME BIGINT", "FOREIGN KEY(SHOP_ID) REFERENCES SHOP(ID) ON DELETE CASCADE");
+        SQLUtil.createTable("SHOP_RENT", columns);
     }
 
     private static void createShopItemTable() throws SQLException {
@@ -318,6 +330,51 @@ public class SQLDataUtil {
                 }
             });
         } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static Map<UUID,LocalDateTime> loadShopRent(Logger logger) {
+        Map<UUID,LocalDateTime> rentMap = new HashMap<>();
+        try {
+            SQLUtil.select("SHOP_RENT", resultSet -> {
+                try {
+                    while(resultSet.next()){
+                        rentMap.put(
+                                (UUID) resultSet.getObject("SHOP_ID"),
+                                LocalDateTime.ofEpochSecond(
+                                        resultSet.getLong("EXPIRE_TIME"),
+                                        0,
+                                        ZoneOffset.UTC)
+                        );
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+        return rentMap;
+    }
+
+    public static void saveShopRent(Map<UUID, LocalDateTime> rentMap, Logger logger){
+        List<String> values = rentMap.entrySet().stream()
+                .map( e -> "('" + e.getKey().toString() + "', " + e.getValue().toEpochSecond(ZoneOffset.UTC) + ")")
+                .collect(Collectors.toList());
+        if (!values.isEmpty()) {
+            try {
+                SQLUtil.executeUpdate("MERGE INTO SHOP_RENT VALUES" + values.stream().collect(Collectors.joining(", ")));
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+        }
+    }
+
+    public static void deleteShopRent(UUID shopUUID, Logger logger){
+        try {
+            SQLUtil.delete("SHOP_RENT", "SHOP_ID", shopUUID.toString());
+        } catch (SQLException e){
             logger.error(e.getMessage());
         }
     }

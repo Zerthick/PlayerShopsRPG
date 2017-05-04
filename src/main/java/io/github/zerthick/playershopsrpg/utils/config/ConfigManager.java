@@ -155,6 +155,7 @@ public class ConfigManager {
         if (shopRentFile.exists()) {
             try {
                 CommentedConfigurationNode shopRentConfig = loader.load();
+                shopRentFile.renameTo(new File(plugin.getDefaultConfigDir().toFile(), "shopRent_old.conf"));
                 return shopRentConfig.getValue(new TypeToken<Map<UUID, Long>>() {
                 }, new HashMap<>()).entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> LocalDateTime.ofEpochSecond(entry.getValue(), 0, ZoneOffset.UTC)));
             } catch (IOException e) {
@@ -164,24 +165,11 @@ public class ConfigManager {
             }
         }
 
-        return new HashMap<>();
+        return SQLDataUtil.loadShopRent(logger);
     }
 
     public void saveShopRent() {
-        File shopRentFile = new File(plugin.getDefaultConfigDir().toFile(), "shopRent.conf");
-        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(shopRentFile).build();
-
-        try {
-            CommentedConfigurationNode shopRentConfig = loader.load();
-
-            Map<UUID, Long> shopRentMap = plugin.getShopRentManager().getShopRentMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().toEpochSecond(ZoneOffset.UTC)));
-
-            shopRentConfig.setValue(new TypeToken<Map<UUID, Long>>() {
-            }, shopRentMap);
-            loader.save(shopRentConfig);
-        } catch (IOException | ObjectMappingException e) {
-            logger.warn("Error saving shop rent config! Error:" + e.getMessage());
-        }
+        SQLDataUtil.saveShopRent(plugin.getShopRentManager().getShopRentMap(), logger);
     }
 
     public Properties loadMessages() {
