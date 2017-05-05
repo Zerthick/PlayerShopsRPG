@@ -100,14 +100,14 @@ public class SQLDataUtil {
     }
 
     private static void createShopRentView() throws SQLException {
-        SQLUtil.executeUpdate("CREATE VIEW SHOP_RENT_VIEW AS " +
+        SQLUtil.executeUpdate("CREATE VIEW IF NOT EXISTS SHOP_RENT_VIEW AS " +
                 "SELECT S.ID, S.NAME, S.OWNER_ID, S.RENTER_ID, " +
                 "S.UNLIMITED_MONEY, S.UNLIMITED_STOCK, S.TYPE, S.PRICE, S.RENT, " +
                 "R.EXPIRE_TIME FROM SHOP S LEFT JOIN SHOP_RENT R ON S.ID = R.SHOP_ID");
     }
 
     private static void createShopRegionView() throws SQLException {
-        SQLUtil.executeUpdate("CREATE VIEW SHOP_REGION_VIEW AS " +
+        SQLUtil.executeUpdate("CREATE VIEW IF NOT EXISTS SHOP_REGION_VIEW AS " +
                 "SELECT S.ID, S.NAME, S.OWNER_ID, S.RENTER_ID, " +
                 "S.UNLIMITED_MONEY, S.UNLIMITED_STOCK, S.TYPE SHOP_TYPE, S.PRICE, S.RENT, " +
                 "R.ID REGION_ID, R.TYPE REGION_TYPE, R.DATA, R.WORLD_ID " +
