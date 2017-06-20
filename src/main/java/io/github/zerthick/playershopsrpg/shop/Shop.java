@@ -618,7 +618,10 @@ public class Shop {
     }
 
     public boolean hasOwnerPermissions(Player player) {
-        return ownerUUID.equals(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_OWNER);
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_OWNER)) {
+            return true;
+        }
+        return ownerUUID != null && ownerUUID.equals(player.getUniqueId());
     }
 
     public boolean hasRenterPermissions(Player player) {
@@ -650,8 +653,8 @@ public class Shop {
         return Optional.ofNullable(items.get(itemUUID));
     }
 
-    public UUID getOwnerUUID() {
-        return ownerUUID;
+    public Optional<UUID> getOwnerUUID() {
+        return Optional.ofNullable(ownerUUID);
     }
 
     public UUID getRenterUUID() {

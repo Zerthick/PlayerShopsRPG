@@ -39,6 +39,7 @@ public class Permissions {
     public static final String PLAYERSHOPSRPG_COMMAND_SET_TYPE = "playershopsrpg.commands.set.type";
     public static final String PLAYERSHOPSRPG_COMMAND_SET_NAME = "playershopsrpg.commands.set.name";
     public static final String PLAYERSHOPSRPG_COMMAND_SET_OWNER = "playershopsrpg.commands.set.owner";
+    public static final String PLAYERSHOPSRPG_COMMAND_SET_OWNER_NONE = "playershopsrpg.commands.set.ownernone";
     public static final String PLAYERSHOPSRPG_COMMAND_SET_UNLIMITED = "playershopsrpg.commands.set.unlimited";
     public static final String PLAYERSHOPSRPG_COMMAND_BROWSE = "playershopsrpg.commands.browse";
     public static final String PLAYERSHOPSRPG_COMMAND_DESTROY = "playershopsrpg.commands.destroy";

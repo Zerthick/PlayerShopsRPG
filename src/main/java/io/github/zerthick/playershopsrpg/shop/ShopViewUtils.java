@@ -30,6 +30,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationService;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -322,9 +323,11 @@ public class ShopViewUtils {
                             ImmutableList.of("shop set owner %c " + shop.getUUID(), "shop browse owner"))))
                     .style(TextStyles.UNDERLINE).build();
         }
-        String ownerName;
-        Optional<Player> ownerOptional = Sponge.getServer().getPlayer(shop.getOwnerUUID());
-        ownerName = ownerOptional.map(User::getName).orElse(Messages.UI_UNKNOWN);
+        String ownerName = Messages.UI_UNKNOWN;
+        Optional<UUID> ownerUUIDOptional = shop.getOwnerUUID();
+        if (ownerUUIDOptional.isPresent()) {
+            ownerName = getNameForUuid(ownerUUIDOptional.get()).orElse(Messages.UI_UNKNOWN);
+        }
         contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_OWNER, TextColors.WHITE, ownerName, " ", changeShopOwner));
 
         //Display shop renter if present
@@ -454,5 +457,19 @@ public class ShopViewUtils {
 
     private static Text formatCurrency(Double value) {
         return formatCurrency(BigDecimal.valueOf(value));
+    }
+
+    private static Optional<String> getNameForUuid(UUID uuid) {
+        UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
+        Optional<User> userOptional = uss.get(uuid);
+
+        if (userOptional.isPresent()) {
+            // the name with which that player has been online the last time
+            String name = userOptional.get().getName();
+            return Optional.of(name);
+        } else {
+            // a player with that uuid has never been on your server
+            return Optional.empty();
+        }
     }
 }

@@ -201,12 +201,21 @@ public class CommandRegister {
                 .executor(new ShopSetNameExecutor(plugin))
                 .build();
 
+        // shop set owner none
+        CommandSpec shopSetOwnerNoneCommand = CommandSpec.builder()
+                .description(Text.of("Set the owner of the shop to no one"))
+                .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_OWNER_NONE)
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopSetOwnerNoneExecutor(plugin))
+                .build();
+
         // shop set owner <user>
         CommandSpec shopSetOwnerCommand = CommandSpec.builder()
                 .description(Text.of("Set the owner of the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_OWNER)
                 .arguments(GenericArguments.user(CommandArgs.USER_ARGUMENT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopSetOwnerExecutor(plugin))
+                .child(shopSetOwnerNoneCommand, "none")
                 .build();
 
         // shop set unlimited [stock | money] <bool>
