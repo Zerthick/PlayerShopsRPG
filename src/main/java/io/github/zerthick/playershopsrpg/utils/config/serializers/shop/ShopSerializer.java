@@ -27,9 +27,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ShopSerializer implements TypeSerializer<Shop> {
@@ -44,9 +42,8 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         String name = value.getNode("shopName").getString();
         UUID ownerUUID = value.getNode("ownerUUID").getValue(TypeToken.of(UUID.class));
         UUID renterUUID = value.getNode("renterUUID").getValue(TypeToken.of(UUID.class));
-        Set<UUID> managerUUIDset = value.getNode("managerSet").getList(TypeToken.of(UUID.class))
-                .stream().collect(Collectors.toSet());
-        List<ShopItem> items = value.getNode("items").getList(TypeToken.of(ShopItem.class));
+        Set<UUID> managerUUIDset = new HashSet<>(value.getNode("managerSet").getList(TypeToken.of(UUID.class)));
+        Map<UUID, ShopItem> items = value.getNode("items").getList(TypeToken.of(ShopItem.class)).stream().collect(Collectors.toMap(ShopItem::getShopItemUUID, shopItem -> shopItem));
         boolean unlimitedMoney = value.getNode("unlimitedMoney").getBoolean();
         boolean unlimitedStock = value.getNode("unlimitedStock").getBoolean();
         String shopType = value.getNode("type").getString();
@@ -64,9 +61,9 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         value.getNode("renterUUID").setValue(TypeToken.of(UUID.class), obj.getRenterUUID());
         Set<UUID> managerUUIDSet = obj.getManagerUUIDSet();
         value.getNode("managerSet").setValue(new TypeToken<List<UUID>>() {
-        }, managerUUIDSet.stream().collect(Collectors.toList()));
+        }, new ArrayList<>(managerUUIDSet));
         value.getNode("items").setValue(new TypeToken<List<ShopItem>>() {
-        }, obj.getItems());
+        }, new ArrayList<>(obj.getItems().values()));
         value.getNode("unlimitedMoney").setValue(obj.isUnlimitedMoney());
         value.getNode("unlimitedStock").setValue(obj.isUnlimitedStock());
         value.getNode("type").setValue(obj.getType());
