@@ -41,6 +41,7 @@ import java.util.*;
 
 public class ShopViewUtils {
 
+    private static final int LINES_PER_PAGE = 10;
     private static PaginationService pagServ = Sponge.getServiceManager().provide(PaginationService.class).get();
 
     public static void sendShopBuyView(Player player, Shop shop) {
@@ -151,6 +152,7 @@ public class ShopViewUtils {
                 .header(header)
                 .padding(Text.of(TextColors.BLUE, Messages.UI_PADDING_STRING))
                 .contents(contents)
+                .linesPerPage(LINES_PER_PAGE)
                 .sendTo(player);
 
     }
@@ -250,6 +252,7 @@ public class ShopViewUtils {
                 .header(header)
                 .padding(Text.of(TextColors.BLUE, Messages.UI_PADDING_STRING))
                 .contents(contents)
+                .linesPerPage(LINES_PER_PAGE)
                 .sendTo(player);
     }
 
@@ -441,6 +444,7 @@ public class ShopViewUtils {
                 .header(header)
                 .padding(Text.of(TextColors.BLUE, Messages.UI_PADDING_STRING))
                 .contents(contents)
+                .linesPerPage(LINES_PER_PAGE)
                 .sendTo(player);
     }
 
