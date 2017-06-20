@@ -147,8 +147,8 @@ public class SQLDataUtil {
         }
     }
 
-    private static List<ShopItem> loadShopItems(UUID shopUUID, Logger logger) {
-        List<ShopItem> items = new ArrayList<>();
+    private static Map<UUID, ShopItem> loadShopItems(UUID shopUUID, Logger logger) {
+        Map<UUID, ShopItem> items = new HashMap<>();
 
         try {
             SQLUtil.select("SHOP_ITEM", "SHOP_ID", shopUUID.toString(), resultSet -> {
@@ -160,7 +160,7 @@ public class SQLDataUtil {
                         int itemMaxAmount = resultSet.getInt("MAX_AMOUNT");
                         double itemBuyPrice = resultSet.getBigDecimal("BUY_PRICE").doubleValue();
                         double itemSellPrice = resultSet.getBigDecimal("SELL_PRICE").doubleValue();
-                        items.add(new ShopItem(itemUUID, snapshot, itemAmount, itemMaxAmount, itemBuyPrice, itemSellPrice));
+                        items.put(itemUUID, new ShopItem(itemUUID, snapshot, itemAmount, itemMaxAmount, itemBuyPrice, itemSellPrice));
                     }
                 } catch (IOException | ObjectMappingException | SQLException e) {
                     logger.info(e.getMessage());
@@ -173,7 +173,7 @@ public class SQLDataUtil {
         return items;
     }
 
-    private static void saveShopItems(UUID shopUUID, List<ShopItem> items, Logger logger) {
+    private static void saveShopItems(UUID shopUUID, Collection<ShopItem> items, Logger logger) {
 
         try {
             SQLUtil.executeBatch("MERGE INTO SHOP_ITEM VALUES (?, ?, ?, ?, ?, ?, ?)", preparedStatement -> items.forEach(shopItem -> {
@@ -234,7 +234,7 @@ public class SQLDataUtil {
                     logger.error(e.getMessage());
                 }
             });
-            saveShopItems(shop.getUUID(), shop.getItems(), logger);
+            saveShopItems(shop.getUUID(), shop.getItems().values(), logger);
             saveShopManagers(shop.getUUID(), shop.getManagerUUIDSet(), logger);
         } catch (SQLException e) {
             logger.error(e.getMessage());
@@ -259,7 +259,7 @@ public class SQLDataUtil {
                         double price = resultSet.getBigDecimal("PRICE").doubleValue();
                         double rent = resultSet.getBigDecimal("RENT").doubleValue();
                         Set<UUID> managers = loadShopManagers(shopUUID, logger);
-                        List<ShopItem> items = loadShopItems(shopUUID, logger);
+                        Map<UUID, ShopItem> items = loadShopItems(shopUUID, logger);
                         shop[0] = new Shop(id, name, ownerId, renterId, managers, items, unlimitedMoney, unlimitedStock, type, price, rent);
                     }
                 } catch (SQLException e) {
