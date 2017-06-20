@@ -77,7 +77,7 @@ public class ShopViewUtils {
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
             Text buy = Text.EMPTY;
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY) && item.getItemSellPrice() != -1) {
-                if (item.getItemAmount() != 0) {
+                if (item.getItemAmount() != 0 || shop.isUnlimitedStock()) {
                     buy = Text.builder(Messages.UI_BUY)
                             .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_BUY_PROMPT,
                                     ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())),
@@ -85,7 +85,7 @@ public class ShopViewUtils {
                             .style(TextStyles.UNDERLINE).build();
                 } else {
                     buy = Text.builder(Messages.UI_BUY)
-                            .onHover(TextActions.showText(Text.of(Messages.processDropins(Messages.UI_BUY_SOLD_OUT,
+                            .onHover(TextActions.showText(Text.of(TextColors.RED, Messages.processDropins(Messages.UI_BUY_SOLD_OUT,
                                     ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain(), Messages.DROPIN_SHOP_NAME, shop.getName())))))
                             .color(TextColors.DARK_GRAY)
                             .style(TextStyles.UNDERLINE).build();
