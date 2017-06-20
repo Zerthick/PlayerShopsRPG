@@ -22,11 +22,9 @@ package io.github.zerthick.playershopsrpg.utils.inventory;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.text.Text;
 
-import java.util.Comparator;
 import java.util.Optional;
 
 public class InventoryUtils {
@@ -122,12 +120,13 @@ public class InventoryUtils {
 
     public static boolean itemStackEqualsIgnoreSize(ItemStack o1, ItemStack o2) {
 
-        Comparator<ItemStack> typeComparator = ItemStackComparators.TYPE;
-        Comparator<ItemStack> dataComparator = ItemStackComparators.ITEM_DATA;
-        Comparator<ItemStack> propertiesComparator = ItemStackComparators.PROPERTIES;
+        ItemStack copy1 = o1.copy();
+        ItemStack copy2 = o2.copy();
 
-        return (typeComparator.compare(o1, o2) == 0) && (dataComparator.compare(o1, o2) == 0)
-                && (propertiesComparator.compare(o1, o2) == 0) && (getItemName(o1).equals(getItemName(o2)));
+        copy1.setQuantity(1);
+        copy2.setQuantity(1);
+
+        return copy1.equalTo(copy2);
     }
 
     public static Text getItemName(ItemStack itemStack) {
