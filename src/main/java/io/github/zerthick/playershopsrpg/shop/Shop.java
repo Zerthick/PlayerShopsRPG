@@ -44,7 +44,7 @@ public class Shop {
     private UUID ownerUUID;
     private UUID renterUUID;
     private Set<UUID> managerUUIDset;
-    private List<ShopItem> items;
+    private Map<UUID, ShopItem> items;
     private boolean unlimitedMoney;
     private boolean unlimitedStock;
     private String type;
@@ -63,7 +63,7 @@ public class Shop {
         this.ownerUUID = ownerUUID;
         renterUUID = null;
         managerUUIDset = new HashSet<>();
-        items = new ArrayList<>();
+        items = new HashMap<>();
         unlimitedMoney = false;
         unlimitedStock = false;
         type = "";
@@ -71,13 +71,13 @@ public class Shop {
         rent = -1;
     }
 
-    public Shop(UUID shopUUID, String name, UUID ownerUUID, UUID renterUUID, Set<UUID> managerUUIDset, List<ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type, double price, double rent) {
+    public Shop(UUID shopUUID, String name, UUID ownerUUID, UUID renterUUID, Set<UUID> managerUUIDset, Map<UUID, ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type, double price, double rent) {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
         this.renterUUID = renterUUID;
         this.managerUUIDset = new HashSet<>(managerUUIDset);
-        this.items = new ArrayList<>(items);
+        this.items = items;
         this.unlimitedMoney = unlimitedMoney;
         this.unlimitedStock = unlimitedStock;
         this.type = type;
@@ -93,7 +93,7 @@ public class Shop {
         }
 
         //If the item already exists return a message to the player
-        for (ShopItem item : items) {
+        for (ShopItem item : items.values()) {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
                 return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_ALREADY_IN_THIS_SHOP);
             }
@@ -103,26 +103,27 @@ public class Shop {
         ItemStack itemToAdd = itemStack.copy();
         itemToAdd.setQuantity(1);
         ShopItem newShopItem = new ShopItem(itemToAdd.createSnapshot(), 0, -1, -1, -1);
-        items.add(newShopItem);
+        items.put(newShopItem.getShopItemUUID(), newShopItem);
         return ShopTransactionResult.SUCCESS;
     }
 
-    public ShopTransactionResult destroyItem(Player player, int index) {
+    public ShopTransactionResult destroyItem(Player player, UUID itemUUID) {
 
         //If the player is not the owner of the shop return a message to the player
         if (!hasRenterPermissions(player)) {
             return new ShopTransactionResult(Messages.YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
         }
 
-        //Bounds Check
-        if (index >= 0 && index < items.size()) {
-            items.remove(index);
+        //If the item is in the shop, remove it
+        if (items.containsKey(itemUUID)) {
+            items.remove(itemUUID);
             return ShopTransactionResult.SUCCESS;
         }
+
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
-    public ShopTransactionResult buyItem(Player player, int index, int amount) {
+    public ShopTransactionResult buyItem(Player player, UUID itemUUID, int amount) {
 
         //Amount Bounds Check
         if (amount < 0) {
@@ -130,8 +131,8 @@ public class Shop {
         }
 
         //Bounds Check
-        if (index >= 0 && index < items.size()) {
-            ShopItem item = items.get(index);
+        if (items.containsKey(itemUUID)) {
+            ShopItem item = items.get(itemUUID);
 
             //Check if the shop does not buy this item
             if (item.getItemBuyPrice() == -1) {
@@ -183,7 +184,7 @@ public class Shop {
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
-    public ShopTransactionResult sellItem(Player player, int index, int amount) {
+    public ShopTransactionResult sellItem(Player player, UUID itemUUID, int amount) {
 
         //Amount Bounds Check
         if (amount < 0) {
@@ -191,8 +192,8 @@ public class Shop {
         }
 
         //Bounds Check
-        if (index >= 0 && index < items.size()) {
-            ShopItem item = items.get(index);
+        if (items.containsKey(itemUUID)) {
+            ShopItem item = items.get(itemUUID);
 
             //Check if the shop does not sell this item
             if (item.getItemSellPrice() == -1) {
@@ -233,7 +234,9 @@ public class Shop {
                             Cause.of(NamedCause.notifier(this)));
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
-                    item.setItemAmount(item.getItemAmount() - amount);
+                    if (!unlimitedStock) {
+                        item.setItemAmount(item.getItemAmount() - amount);
+                    }
                     InventoryUtils.addItem((PlayerInventory) player.getInventory(), item.getItemStack(), amount);
                     return ShopTransactionResult.SUCCESS;
                 } else {
@@ -253,7 +256,7 @@ public class Shop {
         }
 
         //If the item exists add to it's total to the shopitem and remove it from the player's inventory
-        for (ShopItem item : items) {
+        for (ShopItem item : items.values()) {
             if (InventoryUtils.itemStackEqualsIgnoreSize(item.getItemStack(), itemStack)) {
 
                 if ((amount + item.getItemAmount() > item.getItemMaxAmount()) && item.getItemMaxAmount() != -1) {
@@ -270,7 +273,7 @@ public class Shop {
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
-    public ShopTransactionResult removeItem(Player player, int index, int amount) {
+    public ShopTransactionResult removeItem(Player player, UUID itemUUID, int amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
@@ -278,8 +281,8 @@ public class Shop {
         }
 
         //Bounds Check
-        if (index >= 0 && index < items.size()) {
-            ShopItem item = items.get(index);
+        if (items.containsKey(itemUUID)) {
+            ShopItem item = items.get(itemUUID);
             if (amount > item.getItemAmount()) {
                 amount = item.getItemAmount();
             }
@@ -293,7 +296,7 @@ public class Shop {
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
-    public ShopTransactionResult setItemMax(Player player, int index, int amount) {
+    public ShopTransactionResult setItemMax(Player player, UUID itemUUID, int amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
@@ -301,11 +304,11 @@ public class Shop {
         }
 
         //Bounds Check
-        if (index >= 0 && index < items.size()) {
+        if (items.containsKey(itemUUID)) {
 
             // Check if the new max amount is valid (-1) for infinite
             if (amount >= -1) {
-                items.get(index).setItemMaxAmount(amount);
+                items.get(itemUUID).setItemMaxAmount(amount);
                 return ShopTransactionResult.SUCCESS;
             }
 
@@ -315,7 +318,7 @@ public class Shop {
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
-    public ShopTransactionResult setItemBuyPrice(Player player, int index, double amount) {
+    public ShopTransactionResult setItemBuyPrice(Player player, UUID itemUUID, double amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
@@ -323,11 +326,11 @@ public class Shop {
         }
 
         //Bounds Check
-        if (index >= 0 && index < items.size()) {
+        if (items.containsKey(itemUUID)) {
 
             // Check if the new max amount is valid (-1) for infinite
             if (amount >= -1) {
-                items.get(index).setItemBuyPrice(amount);
+                items.get(itemUUID).setItemBuyPrice(amount);
                 return ShopTransactionResult.SUCCESS;
             }
 
@@ -337,7 +340,7 @@ public class Shop {
         return new ShopTransactionResult(Messages.THE_SPECIFIED_ITEM_IS_NOT_IN_THIS_SHOP);
     }
 
-    public ShopTransactionResult setItemSellPrice(Player player, int index, double amount) {
+    public ShopTransactionResult setItemSellPrice(Player player, UUID itemUUID, double amount) {
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
@@ -345,11 +348,11 @@ public class Shop {
         }
 
         //Bounds Check
-        if (index >= 0 && index < items.size()) {
+        if (items.containsKey(itemUUID)) {
 
             // Check if the new max amount is valid (-1) for infinite
             if (amount >= -1) {
-                items.get(index).setItemSellPrice(amount);
+                items.get(itemUUID).setItemSellPrice(amount);
                 return ShopTransactionResult.SUCCESS;
             }
 
@@ -617,16 +620,12 @@ public class Shop {
         return shopUUID;
     }
 
-    public List<ShopItem> getItems() {
+    public Map<UUID, ShopItem> getItems() {
         return items;
     }
 
-    public Optional<ShopItem> getShopItem(int index) {
-        //Bounds Check
-        if (index >= 0 && index < items.size()) {
-            return Optional.of(items.get(index));
-        }
-        return Optional.empty();
+    public Optional<ShopItem> getShopItem(UUID itemUUID) {
+        return Optional.ofNullable(items.get(itemUUID));
     }
 
     public UUID getOwnerUUID() {
@@ -670,7 +669,7 @@ public class Shop {
     }
 
     public boolean isEmpty() {
-        for (ShopItem item : getItems()) {
+        for (ShopItem item : getItems().values()) {
             if (item.getItemAmount() != 0) {
                 return false;
             }
