@@ -520,8 +520,30 @@ public class Shop {
         }
     }
 
-    public void rentExpire() {
+    public void rentExpire(boolean transferFunds, boolean clearItems) {
         managerUUIDset.clear();
+
+        //Transfer shop's balance to renter on rent expire
+        if (transferFunds) {
+            EconManager manager = EconManager.getInstance();
+            Optional<UniqueAccount> renterAccountOptional = manager.getOrCreateAccount(renterUUID);
+            Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
+
+            if (renterAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
+                UniqueAccount renterAccount = renterAccountOptional.get();
+                UniqueAccount shopAccount = shopAccountOptional.get();
+
+                shopAccount.transfer(renterAccount,
+                        manager.getDefaultCurrency(),
+                        shopAccount.getBalance(manager.getDefaultCurrency()),
+                        Cause.of(NamedCause.notifier(this)));
+            }
+        }
+
+        if (clearItems) {
+            items.clear();
+        }
+
         renterUUID = null;
     }
 
