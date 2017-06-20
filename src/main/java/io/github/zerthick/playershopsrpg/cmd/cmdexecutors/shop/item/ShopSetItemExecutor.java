@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -32,6 +32,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ShopSetItemExecutor extends AbstractShopTransactionCmdExecutor {
 
@@ -53,12 +54,12 @@ public class ShopSetItemExecutor extends AbstractShopTransactionCmdExecutor {
         return super.executeTransaction(src, args, (player, arg, shop) -> {
 
             Optional<String> selectTypeOptional = arg.getOne(CommandArgs.SELECTION_TYPE);
-            Optional<Integer> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
+            Optional<String> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
             Optional<Double> doubleArgumentOptional = arg.getOne(CommandArgs.DOUBLE_ARGUMENT);
 
             if (selectTypeOptional.isPresent() && itemIndexArgumentOptional.isPresent() && doubleArgumentOptional.isPresent()) {
                 String selectType = selectTypeOptional.get();
-                int itemIndex = itemIndexArgumentOptional.get();
+                UUID itemIndex = UUID.fromString(itemIndexArgumentOptional.get());
                 double doubleArg = doubleArgumentOptional.get();
 
                 ShopTransactionResult transactionResult;

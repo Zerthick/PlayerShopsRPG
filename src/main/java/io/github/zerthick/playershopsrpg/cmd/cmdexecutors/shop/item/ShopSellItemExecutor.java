@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -30,6 +30,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class ShopSellItemExecutor extends AbstractShopTransactionCmdExecutor {
 
@@ -42,12 +43,12 @@ public class ShopSellItemExecutor extends AbstractShopTransactionCmdExecutor {
 
         return super.executeTransaction(src, args, (player, arg, shop) -> {
 
-            Optional<Integer> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
+            Optional<String> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
             Optional<Integer> itemAmountArgumentOptional = arg.getOne(CommandArgs.ITEM_AMOUNT);
 
             if (itemIndexArgumentOptional.isPresent() && itemAmountArgumentOptional.isPresent()) {
 
-                return shop.buyItem(player, itemIndexArgumentOptional.get(), itemAmountArgumentOptional.get());
+                return shop.buyItem(player, UUID.fromString(itemIndexArgumentOptional.get()), itemAmountArgumentOptional.get());
             }
             return ShopTransactionResult.EMPTY;
         }, Messages.SELL_ITEM_CONSOLE_REJECT);

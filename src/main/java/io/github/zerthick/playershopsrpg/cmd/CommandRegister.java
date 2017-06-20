@@ -80,7 +80,7 @@ public class CommandRegister {
         CommandSpec shopItemSellCommand = CommandSpec.builder()
                 .description(Text.of("Sell an item to the shop you are currenlty standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SELL)
-                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.string(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopSellItemExecutor(plugin))
                 .build();
 
@@ -88,7 +88,7 @@ public class CommandRegister {
         CommandSpec shopItemBuyCommand = CommandSpec.builder()
                 .description(Text.of("Buy an item from the shop you are currenlty standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_BUY)
-                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.string(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopBuyItemExecutor(plugin))
                 .build();
 
@@ -96,7 +96,7 @@ public class CommandRegister {
         CommandSpec shopItemRemoveCommand = CommandSpec.builder()
                 .description(Text.of("Remove an item from the shop you are currenlty standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)
-                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.string(CommandArgs.ITEM_INDEX), GenericArguments.integer(CommandArgs.ITEM_AMOUNT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopRemoveItemExecutor(plugin))
                 .build();
 
@@ -113,7 +113,7 @@ public class CommandRegister {
                 .description(Text.of("Set various attributes of a shop item (max amount / buy price / sell price"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SET)
                 .arguments(GenericArguments.choices(CommandArgs.SELECTION_TYPE, ShopSetItemExecutor.selectChoices()),
-                        GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                        GenericArguments.string(CommandArgs.ITEM_INDEX), GenericArguments.doubleNum(CommandArgs.DOUBLE_ARGUMENT), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopSetItemExecutor(plugin))
                 .build();
 
@@ -121,7 +121,7 @@ public class CommandRegister {
         CommandSpec shopItemDestroyCommand = CommandSpec.builder()
                 .description(Text.of("Destroy an item in the shop you are currently standing in"))
                 .permission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_DESTROY)
-                .arguments(GenericArguments.integer(CommandArgs.ITEM_INDEX), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .arguments(GenericArguments.string(CommandArgs.ITEM_INDEX), GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
                 .executor(new ShopDestroyItemExecutor(plugin))
                 .build();
 

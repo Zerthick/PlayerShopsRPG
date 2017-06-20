@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -36,6 +36,7 @@ import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor {
 
@@ -48,11 +49,11 @@ public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor 
 
         return super.executeTransaction(src, args, (player, arg, shop) -> {
 
-            Optional<Integer> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
+            Optional<String> itemIndexArgumentOptional = arg.getOne(CommandArgs.ITEM_INDEX);
 
             if (itemIndexArgumentOptional.isPresent()) {
-                Optional<ShopItem> shopItem = shop.getShopItem(itemIndexArgumentOptional.get());
-                ShopTransactionResult transactionResult = shop.destroyItem(player, itemIndexArgumentOptional.get());
+                Optional<ShopItem> shopItem = shop.getShopItem(UUID.fromString(itemIndexArgumentOptional.get()));
+                ShopTransactionResult transactionResult = shop.destroyItem(player, UUID.fromString(itemIndexArgumentOptional.get()));
 
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
                     shopItem.ifPresent(item -> SQLDataUtil.deleteShopItem(item.getShopItemUUID(), plugin.getLogger()));
