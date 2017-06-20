@@ -126,4 +126,13 @@ public class SQLUtil {
         statement.executeUpdate();
         connection.close();
     }
+
+    public static void executeBatch(String sql, Consumer<PreparedStatement> consumer) throws SQLException {
+        Connection connection = getDataSource().getConnection();
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        consumer.accept(statement);
+        statement.executeBatch();
+        connection.close();
+    }
 }

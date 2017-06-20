@@ -37,7 +37,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SQLDataUtil {
 
@@ -133,13 +132,18 @@ public class SQLDataUtil {
     }
 
     private static void saveShopManagers(UUID shopUUID, Set<UUID> managerSet, Logger logger) {
-        List<String> values = managerSet.stream().map(uuid -> "('" + shopUUID + "', '" + uuid.toString() + "')").collect(Collectors.toList());
-        if (!values.isEmpty()) {
-            try {
-                SQLUtil.executeUpdate("MERGE INTO SHOP_MANAGERS VALUES" + values.stream().collect(Collectors.joining(", ")));
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-            }
+        try {
+            SQLUtil.executeBatch("MERGE INTO SHOP_MANAGERS VALUES (?, ?)", preparedStatement -> managerSet.forEach(managerUUID -> {
+                try {
+                    preparedStatement.setObject(1, shopUUID);
+                    preparedStatement.setObject(2, managerUUID);
+                    preparedStatement.addBatch();
+                } catch (SQLException e) {
+                    logger.error(e.getMessage());
+                }
+            }));
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -170,28 +174,35 @@ public class SQLDataUtil {
     }
 
     private static void saveShopItems(UUID shopUUID, List<ShopItem> items, Logger logger) {
-        List<String> values = items.stream().map(shopItem -> {
-            String itemID = shopItem.getShopItemUUID().toString();
-            String itemStack = "";
-            try {
-                itemStack = ItemStackHOCONSerializer.serializeSnapShot(shopItem.getItemStackSnapShot());
-            } catch (ObjectMappingException | IOException e) {
-                logger.info(e.getMessage());
-            }
-            int amount = shopItem.getItemAmount();
-            int maxAmount = shopItem.getItemMaxAmount();
-            double itemBuyPrice = shopItem.getItemBuyPrice();
-            double itemSellPrice = shopItem.getItemSellPrice();
 
-            return "('" + itemID + "', '" + itemStack + "', " + amount + ", " + maxAmount + ", " + itemBuyPrice + ", "
-                    + itemSellPrice + ", '" + shopUUID + "')";
-        }).collect(Collectors.toList());
-        if (!values.isEmpty()) {
-            try {
-                SQLUtil.executeUpdate("MERGE INTO SHOP_ITEM VALUES" + values.stream().collect(Collectors.joining(", ")));
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-            }
+        try {
+            SQLUtil.executeBatch("MERGE INTO SHOP_ITEM VALUES (?, ?, ?, ?, ?, ?)", preparedStatement -> items.forEach(shopItem -> {
+                UUID itemID = shopItem.getShopItemUUID();
+                String itemStack = "";
+                try {
+                    itemStack = ItemStackHOCONSerializer.serializeSnapShot(shopItem.getItemStackSnapShot());
+                } catch (ObjectMappingException | IOException e) {
+                    logger.error(e.getMessage());
+                }
+                int amount = shopItem.getItemAmount();
+                int maxAmount = shopItem.getItemMaxAmount();
+                double itemBuyPrice = shopItem.getItemBuyPrice();
+                double itemSellPrice = shopItem.getItemSellPrice();
+
+                try {
+                    preparedStatement.setObject(1, itemID);
+                    preparedStatement.setString(2, itemStack);
+                    preparedStatement.setInt(3, amount);
+                    preparedStatement.setInt(4, maxAmount);
+                    preparedStatement.setBigDecimal(5, BigDecimal.valueOf(itemBuyPrice));
+                    preparedStatement.setBigDecimal(6, BigDecimal.valueOf(itemSellPrice));
+                    preparedStatement.addBatch();
+                } catch (SQLException e) {
+                    logger.error(e.getMessage());
+                }
+            }));
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -381,15 +392,19 @@ public class SQLDataUtil {
     }
 
     public static void saveShopRent(Map<UUID, LocalDateTime> rentMap, Logger logger){
-        List<String> values = rentMap.entrySet().stream()
-                .map( e -> "('" + e.getKey().toString() + "', " + e.getValue().toEpochSecond(ZoneOffset.UTC) + ")")
-                .collect(Collectors.toList());
-        if (!values.isEmpty()) {
-            try {
-                SQLUtil.executeUpdate("MERGE INTO SHOP_RENT VALUES" + values.stream().collect(Collectors.joining(", ")));
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-            }
+
+        try {
+            SQLUtil.executeBatch("MERGE INTO SHOP_RENT VALUES (?, ?)", preparedStatement -> rentMap.forEach(((uuid, localDateTime) -> {
+                try {
+                    preparedStatement.setObject(1, uuid);
+                    preparedStatement.setLong(2, localDateTime.toEpochSecond(ZoneOffset.UTC));
+                    preparedStatement.addBatch();
+                } catch (SQLException e) {
+                    logger.error(e.getMessage());
+                }
+            })));
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
     }
 
