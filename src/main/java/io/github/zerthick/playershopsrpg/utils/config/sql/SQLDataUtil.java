@@ -176,7 +176,7 @@ public class SQLDataUtil {
     private static void saveShopItems(UUID shopUUID, List<ShopItem> items, Logger logger) {
 
         try {
-            SQLUtil.executeBatch("MERGE INTO SHOP_ITEM VALUES (?, ?, ?, ?, ?, ?)", preparedStatement -> items.forEach(shopItem -> {
+            SQLUtil.executeBatch("MERGE INTO SHOP_ITEM VALUES (?, ?, ?, ?, ?, ?, ?)", preparedStatement -> items.forEach(shopItem -> {
                 UUID itemID = shopItem.getShopItemUUID();
                 String itemStack = "";
                 try {
@@ -196,6 +196,7 @@ public class SQLDataUtil {
                     preparedStatement.setInt(4, maxAmount);
                     preparedStatement.setBigDecimal(5, BigDecimal.valueOf(itemBuyPrice));
                     preparedStatement.setBigDecimal(6, BigDecimal.valueOf(itemSellPrice));
+                    preparedStatement.setObject(7, shopUUID);
                     preparedStatement.addBatch();
                 } catch (SQLException e) {
                     logger.error(e.getMessage());
