@@ -48,8 +48,8 @@ public class CuboidRegionSerializer implements TypeSerializer<CuboidRegion> {
 
     @Override
     public void serialize(TypeToken<?> type, CuboidRegion obj, ConfigurationNode value) throws ObjectMappingException {
-        Vector3i parA = obj.getA();
-        Vector3i parB = obj.getB();
+        Vector3i parA = obj.getMin();
+        Vector3i parB = obj.getMax();
 
         value.getNode("parA", "x").setValue(parA.getX());
         value.getNode("parA", "y").setValue(parA.getY());

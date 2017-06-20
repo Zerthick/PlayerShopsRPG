@@ -307,7 +307,7 @@ public class SQLDataUtil {
                         switch (region.getType()) {
                             case "cuboid":
                                 CuboidRegion cuboidRegion = (CuboidRegion) region;
-                                region = new CuboidRegion(regionID, cuboidRegion.getA(), cuboidRegion.getB());
+                                region = new CuboidRegion(regionID, cuboidRegion.getMin(), cuboidRegion.getMax());
                                 break;
                         }
                         Shop shop = loadShop((UUID) resultSet.getObject("SHOP_ID"), logger);
