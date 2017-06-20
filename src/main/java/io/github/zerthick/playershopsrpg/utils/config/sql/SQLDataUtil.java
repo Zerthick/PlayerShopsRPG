@@ -210,7 +210,7 @@ public class SQLDataUtil {
     private static void saveShop(Shop shop, Logger logger) {
         UUID id = shop.getUUID();
         String name = shop.getName();
-        UUID ownerId = shop.getOwnerUUID();
+        UUID ownerId = shop.getOwnerUUID().orElse(null);
         UUID renterId = shop.getRenterUUID();
         boolean unlimitedMoney = shop.isUnlimitedMoney();
         boolean unlimitedStock = shop.isUnlimitedStock();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -60,7 +60,7 @@ public class ShopRentManager {
                     Optional<ShopContainer> shopContainerOptional = shopManager.getShopByUUID(entry.getKey());
                     shopContainerOptional.ifPresent(shopContainer -> {
                         SQLDataUtil.deleteShopRent(shopContainer.getShop().getUUID(),plugin.getLogger());
-                        shopContainer.getShop().rentExpire();
+                        shopContainer.getShop().rentExpire(true, true);
                     });
                     it.remove();
                 }
