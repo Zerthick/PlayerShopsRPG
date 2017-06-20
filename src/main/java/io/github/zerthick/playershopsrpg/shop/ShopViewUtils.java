@@ -36,10 +36,7 @@ import org.spongepowered.api.text.format.TextStyles;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class ShopViewUtils {
 
@@ -52,14 +49,15 @@ public class ShopViewUtils {
 
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
-        List<ShopItem> items = shop.getItems();
+        List<ShopItem> items = new ArrayList<>(shop.getItems().values());
 
         if (items.isEmpty()) {
             contents.add(Text.of(TextColors.BLUE, Messages.UI_NO_ITEMS_TO_DISPLAY));
         }
 
-        for (int i = 0; i < items.size(); i++) {
-            ShopItem item = items.get(i);
+        //Sort items by display name
+        items.sort(Comparator.comparing(o -> InventoryUtils.getItemNamePlain(o.getItemStack())));
+        for (ShopItem item : items) {
 
             Text itemAmount;
             if (shop.isUnlimitedStock()) {
@@ -81,7 +79,7 @@ public class ShopViewUtils {
                 if (item.getItemAmount() != 0) {
                     buy = Text.builder(Messages.UI_BUY)
                             .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_BUY_PROMPT,
-                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item buy " + i + " %c " + shop.getUUID())))
+                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item buy " + item.getShopItemUUID() + " %c " + shop.getUUID())))
                             .style(TextStyles.UNDERLINE).build();
                 } else {
                     buy = Text.builder(Messages.UI_BUY)
@@ -96,7 +94,7 @@ public class ShopViewUtils {
                 if (item.getItemAmount() != item.getItemMaxAmount()) {
                     sell = Text.builder(Messages.UI_SELL)
                             .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SELL_PROMPT,
-                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain(), Messages.DROPIN_SHOP_NAME, shop.getName())), "shop item sell " + i + " %c " + shop.getUUID())))
+                                    ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain(), Messages.DROPIN_SHOP_NAME, shop.getName())), "shop item sell " + item.getShopItemUUID() + " %c " + shop.getUUID())))
                             .style(TextStyles.UNDERLINE).build();
                 } else {
                     sell = Text.builder(Messages.UI_SELL)
@@ -161,13 +159,14 @@ public class ShopViewUtils {
 
         //First build up the contents of the shop
         List<Text> contents = new ArrayList<>();
-        List<ShopItem> items = shop.getItems();
+        List<ShopItem> items = new ArrayList<>(shop.getItems().values());
         if (items.isEmpty()) {
             contents.add(Text.of(TextColors.BLUE, Messages.UI_NO_ITEMS_TO_DISPLAY));
         }
 
-        for (int i = 0; i < items.size(); i++) {
-            ShopItem item = items.get(i);
+        //Sort items by display name
+        items.sort(Comparator.comparing(o -> InventoryUtils.getItemNamePlain(o.getItemStack())));
+        for (ShopItem item : items) {
 
             Text itemAmount;
             if (shop.isUnlimitedStock()) {
@@ -182,15 +181,15 @@ public class ShopViewUtils {
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_SET)) {
                 itemMax = Text.builder(item.getItemMaxAmount() == -1 ? Messages.UI_INFINITY : String.valueOf(item.getItemMaxAmount()))
                         .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_MAX_PROMPT,
-                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set max " + i + " %c " + shop.getUUID())))
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set max " + item.getShopItemUUID() + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
                 itemSell = Text.builder(item.getItemBuyPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemBuyPrice()).toPlain())
                         .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_BUY_PROMPT,
-                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set buy " + i + " %c " + shop.getUUID())))
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set buy " + item.getShopItemUUID() + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
                 itemBuy = Text.builder(item.getItemSellPrice() == -1 ? Messages.UI_EMPTY : formatCurrency(item.getItemSellPrice()).toPlain())
                         .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_SET_ITEM_SELL_PROMPT,
-                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set sell " + i + " %c " + shop.getUUID())))
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item set sell " + item.getShopItemUUID() + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
@@ -199,7 +198,7 @@ public class ShopViewUtils {
             if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_REMOVE)) {
                 remove = Text.builder(Messages.UI_REMOVE)
                         .onClick(TextActions.executeCallback(cb.getCallBack(Messages.processDropins(Messages.UI_REMOVE_PROMPT,
-                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item remove " + i + " %c " + shop.getUUID())))
+                                ImmutableMap.of(Messages.DROPIN_ITEM_NAME, itemName.toPlain())), "shop item remove " + item.getShopItemUUID() + " %c " + shop.getUUID())))
                         .style(TextStyles.UNDERLINE).build();
             }
             //Build the full line of text
@@ -366,23 +365,26 @@ public class ShopViewUtils {
         }
 
         //Add option to destroy items
-        List<ShopItem> items = shop.getItems();
+        List<ShopItem> items = new ArrayList<>(shop.getItems().values());
         if (!items.isEmpty()) {
+            //Sort items by display name
+            items.sort(Comparator.comparing(o -> InventoryUtils.getItemNamePlain(o.getItemStack())));
+
             contents.add(Text.of(""));
 
             contents.add(Text.of(TextColors.BLUE, Messages.UI_ITEMS));
 
-            for (int i = 0; i < items.size(); i++) {
+            for (ShopItem item : items) {
                 Text destroyItem = Text.EMPTY;
                 if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_ITEM_DESTROY)) {
                     destroyItem = Text.builder(Messages.UI_DESTROY)
-                            .onClick(TextActions.runCommand("/shop item destroy " + i))
+                            .onClick(TextActions.runCommand("/shop item destroy " + item.getShopItemUUID()))
                             .color(TextColors.RED)
                             .style(TextStyles.UNDERLINE).build();
                 }
 
-                Text itemName = InventoryUtils.getItemName(items.get(i).getItemStack());
-                itemName = itemName.toBuilder().onHover(TextActions.showItem(items.get(i).getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
+                Text itemName = InventoryUtils.getItemName(item.getItemStack());
+                itemName = itemName.toBuilder().onHover(TextActions.showItem(item.getItemStack().createSnapshot())).style(TextStyles.UNDERLINE).build();
 
                 contents.add(Text.of(itemName, " ", destroyItem));
                 contents.add(Text.of(""));
