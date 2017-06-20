@@ -19,7 +19,6 @@
 
 package io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item;
 
-import com.google.common.collect.ImmutableMap;
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.AbstractShopTransactionCmdExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
@@ -31,9 +30,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.chat.ChatTypes;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -57,9 +53,6 @@ public class ShopDestroyItemExecutor extends AbstractShopTransactionCmdExecutor 
 
                 if (transactionResult == ShopTransactionResult.SUCCESS) {
                     shopItem.ifPresent(item -> SQLDataUtil.deleteShopItem(item.getShopItemUUID(), plugin.getLogger()));
-                    player.sendMessage(ChatTypes.CHAT, Text.of(TextColors.BLUE, Messages.processDropins(Messages.DESTROY_ITEM_SUCCESS,
-                            ImmutableMap.of(Messages.DROPIN_SHOP_NAME, shop.getName(), Messages.DROPIN_ITEM_INDEX,
-                                    String.valueOf(itemIndexArgumentOptional.get())))));
                 }
 
                 return transactionResult;

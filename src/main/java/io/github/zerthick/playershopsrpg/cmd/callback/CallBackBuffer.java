@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -26,6 +26,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -34,7 +35,7 @@ public class CallBackBuffer {
 
     private static CallBackBuffer instance = null;
 
-    private Map<UUID, String> callBackMap;
+    private Map<UUID, List<String>> callBackMap;
 
     protected CallBackBuffer() {
         callBackMap = new HashMap<>();
@@ -51,22 +52,24 @@ public class CallBackBuffer {
         return callBackMap.containsKey(player.getUniqueId());
     }
 
-    public void addCallBack(Player player, String callback) {
-        callBackMap.put(player.getUniqueId(), callback);
+    public void addCallBack(Player player, List<String> callbacks) {
+        callBackMap.put(player.getUniqueId(), callbacks);
     }
 
     public void executeCallBack(Player player, String callBackValue) {
         if (hasCallBack(player)) {
-            Sponge.getGame().getCommandManager().process(player, callBackMap.remove(player.getUniqueId()).replace("%c", callBackValue));
+            for (String s : callBackMap.remove(player.getUniqueId())) {
+                Sponge.getGame().getCommandManager().process(player, s.replace("%c", callBackValue));
+            }
         }
     }
 
-    public Consumer<CommandSource> getCallBack(String msg, String command) {
+    public Consumer<CommandSource> getCallBack(String msg, List<String> commands) {
         return commandSource -> {
             if (commandSource instanceof Player) {
                 Player player = (Player) commandSource;
                 player.sendMessage(Text.of(TextColors.BLUE, msg));
-                addCallBack(player, command);
+                addCallBack(player, commands);
             }
         };
     }
