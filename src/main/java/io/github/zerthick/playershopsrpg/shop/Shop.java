@@ -501,13 +501,17 @@ public class Shop {
 
         // Transfer funds from the purchaser to the owner
         EconManager manager = EconManager.getInstance();
+        TransactionResult result;
         Optional<UniqueAccount> renterAccountOptional = manager.getOrCreateAccount(player.getUniqueId());
-        Optional<UniqueAccount> ownerAccountOptional = manager.getOrCreateAccount(ownerUUID);
+        if (ownerUUID != null) {
+            Optional<UniqueAccount> ownerAccountOptional = manager.getOrCreateAccount(ownerUUID);
 
-        TransactionResult result =
-                renterAccountOptional.get()
-                        .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price * duration), Cause.of(NamedCause.notifier(this)));
-
+            result =
+                    renterAccountOptional.get()
+                            .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price * duration), Cause.of(NamedCause.notifier(this)));
+        } else {
+            result = renterAccountOptional.get().withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(price * duration), Cause.of(NamedCause.notifier(this)));
+        }
         if (result.getResult() == ResultType.SUCCESS) {
             ShopRentManager.getInstance().rentShop(this, duration);
             renterUUID = player.getUniqueId();
