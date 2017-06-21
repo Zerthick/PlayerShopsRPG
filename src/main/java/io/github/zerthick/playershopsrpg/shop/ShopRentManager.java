@@ -73,7 +73,7 @@ public class ShopRentManager {
     }
 
     public void rentShop(Shop shop, long durationInHours) {
-        shopRentMap.put(shop.getUUID(), LocalDateTime.now().plusHours(durationInHours));
+        shopRentMap.put(shop.getUUID(), shopRentMap.getOrDefault(shop.getUUID(), LocalDateTime.now()).plusHours(durationInHours));
     }
 
     public LocalDateTime getShopExpireTime(Shop shop) {

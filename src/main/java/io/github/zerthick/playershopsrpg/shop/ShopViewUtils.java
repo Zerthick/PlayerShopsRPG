@@ -331,11 +331,11 @@ public class ShopViewUtils {
         contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_OWNER, TextColors.WHITE, ownerName, " ", changeShopOwner));
 
         //Display shop renter if present
-        if (shop.getRenterUUID() != null) {
+        if (shop.isBeingRented()) {
             String renterName;
-            Optional<Player> renterOptional = Sponge.getServer().getPlayer(shop.getRenterUUID());
-            renterName = renterOptional.map(User::getName).orElse(Messages.UI_UNKNOWN);
+            renterName = getNameForUuid(shop.getRenterUUID()).orElse(Messages.UI_UNKNOWN);
             String expireTime = ShopRentManager.getInstance().getShopExpireTime(shop).format(DateTimeFormatter.ofPattern("MMM d yyyy  hh:mm a", player.getLocale()));
+            contents.add(Text.of(TextColors.BLUE, Messages.UI_RENT, TextColors.WHITE, formatCurrency(shop.getRent()), "/hr"));
             contents.add(Text.of(TextColors.BLUE, Messages.UI_SHOP_RENTER, TextColors.WHITE, renterName, TextColors.BLUE, " ", Messages.UI_UNTIL, " ", TextColors.AQUA, expireTime));
         }
 

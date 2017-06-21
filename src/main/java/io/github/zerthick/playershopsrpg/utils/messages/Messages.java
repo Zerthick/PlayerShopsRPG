@@ -103,6 +103,9 @@ public class Messages {
     public static final String SET_UNLIMITED_CONSOLE_REJECT = messageProps.getProperty("SET_UNLIMITED_CONSOLE_REJECT");
     public static final String SET_PRICE_WHILE_RENTED_REJECT = messageProps.getProperty("SET_PRICE_WHILE_RENTED_REJECT");
     public static final String SET_RENT_WHILE_RENTED_REJECT = messageProps.getProperty("SET_RENT_WHILE_RENTED_REJECT");
+    public static final String SET_PRICE_FOR_RENT_REJECT = messageProps.getProperty("SET_PRICE_FOR_RENT_REJECT");
+    public static final String SET_RENT_FOR_SALE_REJECT = messageProps.getProperty("SET_RENT_FOR_SALE_REJECT");
+    public static final String RENT_SHOP_SUCCESS = messageProps.getProperty("RENT_SHOP_SUCCESS");
 
     //UI
     public static final String UI_PADDING_STRING = messageProps.getProperty("UI_PADDING_STRING");

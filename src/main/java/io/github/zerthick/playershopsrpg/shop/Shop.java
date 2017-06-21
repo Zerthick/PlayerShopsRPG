@@ -443,7 +443,11 @@ public class Shop {
         }
 
         if (isBeingRented()) {
-            return new ShopTransactionResult(Messages.SET_PRICE_CONSOLE_REJECT);
+            return new ShopTransactionResult(Messages.SET_PRICE_WHILE_RENTED_REJECT);
+        }
+
+        if (isForRent()) {
+            return new ShopTransactionResult(Messages.SET_PRICE_FOR_RENT_REJECT);
         }
 
         this.price = price;
@@ -463,6 +467,10 @@ public class Shop {
 
         if (isBeingRented()) {
             return new ShopTransactionResult(Messages.SET_RENT_WHILE_RENTED_REJECT);
+        }
+
+        if (isForSale()) {
+            return new ShopTransactionResult(Messages.SET_RENT_FOR_SALE_REJECT);
         }
 
         this.rent = rent;
@@ -516,16 +524,14 @@ public class Shop {
 
             result =
                     renterAccountOptional.get()
-                            .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price * duration), Cause.of(NamedCause.notifier(this)));
+                            .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(rent * duration), Cause.of(NamedCause.notifier(this)));
+
         } else {
-            result = renterAccountOptional.get().withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(price * duration), Cause.of(NamedCause.notifier(this)));
+            result = renterAccountOptional.get().withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(rent * duration), Cause.of(NamedCause.notifier(this)));
         }
         if (result.getResult() == ResultType.SUCCESS) {
             ShopRentManager.getInstance().rentShop(this, duration);
             renterUUID = player.getUniqueId();
-            price = -1;
-            managerUUIDset.clear();
-
             return ShopTransactionResult.SUCCESS;
         } else {
             return new ShopTransactionResult(Messages.YOU_DON_T_HAVE_ENOUGH_FUNDS);
@@ -706,7 +712,7 @@ public class Shop {
     }
 
     public boolean isBeingRented() {
-        return getRenterUUID() == null;
+        return getRenterUUID() != null;
     }
 
     public boolean isEmpty() {
