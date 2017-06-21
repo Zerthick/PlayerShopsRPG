@@ -266,7 +266,7 @@ public class ShopViewUtils {
         List<Text> contents = new ArrayList<>();
 
         //Add option to put shop up for sale
-        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)) {
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE) && !shop.isBeingRented()) {
             Text putUpForSale;
             if (shop.isForSale()) {
                 putUpForSale = formatCurrency(shop.getPrice()).toBuilder()
@@ -283,7 +283,7 @@ public class ShopViewUtils {
         }
 
         //Add option to put shop up for rent
-        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_PRICE)) {
+        if (player.hasPermission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_RENT) && !shop.isBeingRented()) {
             Text putUpForRent;
             if (shop.isForRent()) {
                 putUpForRent = formatCurrency(shop.getRent()).toBuilder()

@@ -442,6 +442,10 @@ public class Shop {
             return new ShopTransactionResult(Messages.INVALID_SHOP_SELL_PRICE);
         }
 
+        if (isBeingRented()) {
+            return new ShopTransactionResult(Messages.SET_PRICE_CONSOLE_REJECT);
+        }
+
         this.price = price;
         return ShopTransactionResult.SUCCESS;
     }
@@ -455,6 +459,10 @@ public class Shop {
 
         if (rent != -1 && rent < 0) {
             return new ShopTransactionResult(Messages.INVALID_SHOP_RENT_PRICE);
+        }
+
+        if (isBeingRented()) {
+            return new ShopTransactionResult(Messages.SET_RENT_WHILE_RENTED_REJECT);
         }
 
         this.rent = rent;
@@ -695,6 +703,10 @@ public class Shop {
 
     public boolean isForRent() {
         return getRenterUUID() == null && getRent() != -1;
+    }
+
+    public boolean isBeingRented() {
+        return getRenterUUID() == null;
     }
 
     public boolean isEmpty() {

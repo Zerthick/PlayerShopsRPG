@@ -20,6 +20,7 @@
 package io.github.zerthick.playershopsrpg.shop;
 
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
+import io.github.zerthick.playershopsrpg.utils.config.PluginConfig;
 import io.github.zerthick.playershopsrpg.utils.config.sql.SQLDataUtil;
 import org.spongepowered.api.Sponge;
 
@@ -52,6 +53,8 @@ public class ShopRentManager {
         this.shopRentMap = shopRentMap;
         shopManager = plugin.getShopManager();
 
+        PluginConfig pluginConfig = plugin.getPluginConfig();
+
         Sponge.getScheduler().createTaskBuilder().interval(15, TimeUnit.MINUTES).execute(() -> {
             Iterator<Map.Entry<UUID, LocalDateTime>> it = this.shopRentMap.entrySet().iterator();
             while (it.hasNext()) {
@@ -60,7 +63,7 @@ public class ShopRentManager {
                     Optional<ShopContainer> shopContainerOptional = shopManager.getShopByUUID(entry.getKey());
                     shopContainerOptional.ifPresent(shopContainer -> {
                         SQLDataUtil.deleteShopRent(shopContainer.getShop().getUUID(),plugin.getLogger());
-                        shopContainer.getShop().rentExpire(true, true);
+                        shopContainer.getShop().rentExpire(pluginConfig.isRentExpireTransferFunds(), pluginConfig.isRentExpireClearInventory());
                     });
                     it.remove();
                 }

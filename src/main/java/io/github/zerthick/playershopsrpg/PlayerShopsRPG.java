@@ -28,6 +28,7 @@ import io.github.zerthick.playershopsrpg.shop.ShopManager;
 import io.github.zerthick.playershopsrpg.shop.ShopRentManager;
 import io.github.zerthick.playershopsrpg.shop.type.ShopTypeManager;
 import io.github.zerthick.playershopsrpg.utils.config.ConfigManager;
+import io.github.zerthick.playershopsrpg.utils.config.PluginConfig;
 import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.slf4j.Logger;
@@ -80,6 +81,8 @@ public class PlayerShopsRPG {
     @ConfigDir(sharedRoot = false)
     private Path defaultConfigDir;
 
+    private PluginConfig pluginConfig;
+
     private ConfigManager configManager;
 
     public ShopManager getShopManager() {
@@ -114,17 +117,24 @@ public class PlayerShopsRPG {
         return instance;
     }
 
+    public PluginConfig getPluginConfig() {
+        return pluginConfig;
+    }
+
     @Listener
     public void onGameInit(GameInitializationEvent event){
 
         configManager = ConfigManager.getInstance();
         configManager.init(this);
 
+        pluginConfig = configManager.loadPluginConfig();
+
         shopManager = configManager.loadShops();
         shopTypeManager = configManager.loadShopTypes();
         shopRentManager = ShopRentManager.getInstance();
         shopRentManager.init(this, configManager.loadShopRent());
         messages = Messages.getInstance();
+
     }
 
     @Listener

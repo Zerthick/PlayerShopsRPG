@@ -200,4 +200,31 @@ public class ConfigManager {
 
         return properties;
     }
+
+    public PluginConfig loadPluginConfig() {
+        File configFile = plugin.getDefaultConfig().toFile();
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(configFile).build();
+        if (!configFile.exists()) {
+            Asset defaultConfig = plugin.getInstance().getAsset("default_config.conf").get();
+            try {
+                defaultConfig.copyToFile(configFile.toPath());
+                loader.save(loader.load());
+            } catch (IOException e) {
+                logger.warn("Error loading default plugin config! Error:" + e.getMessage());
+            }
+        }
+
+        try {
+            CommentedConfigurationNode defaultConfig = loader.load();
+            CommentedConfigurationNode rentExpireNode = defaultConfig.getNode("rentExpireActions");
+            boolean clearInventory = rentExpireNode.getNode("clearInventory").getBoolean();
+            boolean transferFunds = rentExpireNode.getNode("transferFunds").getBoolean();
+
+            return new PluginConfig(clearInventory, transferFunds);
+        } catch (IOException e) {
+            logger.warn("Error loading messages config! Error:" + e.getMessage());
+        }
+
+        return new PluginConfig(false, false);
+    }
 }
