@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -34,4 +34,5 @@ public class CommandArgs {
     public static final LiteralText SHOP_UUID = Text.of("ShopUUID");
     public static final LiteralText MESSAGE = Text.of("Message");
     public static final LiteralText COMMAND = Text.of("Command");
+    public static final LiteralText CURRENCY = Text.of("Currency");
 }

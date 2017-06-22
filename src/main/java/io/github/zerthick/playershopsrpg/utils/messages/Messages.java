@@ -94,6 +94,7 @@ public class Messages {
     public static final String SELECT_CLEAR = messageProps.getProperty("SELECT_CLEAR");
     public static final String SELECT_UNKNOWN_TYPE = messageProps.getProperty("SELECT_UNKNOWN_TYPE");
     public static final String SELECT_CONSOLE_REJECT = messageProps.getProperty("SELECT_CONSOLE_REJECT");
+    public static final String SET_CURRENCY_CONSOLE_REJECT = messageProps.getProperty("SET_CURRENCY_CONSOLE_REJECT");
     public static final String SET_OWNER_CONSOLE_REJECT = messageProps.getProperty("SET_OWNER_CONSOLE_REJECT");
     public static final String SET_NAME_CONSOLE_REJECT = messageProps.getProperty("SET_NAME_CONSOLE_REJECT");
     public static final String SET_PRICE_CONSOLE_REJECT = messageProps.getProperty("SET_PRICE_CONSOLE_REJECT");

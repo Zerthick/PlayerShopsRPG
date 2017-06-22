@@ -30,6 +30,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
@@ -50,6 +51,7 @@ public class Shop {
     private String type;
     private double price;
     private double rent;
+    private String currencyID;
 
     /**
      * Basic Constructor, used for creating shops for the first time
@@ -69,9 +71,21 @@ public class Shop {
         type = "";
         price = -1;
         rent = -1;
+        currencyID = null;
     }
 
-    public Shop(UUID shopUUID, String name, UUID ownerUUID, UUID renterUUID, Set<UUID> managerUUIDset, Map<UUID, ShopItem> items, boolean unlimitedMoney, boolean unlimitedStock, String type, double price, double rent) {
+    public Shop(UUID shopUUID,
+                String name,
+                UUID ownerUUID,
+                UUID renterUUID,
+                Set<UUID> managerUUIDset,
+                Map<UUID, ShopItem> items,
+                boolean unlimitedMoney,
+                boolean unlimitedStock,
+                String type,
+                double price,
+                double rent,
+                String currencyID) {
         this.shopUUID = shopUUID;
         this.name = name;
         this.ownerUUID = ownerUUID;
@@ -83,6 +97,7 @@ public class Shop {
         this.type = type;
         this.price = price;
         this.rent = rent;
+        this.currencyID = currencyID;
     }
 
     public ShopTransactionResult createItem(Player player, ItemStack itemStack) {
@@ -162,12 +177,12 @@ public class Shop {
                 TransactionResult result;
 
                 if (unlimitedMoney) {
-                    result = playerAccountOptional.get().deposit(manager.getDefaultCurrency(),
+                    result = playerAccountOptional.get().deposit(getShopCurrency(),
                             BigDecimal.valueOf(amount * item.getItemBuyPrice()),
                             Cause.of(NamedCause.notifier(this)));
                 } else {
                     result = shopAccountOptional.get().transfer(playerAccountOptional.get(),
-                            manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()),
+                            getShopCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()),
                             Cause.of(NamedCause.notifier(this)));
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
@@ -225,12 +240,12 @@ public class Shop {
                 TransactionResult result;
 
                 if (unlimitedMoney) {
-                    result = playerAccountOptional.get().withdraw(manager.getDefaultCurrency(),
+                    result = playerAccountOptional.get().withdraw(getShopCurrency(),
                             BigDecimal.valueOf(amount * item.getItemSellPrice()),
                             Cause.of(NamedCause.notifier(this)));
                 } else {
                     result = playerAccountOptional.get().transfer(shopAccountOptional.get(),
-                            manager.getDefaultCurrency(), BigDecimal.valueOf(amount * item.getItemSellPrice()),
+                            getShopCurrency(), BigDecimal.valueOf(amount * item.getItemSellPrice()),
                             Cause.of(NamedCause.notifier(this)));
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
@@ -408,6 +423,22 @@ public class Shop {
         return ShopTransactionResult.SUCCESS;
     }
 
+    public ShopTransactionResult setCurrency(Player player, Currency currency) {
+
+        // /If the player is not the owner of the shop return a message to the player
+        if (!hasOwnerPermissions(player)) {
+            return new ShopTransactionResult(Messages.YOU_ARE_NOT_THE_OWNER_OF_THIS_SHOP);
+        }
+
+        if (currency == null) {
+            currencyID = null;
+        } else {
+            currencyID = currency.getId();
+        }
+
+        return ShopTransactionResult.SUCCESS;
+    }
+
     public ShopTransactionResult setUnlimitedStock(Player player, boolean bool) {
 
         unlimitedStock = bool;
@@ -490,7 +521,7 @@ public class Shop {
 
         TransactionResult result =
                 playerAccountOptional.get()
-                        .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(price), Cause.of(NamedCause.notifier(this)));
+                        .transfer(ownerAccountOptional.get(), getShopCurrency(), BigDecimal.valueOf(price), Cause.of(NamedCause.notifier(this)));
 
         if(result.getResult() == ResultType.SUCCESS) {
             ownerUUID = player.getUniqueId();
@@ -524,10 +555,10 @@ public class Shop {
 
             result =
                     renterAccountOptional.get()
-                            .transfer(ownerAccountOptional.get(), manager.getDefaultCurrency(), BigDecimal.valueOf(rent * duration), Cause.of(NamedCause.notifier(this)));
+                            .transfer(ownerAccountOptional.get(), getShopCurrency(), BigDecimal.valueOf(rent * duration), Cause.of(NamedCause.notifier(this)));
 
         } else {
-            result = renterAccountOptional.get().withdraw(manager.getDefaultCurrency(), BigDecimal.valueOf(rent * duration), Cause.of(NamedCause.notifier(this)));
+            result = renterAccountOptional.get().withdraw(getShopCurrency(), BigDecimal.valueOf(rent * duration), Cause.of(NamedCause.notifier(this)));
         }
         if (result.getResult() == ResultType.SUCCESS) {
             ShopRentManager.getInstance().rentShop(this, duration);
@@ -552,8 +583,8 @@ public class Shop {
                 UniqueAccount shopAccount = shopAccountOptional.get();
 
                 shopAccount.transfer(renterAccount,
-                        manager.getDefaultCurrency(),
-                        shopAccount.getBalance(manager.getDefaultCurrency()),
+                        getShopCurrency(),
+                        shopAccount.getBalance(getShopCurrency()),
                         Cause.of(NamedCause.notifier(this)));
             }
         }
@@ -603,7 +634,7 @@ public class Shop {
         Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
 
         if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
-            shopAccountOptional.get().transfer(playerAccountOptional.get(), manager.getDefaultCurrency(), amount, Cause.of(NamedCause.notifier(this)));
+            shopAccountOptional.get().transfer(playerAccountOptional.get(), getShopCurrency(), amount, Cause.of(NamedCause.notifier(this)));
         }
 
         return ShopTransactionResult.SUCCESS;
@@ -620,7 +651,7 @@ public class Shop {
         Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
 
         if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
-            playerAccountOptional.get().transfer(shopAccountOptional.get(), manager.getDefaultCurrency(), amount, Cause.of(NamedCause.notifier(this)));
+            playerAccountOptional.get().transfer(shopAccountOptional.get(), getShopCurrency(), amount, Cause.of(NamedCause.notifier(this)));
         }
 
         return ShopTransactionResult.SUCCESS;
@@ -632,7 +663,7 @@ public class Shop {
 
         Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
 
-        return shopAccountOptional.map(uniqueAccount -> uniqueAccount.getBalance(manager.getDefaultCurrency())).orElse(BigDecimal.ZERO);
+        return shopAccountOptional.map(uniqueAccount -> uniqueAccount.getBalance(getShopCurrency())).orElse(BigDecimal.ZERO);
     }
 
     public boolean hasOwnerPermissions(Player player) {
@@ -653,6 +684,10 @@ public class Shop {
     public boolean hasManagerPermissions(Player player) {
         return managerUUIDset.contains(player.getUniqueId()) || player.hasPermission(Permissions.PLAYERSHOPSRPG_BYPASS_MANAGER) ||
                 hasRenterPermissions(player);
+    }
+
+    public String getCurrencyID() {
+        return currencyID;
     }
 
     public String getName() {
@@ -702,6 +737,17 @@ public class Shop {
     public double getPrice() { return price; }
 
     public double getRent() { return rent; }
+
+    public Currency getShopCurrency() {
+
+        EconManager econManager = EconManager.getInstance();
+
+        if (currencyID == null) {
+            return econManager.getDefaultCurrency();
+        } else {
+            return econManager.getCurrency(currencyID).orElse(econManager.getDefaultCurrency());
+        }
+    }
 
     public boolean isForSale() {
         return getPrice() >= 0;

@@ -21,14 +21,17 @@ package io.github.zerthick.playershopsrpg.cmd;
 
 import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.CommandArgs;
+import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.ShopSetCurrencyDefaultExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.item.*;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager.ShopAddManagerExecutor;
 import io.github.zerthick.playershopsrpg.cmd.cmdexecutors.shop.manager.ShopRemoveManagerExecutor;
 import io.github.zerthick.playershopsrpg.permissions.Permissions;
+import io.github.zerthick.playershopsrpg.utils.econ.EconManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
@@ -166,6 +169,25 @@ public class CommandRegister {
                 .child(shopManagerRemoveCommand, "remove")
                 .build();
 
+        // shop set currency default
+        CommandSpec shopSetCurrencyDefaultCommand = CommandSpec.builder()
+                .description(Text.of("Set the currency of the shop you are currently standing in to the default currency"))
+                .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_CURRENCY)
+                .arguments(GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopSetCurrencyDefaultExecutor(plugin))
+                .build();
+
+        // shop set currency <currency>
+        CommandSpec shopSetCurrencyCommand = CommandSpec.builder()
+                .description(Text.of("Set the currency of the shop you are currently standing in"))
+                .permission(Permissions.PLAYERSHOPSRPG_COMMAND_SET_CURRENCY)
+                .arguments(GenericArguments.choices(CommandArgs.CURRENCY,
+                        EconManager.getInstance().getCurrencies().stream().collect(Collectors.toMap(Currency::getName, c -> c))),
+                        GenericArguments.optional(GenericArguments.string(CommandArgs.SHOP_UUID)))
+                .executor(new ShopSetCurrencyExecutor(plugin))
+                .child(shopSetCurrencyDefaultCommand, "default")
+                .build();
+
         // shop set price <price>
         CommandSpec shopSetPriceCommand = CommandSpec.builder()
                 .description(Text.of("Set the purchase price of the shop you are currently standing in"))
@@ -234,6 +256,7 @@ public class CommandRegister {
                 .child(shopSetTypeCommand, "type")
                 .child(shopSetPriceCommand, "price")
                 .child(shopSetRentCommand, "rent")
+                .child(shopSetCurrencyCommand, "currency")
                 .build();
 
         // shop browse manager

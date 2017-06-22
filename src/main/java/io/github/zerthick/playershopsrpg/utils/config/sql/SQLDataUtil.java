@@ -57,7 +57,7 @@ public class SQLDataUtil {
         List<String> columns =
                 ImmutableList.of("ID UUID PRIMARY KEY", "NAME VARCHAR(256)", "OWNER_ID UUID", "RENTER_ID UUID",
                         "UNLIMITED_MONEY BOOLEAN", "UNLIMITED_STOCK BOOLEAN", "TYPE VARCHAR(32)",
-                        "PRICE DECIMAL", "RENT DECIMAL");
+                        "PRICE DECIMAL", "RENT DECIMAL", "CURRENCY VARCHAR(32)");
         SQLUtil.createTable("SHOP", columns);
     }
 
@@ -217,9 +217,9 @@ public class SQLDataUtil {
         String type = shop.getType();
         double price = shop.getPrice();
         double rent = shop.getRent();
-
+        String currencyID = shop.getCurrencyID();
         try {
-            SQLUtil.executeUpdate("MERGE INTO SHOP VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", preparedStatement -> {
+            SQLUtil.executeUpdate("MERGE INTO SHOP VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", preparedStatement -> {
                 try {
                     preparedStatement.setObject(1, id);
                     preparedStatement.setString(2, name);
@@ -230,6 +230,7 @@ public class SQLDataUtil {
                     preparedStatement.setString(7, type);
                     preparedStatement.setBigDecimal(8, BigDecimal.valueOf(price));
                     preparedStatement.setBigDecimal(9, BigDecimal.valueOf(rent));
+                    preparedStatement.setString(10, currencyID);
                 } catch (SQLException e) {
                     logger.error(e.getMessage());
                 }
@@ -260,7 +261,8 @@ public class SQLDataUtil {
                         double rent = resultSet.getBigDecimal("RENT").doubleValue();
                         Set<UUID> managers = loadShopManagers(shopUUID, logger);
                         Map<UUID, ShopItem> items = loadShopItems(shopUUID, logger);
-                        shop[0] = new Shop(id, name, ownerId, renterId, managers, items, unlimitedMoney, unlimitedStock, type, price, rent);
+                        String currencyID = resultSet.getString("CURRENCY");
+                        shop[0] = new Shop(id, name, ownerId, renterId, managers, items, unlimitedMoney, unlimitedStock, type, price, rent, currencyID);
                     }
                 } catch (SQLException e) {
                     logger.error(e.getMessage());

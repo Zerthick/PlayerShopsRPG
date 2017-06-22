@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Zerthick
+ * Copyright (C) 2017  Zerthick
  *
  * This file is part of PlayerShopsRPG.
  *
@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.utils.econ;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
@@ -51,6 +52,11 @@ public class EconManager {
     public Set<Currency> getCurrencies(){
         return economyService.getCurrencies();
     }
+
+    public Optional<Currency> getCurrency(String id) {
+        return Sponge.getRegistry().getType(Currency.class, id);
+    }
+
     public Currency getDefaultCurrency(){
         return economyService.getDefaultCurrency();
     }

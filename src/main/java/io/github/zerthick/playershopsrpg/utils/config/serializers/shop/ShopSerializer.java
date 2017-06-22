@@ -50,7 +50,7 @@ public class ShopSerializer implements TypeSerializer<Shop> {
         double price = value.getNode("price").getDouble(-1);
         double rent = value.getNode("rent").getDouble(-1);
 
-        return new Shop(shopUUID, name, ownerUUID, renterUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType, price, rent);
+        return new Shop(shopUUID, name, ownerUUID, renterUUID, managerUUIDset, items, unlimitedMoney, unlimitedStock, shopType, price, rent, null);
     }
 
     @Override
