@@ -5,6 +5,17 @@ PlayerShopsRPG is a region-based player shop plugin, similar to the now-gone Buk
 ## Rational
 As the name implies PlayerShopsRPG is designed to be used with rpg-type servers where the clutter of physical shop objects (signs/chests) may be undesirable.  It was built as a compromise between the flexibility of command-based shops and the ease of use of GUI-based shops, relying primarily on clickable links in chat to perform most of it's functions.  It also allows server owners to create different types of shops, it doesn't make much sense for a Blacksmith to sell cake, does it?
 
+## Features
+
+* Region-defined Player Shops!
+* Easy to use Chat Interface!
+* Ability to define Admin/Server Shops!
+* Ability to define different Shop Types (Ex: Blacksmith) that can only sell certain items!
+* Support for Shop Managers in addition to Owners!
+* Full Support for Custom Items (MetaData)!
+* Support for Multiple Currencies!
+* More!
+
 ## QuickStart - How to create your first shop
 1. `/shop select` to select the region to create the shop
 2. `/shop create My Wonderful QuickStart Shop` to create a shop named *My Wonderful QuickStart Shop*
