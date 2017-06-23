@@ -43,6 +43,17 @@ public class CuboidRegionSerializer implements TypeSerializer<CuboidRegion> {
         int bY = value.getNode("parB", "y").getInt();
         int bZ = value.getNode("parB", "z").getInt();
 
+        // Check for degenerate dimensions (distance of 0)
+        if (aX == bX) {
+            bX++;
+        }
+        if (aY == bY) {
+            bY++;
+        }
+        if (aZ == bZ) {
+            bZ++;
+        }
+
         return new CuboidRegion(new Vector3i(aX, aY, aZ), new Vector3i(bX, bY, bZ));
     }
 

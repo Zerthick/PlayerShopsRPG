@@ -129,21 +129,27 @@ public class PlayerShopsRPG {
 
         pluginConfig = configManager.loadPluginConfig();
 
-        shopManager = configManager.loadShops();
-        shopTypeManager = configManager.loadShopTypes();
-        shopRentManager = ShopRentManager.getInstance();
-        shopRentManager.init(this, configManager.loadShopRent());
         messages = Messages.getInstance();
 
     }
 
     @Listener
-    public void onServerStart(GameStartedServerEvent event){
-        // Initialize Region Select Buffer
-        regionSelectBuffer = new RegionSelectBuffer();
+    public void onServerStarting(GameStartedServerEvent event) {
+
+        // Delay loading shops so mods can register items
+        shopManager = configManager.loadShops();
+        shopTypeManager = configManager.loadShopTypes();
+        shopRentManager = ShopRentManager.getInstance();
+        shopRentManager.init(this, configManager.loadShopRent());
 
         // Register Commands
         CommandRegister.registerCommands(this);
+    }
+    
+    @Listener
+    public void onServerStart(GameStartedServerEvent event){
+        // Initialize Region Select Buffer
+        regionSelectBuffer = new RegionSelectBuffer();
 
         // Log Start Up to Console
         getLogger().info(
