@@ -53,7 +53,7 @@ import java.util.Optional;
 
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
-        version = "2.0.0",
+        version = "2.0.1",
         description = "A region-based player shop plugin.",
         authors = {
                 "Zerthick"
@@ -145,7 +145,7 @@ public class PlayerShopsRPG {
         // Register Commands
         CommandRegister.registerCommands(this);
     }
-    
+
     @Listener
     public void onServerStart(GameStartedServerEvent event){
         // Initialize Region Select Buffer
