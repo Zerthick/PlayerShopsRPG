@@ -53,6 +53,8 @@ public class Messages {
     public static final String INVALID_MAX_ITEM_AMOUNT = messageProps.getProperty("INVALID_MAX_ITEM_AMOUNT");
     public static final String INVALID_ITEM_BUY_PRICE = messageProps.getProperty("INVALID_ITEM_BUY_PRICE");
     public static final String INVALID_ITEM_BUY_AMOUNT = messageProps.getProperty("INVALID_ITEM_BUY_AMOUNT");
+    public static final String INVALID_ITEM_ADD_AMOUNT = messageProps.getProperty("INVALID_ITEM_ADD_AMOUNT");
+    public static final String INVALID_ITEM_REMOVE_AMOUNT = messageProps.getProperty("INVALID_ITEM_REMOVE_AMOUNT");
     public static final String SHOP_DOES_NOT_BUY_ITEM = messageProps.getProperty("SHOP_DOES_NOT_BUY_ITEM");
     public static final String PLAYER_DOES_NOT_HAVE_ENOUGH_ITEM = messageProps.getProperty("PLAYER_DOES_NOT_HAVE_ENOUGH_ITEM");
     public static final String SHOP_DOES_NOT_HAVE_ENOUGH_FUNDS = messageProps.getProperty("SHOP_DOES_NOT_HAVE_ENOUGH_FUNDS");
@@ -154,6 +156,13 @@ public class Messages {
     public static final String UI_ADD_MANAGER_PROMPT = messageProps.getProperty("UI_ADD_MANAGER_PROMPT");
     public static final String UI_ITEMS = messageProps.getProperty("UI_ITEMS");
     public static final String UI_DESTROY = messageProps.getProperty("UI_DESTROY");
+
+    //Region Select Messages
+    public static final String CUBOID_SELECT_BOTTOM_LEFT = messageProps.getProperty("CUBOID_SELECT_BOTTOM_LEFT");
+    public static final String CUBOID_SELECT_TOP_RIGHT = messageProps.getProperty("CUBOID_SELECT_TOP_RIGHT");
+    public static final String CUBOID_CREATE = messageProps.getProperty("CUBOID_CREATE");
+    public static final String CUBOID_ERROR = messageProps.getProperty("CUBOID_ERROR");
+
 
     private static Messages instance = null;
 

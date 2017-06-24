@@ -265,6 +265,11 @@ public class Shop {
 
     public ShopTransactionResult addItem(Player player, ItemStack itemStack, int amount) {
 
+        //Amount Bounds Check
+        if (amount < 0) {
+            return new ShopTransactionResult(Messages.INVALID_ITEM_ADD_AMOUNT);
+        }
+
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
             return new ShopTransactionResult(Messages.YOU_ARE_NOT_A_MANAGER_OF_THIS_SHOP);
@@ -289,6 +294,11 @@ public class Shop {
     }
 
     public ShopTransactionResult removeItem(Player player, UUID itemUUID, int amount) {
+
+        //Amount Bounds Check
+        if (amount < 0) {
+            return new ShopTransactionResult(Messages.INVALID_ITEM_REMOVE_AMOUNT);
+        }
 
         //If the player is not a manager of the shop return a message to the player
         if (!hasManagerPermissions(player)) {
