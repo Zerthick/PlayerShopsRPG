@@ -32,9 +32,8 @@ public class InventoryUtils {
     public static int getItemCount(PlayerInventory inventory, ItemStack itemStack) {
 
         ItemStack copy = itemStack.copy();
-        copy.setQuantity(-1);
 
-        return inventory.query(copy).totalItems();
+        return inventory.queryAny(copy).totalItems();
     }
 
     public static int getAvailableSpace(PlayerInventory inventory, ItemStack itemStack) {
@@ -105,13 +104,12 @@ public class InventoryUtils {
         }
 
         ItemStack copy = itemStack.copy();
-        copy.setQuantity(-1);
         while (total > 0) {
             if (total > copy.getMaxStackQuantity()) {
-                inventory.query(copy).poll(copy.getMaxStackQuantity());
+                inventory.queryAny(copy).poll(copy.getMaxStackQuantity());
                 total -= copy.getMaxStackQuantity();
             } else {
-                inventory.query(copy).poll(total);
+                inventory.queryAny(copy).poll(total);
                 total = 0;
             }
         }

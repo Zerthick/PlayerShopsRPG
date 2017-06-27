@@ -36,11 +36,11 @@ repositories {
 spongestart{
     eula true
 
-    minecraft '1.10.2'
+    minecraft '1.11.2'
     type 'stable'
 
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:5.1.0'
+    compile 'org.spongepowered:spongeapi:6.0.0'
 }
