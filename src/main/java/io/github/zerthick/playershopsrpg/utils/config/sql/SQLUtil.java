@@ -19,6 +19,7 @@
 
 package io.github.zerthick.playershopsrpg.utils.config.sql;
 
+import io.github.zerthick.playershopsrpg.PlayerShopsRPG;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
 
@@ -36,7 +37,9 @@ public class SQLUtil {
     private static SqlService sql = Sponge.getServiceManager().provide(SqlService.class).get();
 
     private static DataSource getDataSource() throws SQLException {
-        return sql.getDataSource("jdbc:h2:./config/playershopsrpg/data");
+        PlayerShopsRPG plugin = (PlayerShopsRPG) Sponge.getPluginManager().getPlugin("playershopsrpg").get().getInstance().get();
+        String configDir = plugin.getDefaultConfigDir().toString();
+        return sql.getDataSource("jdbc:h2:" + configDir + "/data");
     }
 
     public static void createTable(String name, List<String> columns) throws SQLException {
