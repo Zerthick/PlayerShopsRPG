@@ -40,7 +40,7 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppedEvent;
+import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -200,7 +200,7 @@ public class PlayerShopsRPG {
     }
 
     @Listener
-    public void onServerStop(GameStoppedEvent event) {
+    public void onServerStop(GameStoppedServerEvent event) {
         configManager.saveShops();
         configManager.saveShopRent();
     }
