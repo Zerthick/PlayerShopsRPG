@@ -53,7 +53,7 @@ import java.util.Optional;
 
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
-        version = "2.0.3",
+        version = "2.0.4",
         description = "A region-based player shop plugin.",
         authors = {
                 "Zerthick"
