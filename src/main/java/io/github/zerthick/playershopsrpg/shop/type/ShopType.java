@@ -32,7 +32,7 @@ public class ShopType {
     }
 
     public boolean isAllowedItem(ItemStack itemStack) {
-        return allowedItems.contains(itemStack.getItem().getId());
+        return allowedItems.contains(itemStack.getType().getId());
     }
 
     public Set<String> getAllowedItems() {
