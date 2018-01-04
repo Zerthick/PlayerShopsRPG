@@ -107,7 +107,8 @@ public class ConfigManager {
     }
 
     public void saveShops() {
-        plugin.getShopManager().getShopMap().forEach((uuid, shopContainers) -> SQLDataUtil.saveShopContainers(uuid, shopContainers, logger));
+        Map<UUID, Set<ShopContainer>> shopMap = new HashMap<>(plugin.getShopManager().getShopMap());
+        shopMap.forEach((uuid, shopContainers) -> SQLDataUtil.saveShopContainers(uuid, shopContainers, logger));
     }
 
     public ShopTypeManager loadShopTypes() {
@@ -170,7 +171,8 @@ public class ConfigManager {
     }
 
     public void saveShopRent() {
-        SQLDataUtil.saveShopRent(plugin.getShopRentManager().getShopRentMap(), logger);
+        Map<UUID, LocalDateTime> shopRentMap = new HashMap<>(plugin.getShopRentManager().getShopRentMap());
+        SQLDataUtil.saveShopRent(shopRentMap, logger);
     }
 
     public Properties loadMessages() {

@@ -45,11 +45,13 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.chat.ChatTypes;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "playershopsrpg",
         name = "PlayerShopsRPG",
@@ -143,6 +145,18 @@ public class PlayerShopsRPG {
 
         // Register Commands
         CommandRegister.registerCommands(this);
+
+        Task.builder()
+                .async()
+                .execute(() -> {
+                    logger.info("Saving Shops to DB");
+                    configManager.saveShops();
+                    configManager.saveShopRent();
+                })
+                .interval(5, TimeUnit.MINUTES)
+                .name("PlayerShop Save Task")
+                .submit(this);
+
     }
 
     @Listener
