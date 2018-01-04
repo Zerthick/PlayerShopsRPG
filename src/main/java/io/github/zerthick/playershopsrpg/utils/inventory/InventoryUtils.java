@@ -23,6 +23,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class InventoryUtils {
 
         ItemStack copy = itemStack.copy();
 
-        return inventory.queryAny(copy).totalItems();
+        return inventory.query(QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY.of(copy)).totalItems();
     }
 
     public static int getAvailableSpace(PlayerInventory inventory, ItemStack itemStack) {
@@ -106,10 +107,10 @@ public class InventoryUtils {
         ItemStack copy = itemStack.copy();
         while (total > 0) {
             if (total > copy.getMaxStackQuantity()) {
-                inventory.queryAny(copy).poll(copy.getMaxStackQuantity());
+                inventory.query(QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY.of(copy)).poll(copy.getMaxStackQuantity());
                 total -= copy.getMaxStackQuantity();
             } else {
-                inventory.queryAny(copy).poll(total);
+                inventory.query(QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY.of(copy)).poll(total);
                 total = 0;
             }
         }

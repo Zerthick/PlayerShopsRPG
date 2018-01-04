@@ -27,7 +27,6 @@ import io.github.zerthick.playershopsrpg.utils.messages.Messages;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.service.economy.Currency;
@@ -179,11 +178,11 @@ public class Shop {
                 if (unlimitedMoney) {
                     result = playerAccountOptional.get().deposit(getShopCurrency(),
                             BigDecimal.valueOf(amount * item.getItemBuyPrice()),
-                            Cause.builder().append(this).build(EventContext.empty()));
+                            buildCause());
                 } else {
                     result = shopAccountOptional.get().transfer(playerAccountOptional.get(),
                             getShopCurrency(), BigDecimal.valueOf(amount * item.getItemBuyPrice()),
-                            Cause.builder().append(this).build(EventContext.empty()));
+                            buildCause());
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
                     item.setItemAmount(item.getItemAmount() + amount);
@@ -242,11 +241,11 @@ public class Shop {
                 if (unlimitedMoney) {
                     result = playerAccountOptional.get().withdraw(getShopCurrency(),
                             BigDecimal.valueOf(amount * item.getItemSellPrice()),
-                            Cause.builder().append(this).build(EventContext.empty()));
+                            buildCause());
                 } else {
                     result = playerAccountOptional.get().transfer(shopAccountOptional.get(),
                             getShopCurrency(), BigDecimal.valueOf(amount * item.getItemSellPrice()),
-                            Cause.builder().append(this).build(EventContext.empty()));
+                            buildCause());
                 }
                 if (result.getResult() == ResultType.SUCCESS) {
                     if (!unlimitedStock) {
@@ -531,7 +530,7 @@ public class Shop {
 
         TransactionResult result =
                 playerAccountOptional.get()
-                        .transfer(ownerAccountOptional.get(), getShopCurrency(), BigDecimal.valueOf(price), Cause.builder().append(this).build(EventContext.empty()));
+                        .transfer(ownerAccountOptional.get(), getShopCurrency(), BigDecimal.valueOf(price), buildCause());
 
         if(result.getResult() == ResultType.SUCCESS) {
             ownerUUID = player.getUniqueId();
@@ -565,10 +564,10 @@ public class Shop {
 
             result =
                     renterAccountOptional.get()
-                            .transfer(ownerAccountOptional.get(), getShopCurrency(), BigDecimal.valueOf(rent * duration), Cause.builder().append(this).build(EventContext.empty()));
+                            .transfer(ownerAccountOptional.get(), getShopCurrency(), BigDecimal.valueOf(rent * duration), buildCause());
 
         } else {
-            result = renterAccountOptional.get().withdraw(getShopCurrency(), BigDecimal.valueOf(rent * duration), Cause.builder().append(this).build(EventContext.empty()));
+            result = renterAccountOptional.get().withdraw(getShopCurrency(), BigDecimal.valueOf(rent * duration), buildCause());
         }
         if (result.getResult() == ResultType.SUCCESS) {
             ShopRentManager.getInstance().rentShop(this, duration);
@@ -595,7 +594,7 @@ public class Shop {
                 shopAccount.transfer(renterAccount,
                         getShopCurrency(),
                         shopAccount.getBalance(getShopCurrency()),
-                        Cause.builder().append(this).build(EventContext.empty()));
+                        buildCause());
             }
         }
 
@@ -644,7 +643,7 @@ public class Shop {
         Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
 
         if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
-            shopAccountOptional.get().transfer(playerAccountOptional.get(), getShopCurrency(), amount, Cause.builder().append(this).build(EventContext.empty()));
+            shopAccountOptional.get().transfer(playerAccountOptional.get(), getShopCurrency(), amount, buildCause());
         }
 
         return ShopTransactionResult.SUCCESS;
@@ -661,7 +660,7 @@ public class Shop {
         Optional<UniqueAccount> shopAccountOptional = manager.getOrCreateAccount(getUUID());
 
         if (playerAccountOptional.isPresent() && shopAccountOptional.isPresent()) {
-            playerAccountOptional.get().transfer(shopAccountOptional.get(), getShopCurrency(), amount, Cause.builder().append(this).build(EventContext.empty()));
+            playerAccountOptional.get().transfer(shopAccountOptional.get(), getShopCurrency(), amount, buildCause());
         }
 
         return ShopTransactionResult.SUCCESS;
@@ -778,5 +777,15 @@ public class Shop {
             }
         }
         return true;
+    }
+
+    private Cause buildCause() {
+        Sponge.getCauseStackManager().pushCause(this);
+
+        Cause cause = Sponge.getCauseStackManager().getCurrentCause();
+
+        Sponge.getCauseStackManager().popCause();
+
+        return cause;
     }
 }

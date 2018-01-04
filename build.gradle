@@ -24,6 +24,7 @@ plugins {
 }
 
 group 'io.github.zerthick'
+version '2.1.0'
 
 repositories {
     mavenCentral()
@@ -37,10 +38,9 @@ spongestart{
     eula true
 
     minecraft '1.12.2'
-    type 'bleeding'
-
+    type 'stable'
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.0.0'
 }
