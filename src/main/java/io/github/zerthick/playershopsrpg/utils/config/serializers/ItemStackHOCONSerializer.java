@@ -19,28 +19,30 @@
 
 package io.github.zerthick.playershopsrpg.utils.config.serializers;
 
-import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.persistence.DataFormats;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringWriter;
 
 public class ItemStackHOCONSerializer {
 
-    public static String serializeSnapShot(ItemStackSnapshot snapshot) throws ObjectMappingException, IOException {
-        ConfigurationNode node = HoconConfigurationLoader.builder().build().createEmptyNode();
+    public static String serializeSnapShot(ItemStackSnapshot snapshot) throws IOException {
+
+        DataContainer container = snapshot.toContainer();
         StringWriter stringWriter = new StringWriter();
 
-        node.setValue(TypeToken.of(ItemStackSnapshot.class), snapshot);
-        HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+        DataFormats.HOCON.writeTo(stringWriter, container);
 
         return stringWriter.toString();
     }
 
-    public static ItemStackSnapshot deserializeSnapShot(String serializedSnapshot) throws ObjectMappingException, IOException {
-        ConfigurationNode node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(serializedSnapshot))).build().load();
-        return node.getValue(TypeToken.of(ItemStackSnapshot.class));
+    public static ItemStackSnapshot deserializeSnapShot(String serializedSnapshot) throws IOException {
+
+        DataContainer container = DataFormats.HOCON.read(serializedSnapshot);
+
+        return ItemStack.builder().fromContainer(container).build().createSnapshot();
     }
 }

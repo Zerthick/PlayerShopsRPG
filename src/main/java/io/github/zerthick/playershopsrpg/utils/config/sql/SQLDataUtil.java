@@ -162,7 +162,7 @@ public class SQLDataUtil {
                         double itemSellPrice = resultSet.getBigDecimal("SELL_PRICE").doubleValue();
                         items.put(itemUUID, new ShopItem(itemUUID, snapshot, itemAmount, itemMaxAmount, itemBuyPrice, itemSellPrice));
                     }
-                } catch (IOException | ObjectMappingException | SQLException e) {
+                } catch (IOException | SQLException e) {
                     logger.info(e.getMessage());
                 }
             });
@@ -181,7 +181,7 @@ public class SQLDataUtil {
                 String itemStack = "";
                 try {
                     itemStack = ItemStackHOCONSerializer.serializeSnapShot(shopItem.getItemStackSnapShot());
-                } catch (ObjectMappingException | IOException e) {
+                } catch (IOException e) {
                     logger.error(e.getMessage());
                 }
                 int amount = shopItem.getItemAmount();

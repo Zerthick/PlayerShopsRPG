@@ -20,11 +20,11 @@
 plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
     id 'java'
-    id "com.qixalite.spongestart" version "1.6.2"
+    id "com.qixalite.spongestart2" version '3.2.3'
 }
 
 group 'io.github.zerthick'
-version '2.1.0'
+version '2.1.1'
 
 repositories {
     mavenCentral()
@@ -34,11 +34,8 @@ repositories {
     }
 }
 
-spongestart{
-    eula true
-
+spongestart {
     minecraft '1.12.2'
-    type 'stable'
 }
 
 dependencies {
